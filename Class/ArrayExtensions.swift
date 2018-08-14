@@ -333,19 +333,21 @@ extension Array where Element == DictionaryClosure {
             return
         }
         
-        _ = self.removeFirst()
         if let work = self.first {
-            defer { work(value) }
+            work(value)
+            _ = self.removeFirst()
         }
         objc_sync_exit(self)
         
     }
     
-    public mutating func enqueue(_ work: @escaping DictionaryClosure) {
+    public mutating func enqueue(run: Bool = false, _ work: @escaping DictionaryClosure) {
         objc_sync_enter(self)
-        self.append(work)
-        if self.count == 1 {
-            defer { work(nil) }
+        if run {
+            work(nil)
+        }
+        else {
+            self.append(work)
         }
         objc_sync_exit(self)
     }

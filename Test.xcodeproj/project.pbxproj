@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		520F389721229A890081B956 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389621229A890081B956 /* AppDelegate.swift */; };
-		520F389921229A890081B956 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389821229A890081B956 /* ViewController.swift */; };
+		520F389921229A890081B956 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389821229A890081B956 /* TestViewController.swift */; };
 		520F389C21229A890081B956 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 520F389A21229A890081B956 /* Main.storyboard */; };
 		520F389E21229A8A0081B956 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 520F389D21229A8A0081B956 /* Assets.xcassets */; };
 		520F38A121229A8A0081B956 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 520F389F21229A8A0081B956 /* LaunchScreen.storyboard */; };
@@ -41,14 +41,15 @@
 		520F38E621229C990081B956 /* CGRectExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38C921229C990081B956 /* CGRectExtensions.swift */; };
 		520F38E721229C990081B956 /* UIStoryboardExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38CA21229C990081B956 /* UIStoryboardExtensions.swift */; };
 		520F38E921229CA10081B956 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 520F38E821229CA10081B956 /* README.md */; };
-		520F38EB21229D940081B956 /* PKHParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38EA21229D930081B956 /* PKHParser.swift */; };
 		520F38ED21229E310081B956 /* CommonFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38EC21229E310081B956 /* CommonFunc.swift */; };
+		520F38EF21229FDA0081B956 /* AutoLayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38EE21229FDA0081B956 /* AutoLayoutController.swift */; };
+		520F38F12122B7D90081B956 /* ClosureQueueController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38F02122B7D90081B956 /* ClosureQueueController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		520F389321229A890081B956 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		520F389621229A890081B956 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		520F389821229A890081B956 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		520F389821229A890081B956 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		520F389B21229A890081B956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		520F389D21229A8A0081B956 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		520F38A021229A8A0081B956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -82,8 +83,9 @@
 		520F38C921229C990081B956 /* CGRectExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectExtensions.swift; sourceTree = "<group>"; };
 		520F38CA21229C990081B956 /* UIStoryboardExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIStoryboardExtensions.swift; sourceTree = "<group>"; };
 		520F38E821229CA10081B956 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		520F38EA21229D930081B956 /* PKHParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKHParser.swift; sourceTree = "<group>"; };
 		520F38EC21229E310081B956 /* CommonFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonFunc.swift; sourceTree = "<group>"; };
+		520F38EE21229FDA0081B956 /* AutoLayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLayoutController.swift; sourceTree = "<group>"; };
+		520F38F02122B7D90081B956 /* ClosureQueueController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureQueueController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,7 +122,9 @@
 			isa = PBXGroup;
 			children = (
 				520F389621229A890081B956 /* AppDelegate.swift */,
-				520F389821229A890081B956 /* ViewController.swift */,
+				520F389821229A890081B956 /* TestViewController.swift */,
+				520F38EE21229FDA0081B956 /* AutoLayoutController.swift */,
+				520F38F02122B7D90081B956 /* ClosureQueueController.swift */,
 				520F389A21229A890081B956 /* Main.storyboard */,
 				520F389D21229A8A0081B956 /* Assets.xcassets */,
 				520F389F21229A8A0081B956 /* LaunchScreen.storyboard */,
@@ -132,7 +136,6 @@
 		520F38AA21229AAF0081B956 /* Class */ = {
 			isa = PBXGroup;
 			children = (
-				520F38EA21229D930081B956 /* PKHParser.swift */,
 				520F38B221229C980081B956 /* ArrayExtensions.swift */,
 				520F38B421229C980081B956 /* BoolExtensions.swift */,
 				520F38B621229C980081B956 /* CGFloatExtensions.swift */,
@@ -238,7 +241,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				520F389921229A890081B956 /* ViewController.swift in Sources */,
+				520F389921229A890081B956 /* TestViewController.swift in Sources */,
 				520F38DD21229C990081B956 /* UIViewExtensions.swift in Sources */,
 				520F38DF21229C990081B956 /* UIImageExtension.swift in Sources */,
 				520F38D321229C990081B956 /* UIDeviceExtensions.swift in Sources */,
@@ -246,7 +249,6 @@
 				520F38D521229C990081B956 /* DictionaryExtensions.swift in Sources */,
 				520F38E121229C990081B956 /* NSObjectExtensions.swift in Sources */,
 				520F38E621229C990081B956 /* CGRectExtensions.swift in Sources */,
-				520F38EB21229D940081B956 /* PKHParser.swift in Sources */,
 				520F38D421229C990081B956 /* CGFloatExtensions.swift in Sources */,
 				520F38E721229C990081B956 /* UIStoryboardExtensions.swift in Sources */,
 				520F38DA21229C990081B956 /* UICollectionViewExtension.swift in Sources */,
@@ -254,8 +256,10 @@
 				520F38D121229C990081B956 /* UIScrollViewExtension.swift in Sources */,
 				520F38CB21229C990081B956 /* NSMutableAttributedStringExtensions.swift in Sources */,
 				520F38CD21229C990081B956 /* HTTPCookieExtension.swift in Sources */,
+				520F38EF21229FDA0081B956 /* AutoLayoutController.swift in Sources */,
 				520F38E521229C990081B956 /* StringExtensions.swift in Sources */,
 				520F38D721229C990081B956 /* DispatchQueue.swift in Sources */,
+				520F38F12122B7D90081B956 /* ClosureQueueController.swift in Sources */,
 				520F38CE21229C990081B956 /* UITableViewExtension.swift in Sources */,
 				520F38E221229C990081B956 /* UILabelExtensions.swift in Sources */,
 				520F38E321229C990081B956 /* PHPhotoLibraryExtension.swift in Sources */,

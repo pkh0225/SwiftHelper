@@ -783,18 +783,18 @@ extension UIView {
         return true
     }
     
-    public var gone: Bool {
+    public var isGone: Bool {
         get {
-            return goneWidth || goneHeight
+            return isGoneWidth || isGoneHeight
         }
         set {
             isHidden = newValue
-            goneWidth = newValue
-            goneHeight = newValue
+            isGoneWidth = newValue
+            isGoneHeight = newValue
         }
     }
     
-    public var goneWidth: Bool {
+    public var isGoneWidth: Bool {
         get {
             if let isGone = objc_getAssociatedObject(self, NSLayoutAttributeWidthIsGone_key) as? Bool {
                 return isGone
@@ -812,7 +812,7 @@ extension UIView {
         }
     }
     
-    public var goneHeight: Bool {
+    public var isGoneHeight: Bool {
         get {
             if let isGone = objc_getAssociatedObject(self, NSLayoutAttributeHeightIsGone_key) as? Bool {
                 return isGone
