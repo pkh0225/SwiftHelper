@@ -1,5 +1,5 @@
 # SwiftHelper
-🤖 Common functions 
+🤖 Common functions (AutoLayout, Closure Queue, UIScrollView headerView, footerView ,headerViewIsSticky, UIView viewDidDisappear ....)
 
 ## 목표
 > 자주 쓰는 functions 모음
