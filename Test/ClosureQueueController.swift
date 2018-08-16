@@ -16,10 +16,6 @@ class ClosureQueueController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
         closureQeeue.enqueue { _ in
             UIAlertController.showMessage("Test 111")
         }
@@ -29,8 +25,8 @@ class ClosureQueueController: UIViewController {
         closureQeeue.enqueue { _ in
             UIAlertController.showMessage("Test 333")
         }
-   
     }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

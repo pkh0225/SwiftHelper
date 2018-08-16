@@ -327,28 +327,17 @@ public typealias DictionaryClosure = (_ value: Dictionary<String,Any>?) -> Void
 
 extension Array where Element == DictionaryClosure {
     public mutating func dequeue(_ value: Dictionary<String,Any>? = nil){
-        
         objc_sync_enter(self)
-        guard self.count > 0 || self.first != nil else {
-            return
-        }
+        guard self.count > 0 || self.first != nil else { return }
         
-        if let work = self.first {
-            work(value)
-            _ = self.removeFirst()
-        }
+        let work = self.removeFirst()
+        defer { work(value) }
         objc_sync_exit(self)
-        
     }
     
-    public mutating func enqueue(run: Bool = false, _ work: @escaping DictionaryClosure) {
+    public mutating func enqueue(_ work: @escaping DictionaryClosure) {
         objc_sync_enter(self)
-        if run {
-            work(nil)
-        }
-        else {
-            self.append(work)
-        }
+        self.append(work)
         objc_sync_exit(self)
     }
     
