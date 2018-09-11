@@ -23,6 +23,10 @@ public enum VIEW_ADD_TYPE  {
 private var viewDidDisappear_key: UInt8 = 0
 private var viewDidDisappearTimer_key: UInt8 = 0
 
+private var viewDidAppear_key: UInt8 = 0
+private var viewDidAppearTimer_key: UInt8 = 0
+
+
 private var NSLayoutAttributeWidthEmpty : UInt8 = 0
 private var NSLayoutAttributeWidthEmpty_key = UnsafeMutableRawPointer(&NSLayoutAttributeWidthEmpty)
 private var NSLayoutAttributeHeightEmpty : UInt32 = 0
@@ -723,6 +727,41 @@ extension UIView {
         self.removeSuperViewAllConstraints()
         self.removeConstraints(self.constraints)
         self.translatesAutoresizingMaskIntoConstraints = true
+    }
+    
+    public var viewDidAppear: VoidClosure? {
+        get {
+            return objc_getAssociatedObject(self, &viewDidAppear_key) as? VoidClosure
+        }
+        set {
+            objc_setAssociatedObject ( self, &viewDidAppear_key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            
+            viewDidAppearTimer?.invalidate()
+            if newValue != nil {
+                viewDidAppearTimer = Timer.schedule(repeatInterval: 0.2) { [weak self] (timer) in
+                    guard let `self` = self else { return }
+                    let check = self.isVisible
+                    if check {
+                        self.viewDidAppearTimer?.invalidate()
+                        self.viewDidAppearTimer = nil
+                        self.viewDidAppear?()
+                    }
+                }
+                
+            }
+            else {
+                viewDidAppearTimer = nil
+            }
+        }
+    }
+    
+    private var viewDidAppearTimer: Timer? {
+        get {
+            return objc_getAssociatedObject(self, &viewDidAppearTimer_key) as? Timer
+        }
+        set {
+            objc_setAssociatedObject ( self, &viewDidAppearTimer_key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
     
     public var viewDidDisappear: VoidClosure? {
