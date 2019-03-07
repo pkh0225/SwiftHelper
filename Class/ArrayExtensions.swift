@@ -29,12 +29,6 @@ extension Array {
         return self.filter({$0 as? T == obj}).count > 0
     }
     
-    ///  Get a sub array from range of index
-    public func get(at range: ClosedRange<Int>) -> Array {
-        let halfOpenClampedRange = Range(range).clamped(to: Range(indices))
-        return Array(self[halfOpenClampedRange])
-    }
-
     ///   Checks if array contains at least 1 item which type is same with given element's type
     public func containsType<T>(of element: T) -> Bool {
         let elementType = type(of: element)
@@ -312,7 +306,7 @@ extension Array {
     /// through the mapFunction and discarding nil return values.
     @available(*, deprecated: 1.6, renamed: "flatMap(_:)")
     public func mapFilter<V>(mapFunction map: (Element) -> (V)?) -> [V] {
-        return flatMap { map($0) }
+        return compactMap { map($0) }
     }
 
     ///   Iterates on each element of the array with its index.  (Index, Element)
@@ -322,8 +316,6 @@ extension Array {
     }
 
 }
-
-public typealias DictionaryClosure = (_ value: Dictionary<String,Any>?) -> Void
 
 extension Array where Element == DictionaryClosure {
     public mutating func dequeue(_ value: Dictionary<String,Any>? = nil){

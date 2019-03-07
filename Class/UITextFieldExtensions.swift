@@ -20,7 +20,7 @@ extension UITextField {
         let leftView = UIView()
         leftView.frame = CGRect(x: 0, y: 0, width: blankSize, height: frame.height)
         self.leftView = leftView
-        self.leftViewMode = UITextFieldViewMode.always
+        self.leftViewMode = UITextField.ViewMode.always
     }
 
     ///   Add a image icon on the left side of the textfield
@@ -32,7 +32,7 @@ extension UITextField {
         imgView.image = image
         leftView.addSubview(imgView)
         self.leftView = leftView
-        self.leftViewMode = UITextFieldViewMode.always
+        self.leftViewMode = UITextField.ViewMode.always
     }
 
     ///   Ways to validate by comparison

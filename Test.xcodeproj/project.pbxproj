@@ -44,6 +44,7 @@
 		520F38ED21229E310081B956 /* CommonFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38EC21229E310081B956 /* CommonFunc.swift */; };
 		520F38EF21229FDA0081B956 /* AutoLayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38EE21229FDA0081B956 /* AutoLayoutController.swift */; };
 		520F38F12122B7D90081B956 /* ClosureQueueController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F38F02122B7D90081B956 /* ClosureQueueController.swift */; };
+		52D733A32230CE7A007DF2C7 /* Closure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D733A22230CE7A007DF2C7 /* Closure.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +87,7 @@
 		520F38EC21229E310081B956 /* CommonFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonFunc.swift; sourceTree = "<group>"; };
 		520F38EE21229FDA0081B956 /* AutoLayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLayoutController.swift; sourceTree = "<group>"; };
 		520F38F02122B7D90081B956 /* ClosureQueueController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosureQueueController.swift; sourceTree = "<group>"; };
+		52D733A22230CE7A007DF2C7 /* Closure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Closure.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 		520F38AA21229AAF0081B956 /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				52D733A22230CE7A007DF2C7 /* Closure.swift */,
 				520F38B221229C980081B956 /* ArrayExtensions.swift */,
 				520F38B421229C980081B956 /* BoolExtensions.swift */,
 				520F38B621229C980081B956 /* CGFloatExtensions.swift */,
@@ -200,6 +203,7 @@
 				TargetAttributes = {
 					520F389221229A890081B956 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 					};
 				};
 			};
@@ -258,6 +262,7 @@
 				520F38CD21229C990081B956 /* HTTPCookieExtension.swift in Sources */,
 				520F38EF21229FDA0081B956 /* AutoLayoutController.swift in Sources */,
 				520F38E521229C990081B956 /* StringExtensions.swift in Sources */,
+				52D733A32230CE7A007DF2C7 /* Closure.swift in Sources */,
 				520F38D721229C990081B956 /* DispatchQueue.swift in Sources */,
 				520F38F12122B7D90081B956 /* ClosureQueueController.swift in Sources */,
 				520F38CE21229C990081B956 /* UITableViewExtension.swift in Sources */,
@@ -428,7 +433,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Test.Extenstoin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -449,7 +454,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Test.Extenstoin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

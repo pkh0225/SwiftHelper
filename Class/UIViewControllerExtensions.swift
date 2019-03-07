@@ -120,52 +120,52 @@ extension UIViewController {
     ///
     /// ⚠️ You also need to implement ```keyboardWillShowNotification(_ notification: Notification)```
     open func addKeyboardWillShowNotification() {
-        self.addNotificationObserver(NSNotification.Name.UIKeyboardWillShow.rawValue, selector: #selector(UIViewController.keyboardWillShowNotification(_:)))
+        self.addNotificationObserver(UIResponder.keyboardWillShowNotification.rawValue, selector: #selector(UIViewController.keyboardWillShowNotification(_:)))
     }
     
     ///   Adds a NotificationCenter Observer for keyboardDidShowNotification()
     ///
     /// ⚠️ You also need to implement ```keyboardDidShowNotification(_ notification: Notification)```
     public func addKeyboardDidShowNotification() {
-        self.addNotificationObserver(NSNotification.Name.UIKeyboardDidShow.rawValue, selector: #selector(UIViewController.keyboardDidShowNotification(_:)))
+        self.addNotificationObserver(UIResponder.keyboardDidShowNotification.rawValue, selector: #selector(UIViewController.keyboardDidShowNotification(_:)))
     }
     
     ///   Adds a NotificationCenter Observer for keyboardWillHideNotification()
     ///
     /// ⚠️ You also need to implement ```keyboardWillHideNotification(_ notification: Notification)```
     open func addKeyboardWillHideNotification() {
-        self.addNotificationObserver(NSNotification.Name.UIKeyboardWillHide.rawValue, selector: #selector(UIViewController.keyboardWillHideNotification(_:)))
+        self.addNotificationObserver(UIResponder.keyboardWillHideNotification.rawValue, selector: #selector(UIViewController.keyboardWillHideNotification(_:)))
     }
     
     ///   Adds a NotificationCenter Observer for keyboardDidHideNotification()
     ///
     /// ⚠️ You also need to implement ```keyboardDidHideNotification(_ notification: Notification)```
     open func addKeyboardDidHideNotification() {
-        self.addNotificationObserver(NSNotification.Name.UIKeyboardDidHide.rawValue, selector: #selector(UIViewController.keyboardDidHideNotification(_:)))
+        self.addNotificationObserver(UIResponder.keyboardDidHideNotification.rawValue, selector: #selector(UIViewController.keyboardDidHideNotification(_:)))
     }
     
     ///  Removes keyboardWillShowNotification()'s NotificationCenter Observer
     open func removeKeyboardWillShowNotification() {
-        self.removeNotificationObserver(NSNotification.Name.UIKeyboardWillShow.rawValue)
+        self.removeNotificationObserver(UIResponder.keyboardWillShowNotification.rawValue)
     }
     
     ///  Removes keyboardDidShowNotification()'s NotificationCenter Observer
     open func removeKeyboardDidShowNotification() {
-        self.removeNotificationObserver(NSNotification.Name.UIKeyboardDidShow.rawValue)
+        self.removeNotificationObserver(UIResponder.keyboardDidShowNotification.rawValue)
     }
     
     ///  Removes keyboardWillHideNotification()'s NotificationCenter Observer
     open func removeKeyboardWillHideNotification() {
-        self.removeNotificationObserver(NSNotification.Name.UIKeyboardWillHide.rawValue)
+        self.removeNotificationObserver(UIResponder.keyboardWillHideNotification.rawValue)
     }
     
     ///  Removes keyboardDidHideNotification()'s NotificationCenter Observer
     open func removeKeyboardDidHideNotification() {
-        self.removeNotificationObserver(NSNotification.Name.UIKeyboardDidHide.rawValue)
+        self.removeNotificationObserver(UIResponder.keyboardDidHideNotification.rawValue)
     }
     
     @objc open func keyboardDidShowNotification(_ notification: Notification) {
-        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             
             let frame = value.cgRectValue
             keyboardDidShowWithFrame(frame)
@@ -173,7 +173,7 @@ extension UIViewController {
     }
     
     @objc open func keyboardWillShowNotification(_ notification: Notification) {
-        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             
             let frame = value.cgRectValue
             keyboardWillShowWithFrame(frame)
@@ -181,7 +181,7 @@ extension UIViewController {
     }
     
     @objc open func keyboardWillHideNotification(_ notification: Notification) {
-        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             
             let frame = value.cgRectValue
             keyboardWillHideWithFrame(frame)
@@ -189,7 +189,7 @@ extension UIViewController {
     }
     
     @objc open func keyboardDidHideNotification(_ notification: Notification) {
-        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             
             let frame = value.cgRectValue
             keyboardDidHideWithFrame(frame)
@@ -356,9 +356,9 @@ extension UIViewController {
     
     ///  Adds the specified view controller as a child of the current view controller.
     open func addAsChildViewController(_ vc: UIViewController, toView: UIView) {
-        self.addChildViewController(vc)
+        self.addChild(vc)
         toView.addSubview(vc.view)
-        vc.didMove(toParentViewController: self)
+        vc.didMove(toParent: self)
     }
     
     ///  Adds image named: as a UIImageView in the Background
@@ -367,7 +367,7 @@ extension UIViewController {
         let imageView = UIImageView(frame: view.frame)
         imageView.image = image
         view.addSubview(imageView)
-        view.sendSubview(toBack: imageView)
+        view.sendSubviewToBack(imageView)
     }
     
     ///  Adds UIImage as a UIImageView in the Background
@@ -375,7 +375,7 @@ extension UIViewController {
         let imageView = UIImageView(frame: view.frame)
         imageView.image = image
         view.addSubview(imageView)
-        view.sendSubview(toBack: imageView)
+        view.sendSubviewToBack(imageView)
     }
     
     #if os(iOS)

@@ -1,16 +1,35 @@
 //
 //  UIColorExtensions.swift
-//  EZSwiftExtensions
-//
-//  Created by Goktug Yilmaz on 15/07/15.
-//  Copyright (c) 2015 Goktug Yilmaz. All rights reserved.
 //
 
 #if os(iOS) || os(tvOS)
 
 import UIKit
 
-fileprivate var HexStringColor = [String: UIColor]()
+public class HexStringColorInfoMap {
+    public var dictionary = [String: UIColor]()
+    public let accessQueue = DispatchQueue(label: "queue_HexStringColorInfoMap", qos: .userInitiated, attributes: .concurrent)
+    
+    public func object(withID id: String) -> UIColor? {
+        var result:  UIColor? = nil
+        accessQueue.sync() {
+            result = self.dictionary[id]
+        }
+        return result
+    }
+    
+    public func addObject(id: String, object: UIColor) {
+        if self.dictionary[id] == nil {
+            accessQueue.async(flags: .barrier) {
+                //                print("check 2222: \(id)")
+                self.dictionary[id] = object
+            }
+        }
+    }
+}
+
+
+public var HexStringColor = HexStringColorInfoMap()
 
 extension UIColor {
     ///   init method with RGB values from 0 to 255, instead of 0 to 1. With alpha(default:1)
@@ -20,7 +39,7 @@ extension UIColor {
     
     public class func hexString(_ hexString: String) -> UIColor {
         
-        if let hasColor = HexStringColor[hexString] {
+        if let hasColor = HexStringColor.object(withID: hexString) {
             return hasColor
         }
         
@@ -36,8 +55,7 @@ extension UIColor {
         
         let color = UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0, green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0, blue: CGFloat(rgbValue & 0x0000FF) / 255.0, alpha: 1)
         
-        HexStringColor.updateValue(color, forKey: hexString)
-        
+        HexStringColor.addObject(id: hexString, object: color)
         return color
     }
     
@@ -56,11 +74,11 @@ extension UIColor {
         var rgbValue:UInt32 = 0
         Scanner(string: cString).scanHexInt32(&rgbValue)
         
-        let color = UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0, green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0, blue: CGFloat(rgbValue & 0x0000FF) / 255.0, alpha: 1)
+        let color = UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0, green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0, blue: CGFloat(rgbValue & 0x0000FF) / 255.0, alpha: alpha)
         
         return color
     }
-
+    
     public convenience init(hex col: UInt32, alpha: CGFloat = 1.0) {
         let b = UInt8((col & 0xff))
         let g = UInt8(((col >> 8) & 0xff))
@@ -73,37 +91,37 @@ extension UIColor {
     public convenience init(gray: CGFloat, alpha: CGFloat = 1) {
         self.init(red: gray/255, green: gray/255, blue: gray/255, alpha: alpha)
     }
-
+    
     ///   Red component of UIColor (get-only)
     public var redComponent: Int {
         var r: CGFloat = 0
         getRed(&r, green: nil, blue: nil, alpha: nil)
         return Int(r * 255)
     }
-
+    
     ///   Green component of UIColor (get-only)
     public var greenComponent: Int {
         var g: CGFloat = 0
         getRed(nil, green: &g, blue: nil, alpha: nil)
         return Int(g * 255)
     }
-
+    
     ///   blue component of UIColor (get-only)
     public var blueComponent: Int {
         var b: CGFloat = 0
         getRed(nil, green: nil, blue: &b, alpha: nil)
         return Int(b * 255)
     }
-
+    
     ///   Alpha of UIColor (get-only)
     public var alpha: CGFloat {
         var a: CGFloat = 0
         getRed(nil, green: nil, blue: nil, alpha: &a)
         return a
     }
-
+    
     ///   Returns random UIColor with random alpha(default: false)
-    public func random(randomAlpha: Bool = false) -> UIColor {
+    public class func random(randomAlpha: Bool = false) -> UIColor {
         let randomRed = CGFloat.random()
         let randomGreen = CGFloat.random()
         let randomBlue = CGFloat.random()
@@ -118,5 +136,5 @@ extension UIColor {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
 }
-    
+
 #endif

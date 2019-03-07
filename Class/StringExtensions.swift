@@ -72,25 +72,25 @@ extension String {
     
     public func width(withConstraintedHeight height: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
         
         return ceil(boundingBox.width)
     }
     
     public func textSize(_ width: CGFloat, _ font: UIFont) -> CGSize {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
         return CGSize(width: boundingBox.width, height: boundingBox.height)
     }
     
     public func size(_ font: UIFont) -> CGSize {
-        let result = self.size(withAttributes: [NSAttributedStringKey.font: font])
+        let result = self.size(withAttributes: [NSAttributedString.Key.font: font])
         return CGSize(width: ceil(result.width), height: ceil(result.height))
     }
     
     public func width(font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: font.xHeight)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
         
         return ceil(boundingBox.width)
     }
@@ -597,7 +597,7 @@ extension String {
     
     public func strike() -> NSMutableAttributedString {
         let attributeString = NSMutableAttributedString(string: self)
-        attributeString.addAttribute(NSAttributedStringKey.strikethroughStyle, value: 1, range: NSRange(location: 0, length: attributeString.length))
+        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSRange(location: 0, length: attributeString.length))
         return attributeString
     }
     
@@ -607,9 +607,9 @@ extension String {
         paragraphStyle.lineBreakMode = .byCharWrapping
         paragraphStyle.lineSpacing = lineSpace
         
-        let attributes = [NSAttributedStringKey.font:font,
-                          NSAttributedStringKey.foregroundColor:textColor,
-                          NSAttributedStringKey.paragraphStyle:paragraphStyle]
+        let attributes = [NSAttributedString.Key.font:font,
+                          NSAttributedString.Key.foregroundColor:textColor,
+                          NSAttributedString.Key.paragraphStyle:paragraphStyle]
         
         let attributedText = NSAttributedString(string: self, attributes: attributes)
         return attributedText
@@ -632,15 +632,15 @@ extension String {
                 let range = self.nsRange(from: textRange)
                 
                 if let font = item.font {
-                    attrString.addAttributes([NSAttributedStringKey.font:font], range: range)
+                    attrString.addAttributes([NSAttributedString.Key.font:font], range: range)
                 }
                 
                 if let color = item.color {
-                    attrString.addAttributes([NSAttributedStringKey.foregroundColor:color], range: range)
+                    attrString.addAttributes([NSAttributedString.Key.foregroundColor:color], range: range)
                 }
                 
                 if let lineColor = item.lineColor {
-                    attrString.addAttributes([NSAttributedStringKey.underlineColor:lineColor], range: range)
+                    attrString.addAttributes([NSAttributedString.Key.underlineColor:lineColor], range: range)
                 }
             }
         }
@@ -771,7 +771,7 @@ extension String {
         let attributedString = NSMutableAttributedString(string: self)
         let range: NSRange = self.nsRangeOfString(keyword)
         if range.location != NSNotFound {
-            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: keywordColor, range: range)
+            attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: keywordColor, range: range)
         }
         return attributedString
     }

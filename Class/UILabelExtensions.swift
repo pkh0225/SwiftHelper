@@ -65,15 +65,15 @@ extension UILabel {
         let wonFont: UIFont = UIFont(name: self.font.fontName, size: self.font.pointSize - 4)!
         
         let messageStr: NSMutableAttributedString = NSMutableAttributedString(string: price)
-        messageStr.addAttribute(NSAttributedStringKey.font, value: self.font, range: NSMakeRange(0, messageStr.length - 1))
-        messageStr.addAttribute(NSAttributedStringKey.font, value: wonFont, range: NSMakeRange(messageStr.length - 1, 1))
-        messageStr.addAttribute(NSAttributedStringKey.foregroundColor, value: self.textColor, range: NSMakeRange(0, messageStr.length))
+        messageStr.addAttribute(NSAttributedString.Key.font, value: self.font, range: NSMakeRange(0, messageStr.length - 1))
+        messageStr.addAttribute(NSAttributedString.Key.font, value: wonFont, range: NSMakeRange(messageStr.length - 1, 1))
+        messageStr.addAttribute(NSAttributedString.Key.foregroundColor, value: self.textColor, range: NSMakeRange(0, messageStr.length))
         
         let messageParagraph: NSMutableParagraphStyle = NSMutableParagraphStyle()
         messageParagraph.alignment = .center
         messageParagraph.lineBreakMode = .byCharWrapping
         messageParagraph.lineSpacing = 2
-        messageStr.addAttribute(NSAttributedStringKey.paragraphStyle, value: messageParagraph, range: NSMakeRange(0, messageStr.length))
+        messageStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: messageParagraph, range: NSMakeRange(0, messageStr.length))
         
         return messageStr
     }

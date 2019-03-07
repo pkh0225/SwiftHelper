@@ -13,7 +13,7 @@ public typealias UIAlertControllerClosure = (_ alertView: UIAlertController, _ b
 
 extension UIAlertController {
     
-    public convenience init(title: String?, message: String?, preferredStyle: UIAlertControllerStyle, _ closure: UIAlertControllerClosure?, _ cancelButtonTitle: String?, _ otherButtonTitles: String?...) {
+    public convenience init(title: String?, message: String?, preferredStyle: UIAlertController.Style, _ closure: UIAlertControllerClosure?, _ cancelButtonTitle: String?, _ otherButtonTitles: String?...) {
         
         self.init(title: title, message: message, preferredStyle: preferredStyle)
         
@@ -61,7 +61,7 @@ extension UIAlertController {
         DispatchQueue.main.async {
             let window = UIWindow(frame: UIScreen.main.bounds)
             window.rootViewController = UIViewController()
-            window.windowLevel = UIWindowLevelAlert
+            window.windowLevel = UIWindow.Level.alert
             window.makeKeyAndVisible()
             window.rootViewController?.present(self, animated: true, completion: {
                 

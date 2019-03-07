@@ -8,11 +8,6 @@
 
 import Foundation
 
-private var Object_class_Name_Key : UInt8 = 0
-private var Object_iVar_Name_Key : UInt8 = 0
-private var Object_iVar_Value_Key : UInt8 = 0
-
-
 @inline(__always) public func swiftClassFromString(_ className: String, bundleName: String = "WiggleSDK") -> AnyClass? {
     
     // get the project name
@@ -36,31 +31,40 @@ private var Object_iVar_Value_Key : UInt8 = 0
 
 
 extension NSObject {
+    private struct AssociatedKeys {
+        static var className: UInt8 = 0
+        static var iVarName: UInt8 = 0
+        static var iVarValue: UInt8 = 0
+    }
+    
+    public var toInt: Int {
+        return unsafeBitCast(self, to: Int.self)
+    }
     
     public var tag_name: String? {
         get {
-            return objc_getAssociatedObject(self, &Object_iVar_Name_Key) as? String
+            return objc_getAssociatedObject(self, &AssociatedKeys.iVarName) as? String
         }
         set {
-            objc_setAssociatedObject(self, &Object_iVar_Name_Key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.iVarName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     public var tag_value: Any? {
         get {
-            return objc_getAssociatedObject(self, &Object_iVar_Value_Key)
+            return objc_getAssociatedObject(self, &AssociatedKeys.iVarValue)
         }
         set {
-            objc_setAssociatedObject(self, &Object_iVar_Value_Key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.iVarValue, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
     public var className: String {
-        if let name = objc_getAssociatedObject(self, &Object_class_Name_Key) as? String {
+        if let name = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
             return name
         }
         else {
             let name = String(describing: type(of:self))
-            objc_setAssociatedObject(self, &Object_class_Name_Key, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return name
         }
         
@@ -68,13 +72,31 @@ extension NSObject {
     }
     
     public class var className: String {
-        if let name = objc_getAssociatedObject(self, &Object_class_Name_Key) as? String {
+        if let name = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
             return name
         }
         else {
-            let name = NSStringFromClass(self).components(separatedBy: ".").last ?? ""
-            objc_setAssociatedObject(self, &Object_class_Name_Key, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            let name = String(describing: self)
+            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             return name
+        }
+    }
+    
+    public var stretch_image : Bool? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.iVarName) as? Bool
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.iVarName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    public var strech_point : CGPoint? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.iVarName) as? CGPoint
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.iVarName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }
