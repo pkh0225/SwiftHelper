@@ -808,7 +808,6 @@ extension UIView {
     }
     
     @objc private func onViewDidDisappear() {
-        print("onViewDidDisappear")
         if self.isVisible == false {
             self.viewDidDisappearCADisplayLink?.invalidate()
             self.viewDidDisappearCADisplayLink = nil
