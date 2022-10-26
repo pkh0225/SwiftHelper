@@ -12,111 +12,110 @@ import UIKit
 public typealias UIAlertControllerClosure = (_ alertView: UIAlertController, _ buttonIndex: Int) -> Void
 
 extension UIAlertController {
-    
-    public convenience init(title: String?, message: String?, preferredStyle: UIAlertController.Style, _ closure: UIAlertControllerClosure?, _ cancelButtonTitle: String?, _ otherButtonTitles: String?...) {
-        
-        self.init(title: title, message: message, preferredStyle: preferredStyle)
-        
-        if let title = cancelButtonTitle {
-            let cancel: UIAlertAction = UIAlertAction(title: title, style: .cancel, handler: { (action: UIAlertAction) in
-                if let callBack =  closure {
-                    callBack(self, self.getActionIndex(action))
-                }
-            })
-            
-            self.addAction(cancel)
-        }
-        
-        for oTitle in otherButtonTitles {
-            if let title = oTitle {
-                let action: UIAlertAction = UIAlertAction(title: title, style: .default, handler: { (action: UIAlertAction) in
-                    if let callBack =  closure {
-                        callBack(self, self.getActionIndex(action))
-                    }
-                })
-                
-                self.addAction(action)
-            }
-        }
-        
-        
-    }
-    
-    public class func showAlertTitle(_ title: String?, _ message: String?, _ hide: Bool) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        if hide {
-            let deadlineTime = DispatchTime.now() + .seconds(2)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                alertController.dismiss(animated: true, completion: {})
-            }
-        }
-        else {
-            let cancel: UIAlertAction = UIAlertAction(title: "확인", style: .cancel, handler: { (action: UIAlertAction) in })
-            alertController.addAction(cancel)
-        }
-        alertController.show()
-    }
-    
     public func showWindow() {
         DispatchQueue.main.async {
-            let window = UIWindow(frame: UIScreen.main.bounds)
+            let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
             window.rootViewController = UIViewController()
             window.windowLevel = UIWindow.Level.alert
             window.makeKeyAndVisible()
-            window.rootViewController?.present(self, animated: true, completion: {
-                
+
+            window.rootViewController?.presentOnto(self, animated: true, completion: {
             })
         }
     }
-    
+
     public func getActionIndex(_ action: UIAlertAction) -> Int {
         for i in 0..<self.actions.count {
             if action == self.actions[i] {
                 return i
             }
         }
-        
+
         return -1
     }
-    
-}
 
-
-extension UIAlertController {
-    ///   Easy way to present UIAlertController
-    public func show(_ useNewWindow: Bool = true) {
-        if useNewWindow {
-            self.showWindow()
-        }
-        else {
-            UIApplication.shared.keyWindow?.rootViewController?.present(self, animated: true, completion: nil)
-        }
-    }
-    
-    public func alert(_ title: String?, _ message: String?) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let cancelAction: UIAlertAction = UIAlertAction(title: NSLocalizedString("common_cancel", comment: ""), style: .cancel) { action -> Void in
-            
-        }
-        alert.addAction(cancelAction)
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    
-    public static func showMessage(_ message: String) {
-        showAlert(title: "", message: message, actions: [UIAlertAction(title: "확인", style: .cancel, handler: nil)])
-    }
-    
-    public static func showAlert(title: String?, message: String?, actions: [UIAlertAction]) {
+    public func show(_ useNewWindow: Bool = false) {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            for action in actions {
-                alert.addAction(action)
+            if useNewWindow {
+                self.showWindow()
             }
-            if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController, let presenting = navigationController.topViewController {
-                presenting.present(alert, animated: true, completion: nil)
+            else {
+                if #available(iOS 13.0, *) {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.keyWindow?.rootViewController?.presentOnto(self, animated: true, completion: nil)
+                    }
+                }
+                else {
+                    // 13미만에서 드롭다운 박스 아래로 얼럿 뜨는 현상 수정
+                    // https://redmine.ssgadm.com/redmine/issues/395088
+                    self.showWindow()
+                }
             }
         }
     }
+
+    public static func alert(title: String?,
+                      message: String? = nil,
+                      cancelButtonTitle: String? = "확인",
+                      otherButtonTitles: String?...,
+                      isAutoHide: Bool = false,
+                      closure: UIAlertControllerClosure? = nil) {
+        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        if let cancelTitle = cancelButtonTitle {
+            let cancelAction: UIAlertAction = UIAlertAction(title: cancelTitle, style: .cancel, handler: { (action: UIAlertAction) in
+                if let callBack = closure {
+                    callBack(alert, alert.getActionIndex(action))
+                }
+            })
+
+            alert.addAction(cancelAction)
+        }
+
+        for title in otherButtonTitles {
+            guard let title = title else { continue }
+            let otherAction: UIAlertAction = UIAlertAction(title: title, style: .default, handler: { (action: UIAlertAction) in
+                if let callBack = closure {
+                    callBack(alert, alert.getActionIndex(action))
+                }
+            })
+
+            alert.addAction(otherAction)
+        }
+
+        alert.show()
+
+        if isAutoHide {
+            // auto close
+            let deadlineTime: DispatchTime = DispatchTime.now() + .seconds(2)
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                alert.dismiss(animated: true, completion: {})
+            }
+        }
+    }
+
+    public static func actionSheet(title: String? = nil,
+                            message: String? = nil,
+                            buttonTitles: [String],
+                            closure: UIAlertControllerClosure? = nil) {
+        guard buttonTitles.count > 0 else { return }
+
+        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+
+        for (idx, title) in buttonTitles.enumerated() {
+            var style: UIAlertAction.Style = .default
+            if idx == 0 {
+                style = .cancel
+            }
+
+            let action: UIAlertAction = UIAlertAction(title: title, style: style) { action in
+                if let callBack = closure {
+                    callBack(alert, alert.getActionIndex(action))
+                }
+            }
+            alert.addAction(action)
+        }
+        alert.show()
+    }
+
 }

@@ -11,11 +11,10 @@
 import UIKit
 
 extension CGFloat {
-
     ///   Return the central value of CGFloat.
     public var center: CGFloat { return (self / 2) }
 
-    @available(*, deprecated: 1.8, renamed: "degreesToRadians")
+    @available(*, deprecated, renamed: "degreesToRadians")
     public func toRadians() -> CGFloat {
         return (.pi * self) / 180.0
     }
@@ -52,7 +51,7 @@ extension CGFloat {
 
     ///   Returns a random floating point number between 0.0 and 1.0, inclusive.
     public static func random() -> CGFloat {
-        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+        return CGFloat(Float(arc4random()) / 0xFFFFFF)
     }
 
     ///   Returns a random floating point number in the range min...max, inclusive.
@@ -72,8 +71,8 @@ extension CGFloat {
       Inspired from : https://github.com/raywenderlich/SKTUtils/blob/master/SKTUtils/CGFloat%2BExtensions.swift
      */
     public static func shortestAngleInRadians(from first: CGFloat, to second: CGFloat) -> CGFloat {
-        let twoPi = CGFloat(.pi * 2.0)
-        var angle = (second - first).truncatingRemainder(dividingBy: twoPi)
+        let twoPi: CGFloat = CGFloat(.pi * 2.0)
+        var angle: CGFloat = (second - first).truncatingRemainder(dividingBy: twoPi)
         if angle >= .pi {
             angle -= twoPi
         }

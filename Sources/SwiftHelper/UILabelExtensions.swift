@@ -9,9 +9,9 @@
 #if os(iOS) || os(tvOS)
 
 import UIKit
+import EasyConstraints
 
 extension UILabel {
-    
     ///   Initialize Label with a font, color and alignment.
     public convenience init(font: UIFont, color: UIColor, alignment: NSTextAlignment) {
         self.init()
@@ -51,56 +51,79 @@ extension UILabel {
         self.fitHeight()
         sizeToFit()
     }
-    
+
     /// EZSwiftExtensions (if duration set to 0 animate wont be)
     public func set(text _text: String?, duration: TimeInterval) {
         UIView.transition(with: self, duration: duration, options: .transitionCrossDissolve, animations: { () -> Void in
             self.text = _text
         }, completion: nil)
     }
-    
-    func convertWonFormat(_ text: String) -> NSMutableAttributedString {
-        
-        let price = text + "원"
+
+    public func convertWonFormat(_ text: String) -> NSMutableAttributedString {
+        let price: String = text + "원"
         let wonFont: UIFont = UIFont(name: self.font.fontName, size: self.font.pointSize - 4)!
-        
+
         let messageStr: NSMutableAttributedString = NSMutableAttributedString(string: price)
-        messageStr.addAttribute(NSAttributedString.Key.font, value: self.font, range: NSMakeRange(0, messageStr.length - 1))
-        messageStr.addAttribute(NSAttributedString.Key.font, value: wonFont, range: NSMakeRange(messageStr.length - 1, 1))
-        messageStr.addAttribute(NSAttributedString.Key.foregroundColor, value: self.textColor, range: NSMakeRange(0, messageStr.length))
-        
+        messageStr.addAttribute(NSAttributedString.Key.font, value: self.font as Any, range: NSRange(location: 0, length: messageStr.length - 1))
+        messageStr.addAttribute(NSAttributedString.Key.font, value: wonFont, range: NSRange(location: messageStr.length - 1, length: 1))
+        messageStr.addAttribute(NSAttributedString.Key.foregroundColor, value: self.textColor as Any, range: NSRange(location: 0, length: messageStr.length))
+
         let messageParagraph: NSMutableParagraphStyle = NSMutableParagraphStyle()
         messageParagraph.alignment = .center
         messageParagraph.lineBreakMode = .byCharWrapping
         messageParagraph.lineSpacing = 2
-        messageStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: messageParagraph, range: NSMakeRange(0, messageStr.length))
-        
+        messageStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: messageParagraph, range: NSRange(location: 0, length: messageStr.length))
+
         return messageStr
     }
-    
-    
-    func boundingRectForCharacterRange(range: NSRange) -> CGRect? {
-        
+
+    public func boundingRectForCharacterRange(range: NSRange) -> CGRect? {
         guard let attributedText = attributedText else { return nil }
-        
-        let textStorage = NSTextStorage(attributedString: attributedText)
-        let layoutManager = NSLayoutManager()
-        
+
+        let textStorage: NSTextStorage = NSTextStorage(attributedString: attributedText)
+        let layoutManager: NSLayoutManager = NSLayoutManager()
+
         textStorage.addLayoutManager(layoutManager)
-        
-        let textContainer = NSTextContainer(size: bounds.size)
+
+        let textContainer: NSTextContainer = NSTextContainer(size: bounds.size)
         textContainer.lineFragmentPadding = 0.0
-        
+
         layoutManager.addTextContainer(textContainer)
-        
-        var glyphRange = NSRange()
-        
+
+        var glyphRange: NSRange = NSRange()
+
         // Convert the range for glyphs.
         layoutManager.characterRange(forGlyphRange: range, actualGlyphRange: &glyphRange)
-        
+
         return layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
     }
-    
+
+    @discardableResult
+    public func visibleViewByDataNBinding(_ value: String?, _ gone: GoneType? = nil) -> Bool {
+        if let gone = gone {
+            if let value = value, value.isValid {
+                self.text = value
+                self.ec.goneRemove(gone)
+                return true
+            }
+            else {
+                self.ec.gone(gone)
+                return false
+            }
+        }
+        else {
+            if let value = value, value.isValid {
+                self.text = value
+                self.isHidden = false
+                return true
+            }
+            else {
+                self.isHidden = true
+                return false
+            }
+        }
+    }
+
 }
 
 #endif

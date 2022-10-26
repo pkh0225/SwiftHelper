@@ -10,18 +10,19 @@
 
 import UIKit
 import CoreTelephony
-  
+
 public enum DeviceScreen {
     case iPhone4
     case iPhone5
     case iPhone6
     case iPhonePlus
     case iPhoneX
+    case iPhoneXR
+    case iPhoneXSMax
     case iPad
     case none
 }
 
-    
 /// EZSwiftExtensions
 private let DeviceList = [
     /* iPod 5 */          "iPod5,1": "iPod Touch 5",
@@ -38,7 +39,7 @@ private let DeviceList = [
     /* iPhone 7 */        "iPhone9,1": "iPhone 7", "iPhone9,3": "iPhone 7",
     /* iPhone 7 Plus */   "iPhone9,2": "iPhone 7 Plus", "iPhone9,4": "iPhone 7 Plus",
     /* iPhone SE */       "iPhone8,4": "iPhone SE",
-    /* iPhoneX */         "iPhone10,3": "iPhoneX","iPhone10,6": "iPhoneX",
+    /* iPhoneX */         "iPhone10,3": "iPhoneX", "iPhone10,6": "iPhoneX",
 
     /* iPad 2 */          "iPad2,1": "iPad 2", "iPad2,2": "iPad 2", "iPad2,3": "iPad 2", "iPad2,4": "iPad 2",
     /* iPad 3 */          "iPad3,1": "iPad 3", "iPad3,2": "iPad 3", "iPad3,3": "iPad 3",
@@ -55,13 +56,12 @@ private let DeviceList = [
 ]
 
 extension UIDevice {
-    
 //    var kAppInfAppendData: String {
 //        get {
 //            return ""
 //        }
 //    }
-    
+
     public func getiPhoneScreen() -> DeviceScreen {
         if UIDevice().userInterfaceIdiom == .phone {
             switch UIScreen.main.nativeBounds.height {
@@ -81,6 +81,10 @@ extension UIDevice {
             case 2436:
 //                print("iPhone X")
                 return .iPhoneX
+            case 1792:
+                return .iPhoneXR
+            case 2688:
+                return .iPhoneXSMax
             default:
 //                print("unknown")
                 return .none
@@ -89,10 +93,10 @@ extension UIDevice {
         else if UIDevice().userInterfaceIdiom == .pad {
             return .iPad
         }
-        
+
         return .none
     }
-    
+
     /// EZSwiftExtensions
     public class func idForVendor() -> String? {
         return UIDevice.current.identifierForVendor?.uuidString
@@ -128,24 +132,24 @@ extension UIDevice {
         return DeviceList[deviceModel()] ?? deviceModel()
     }
 
-    ///   Returns true if the device is iPhone //TODO: Add to readme
+    ///   Returns true if the device is iPhone
     public class func isPhone() -> Bool {
         return UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.phone
     }
 
-    ///   Returns true if the device is iPad //TODO: Add to readme
+    ///   Returns true if the device is iPad
     public class func isPad() -> Bool {
         return UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
     }
 
     /// EZSwiftExtensions
     public class func deviceModel() -> String {
-        var systemInfo = utsname()
+        var systemInfo: utsname = utsname()
         uname(&systemInfo)
 
         let machine = systemInfo.machine
-        var identifier = ""
-        let mirror = Mirror(reflecting: machine)
+        var identifier: String = ""
+        let mirror: Mirror = Mirror(reflecting: machine)
 
         for child in mirror.children {
             let value = child.value
@@ -158,10 +162,7 @@ extension UIDevice {
         return identifier
     }
 
-    //TODO: Fix syntax, add docs and readme for these methods:
-    //TODO: Delete isSystemVersionOver()
     // MARK: - Device Version Checks
-
     public enum Versions: Float {
         case five = 5.0
         case six = 6.0
@@ -169,6 +170,9 @@ extension UIDevice {
         case eight = 8.0
         case nine = 9.0
         case ten = 10.0
+        case eleven = 11.0
+        case twelve = 12.0
+        case thirteen = 13.0
     }
 
     public class func isVersion(_ version: Versions) -> Bool {
@@ -275,36 +279,57 @@ extension UIDevice {
     public class func isSystemVersionOver(_ requiredVersion: String) -> Bool {
         switch systemVersion().compare(requiredVersion, options: NSString.CompareOptions.numeric) {
         case .orderedSame, .orderedDescending:
-            //println("iOS >= 8.0")
+            // println("iOS >= 8.0")
             return true
         case .orderedAscending:
-            //println("iOS < 8.0")
+            // println("iOS < 8.0")
             return false
         }
     }
-    
+
     public class func networkName() -> String {
-        if  self.networkInfo().currentRadioAccessTechnology == CTRadioAccessTechnologyLTE {
-            return "LTE"
+        if #available(iOS 12, *) {
+            if let network = self.networkInfo().serviceCurrentRadioAccessTechnology?.first?.value, network == CTRadioAccessTechnologyLTE {
+                return "LTE"
+            }
         }
-        
+        else {
+            if  self.networkInfo().currentRadioAccessTechnology == CTRadioAccessTechnologyLTE {
+                return "LTE"
+            }
+        }
+
         return "3G"
     }
-    
+
     public class func networkInfo() -> CTTelephonyNetworkInfo {
-        let networkInfo = CTTelephonyNetworkInfo()
-        return networkInfo;
+        let networkInfo: CTTelephonyNetworkInfo = CTTelephonyNetworkInfo()
+        return networkInfo
     }
-    
+
     public class func deviceOsVersion() -> String {
         return UIDevice.current.systemVersion
     }
-    
+
     public class func carrier() -> CTCarrier? {
-        let networkInfo = self.networkInfo()
-        return networkInfo.subscriberCellularProvider
+        let networkInfo: CTTelephonyNetworkInfo = self.networkInfo()
+
+        if #available(iOS 12, *) {
+            if let serviceSubscriberCellularProviders = networkInfo.serviceSubscriberCellularProviders {
+                for provider in serviceSubscriberCellularProviders {
+                    if provider.value.carrierName != nil {
+                        return provider.value
+                    }
+                }
+            }
+
+            return nil
+        }
+        else {
+            return networkInfo.subscriberCellularProvider
+        }
     }
-    
+
 }
 
 #endif
