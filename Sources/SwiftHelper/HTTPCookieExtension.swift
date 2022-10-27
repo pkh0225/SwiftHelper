@@ -9,6 +9,7 @@
 import Foundation
 
 extension HTTPCookie {
+    
     public func getCookieString() -> String {
         var str = ""
         str.append("\(name)=\(value);")
@@ -20,10 +21,10 @@ extension HTTPCookie {
             str.append("expiresDate=\(expiresDate);")
         }
         else {
-            // println("getCookieString ==> \(str)")
+            print("getCookieString ==> \(str)")
         }
 
         return str
     }
-
+    
 }

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import UIKit
+
 
 public func ==<T: Equatable>(lhs: [T]?, rhs: [T]?) -> Bool {
     switch (lhs, rhs) {
@@ -24,44 +24,21 @@ extension Array {
     public func isExist() -> Bool {
         return !self.isEmpty
     }
-
-    public func contains<T>(obj: T) -> Bool where T: Equatable {
-        return self.filter({ $0 as? T == obj }).count > 0
+    
+    public func contains<T>(obj: T) -> Bool where T : Equatable {
+        return self.filter({$0 as? T == obj}).count > 0
     }
-
-    ///   Serialize Dictionary into JSON string
-    public func jsonString() -> String? {
-        if let jsonData: Data = try? JSONSerialization.data(withJSONObject: self, options: JSONSerialization.WritingOptions()) {
-            if let jsonStr: String = String(data: jsonData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue)) {
-                return jsonStr
-            }
-            return ""
-        }
-        return nil
-    }
-
-    ///  Get a sub array from range of index
-//    public func get(at range: ClosedRange<Int>) -> Array {
-//        let halfOpenClampedRange = Range(range).clamped(to: Range(indices))
-//        return Array(self[halfOpenClampedRange])
-//    }
-
+    
     ///   Checks if array contains at least 1 item which type is same with given element's type
     public func containsType<T>(of element: T) -> Bool {
         let elementType = type(of: element)
-        return contains { type(of: $0) == elementType }
+        return contains { type(of: $0) == elementType}
     }
 
     ///   Decompose an array to a tuple with first element and the rest
-//    public func decompose() -> (head: Iterator.Element, tail: SubSequence)? {
-//
-//        if count > 0 {
-//            return (self[0], self[1..<count])
-//        }
-//        else {
-//            return nil
-//        }
-//    }
+    public func decompose() -> (head: Iterator.Element, tail: SubSequence)? {
+        return (count > 0) ? (self[0], self[1..<count]) : nil
+    }
 
     ///   Iterates on each element of the array with its index. (Index, Element)
     public func forEachEnumerated(_ body: @escaping (_ offset: Int, _ element: Element) -> Void) {
@@ -69,14 +46,9 @@ extension Array {
     }
 
     ///   Gets the object at the specified index, if it exists.
-    public subscript(safe index: Int?) -> Element? {
-        guard let index = index else { return nil }
-        if indices.contains(index) {
-            return self[index]
-        }
-        else {
-            return nil
-        }
+    public func get(at index: Int) -> Element? {
+        guard index >= 0 && index < count else { return nil }
+        return self[index]
     }
 
     ///   Prepends an object to the array.
@@ -98,48 +70,25 @@ extension Array {
     }
 
     ///   Shuffles the array in-place using the Fisher-Yates-Durstenfeld algorithm.
-//    public mutating func shuffle() {
-//        guard count > 1 else { return }
-//        var j: Int
-//        for i in 0..<(count-2) {
-//            j = Int(arc4random_uniform(UInt32(count - i)))
-//            if i != i+j { self.swapAt(i, i+j) }
-//        }
-//    }
+    public mutating func shuffle() {
+        guard count > 1 else { return }
+        var j: Int
+        for i in 0..<(count-2) {
+            j = Int(arc4random_uniform(UInt32(count - i)))
+            if i != i+j { self.swapAt(i, i+j) }
+        }
+    }
 
     ///   Shuffles copied array using the Fisher-Yates-Durstenfeld algorithm, returns shuffled array.
-//    public func shuffled() -> Array {
-//        var result = self
-//        result.shuffle()
-//        return result
-//    }
+    public func shuffled() -> Array {
+        var result = self
+        result.shuffle()
+        return result
+    }
 
     ///   Returns an array with the given number as the max number of elements.
     public func takeMax(_ n: Int) -> Array {
         return Array(self[0..<Swift.max(0, Swift.min(n, count))])
-    }
-
-    public func sortForwardIndex(_ index: Int) -> Array {
-        let result = self
-
-        guard index > 0 else { return result }
-        guard self[safe: index] != nil else { return Array() }
-
-        var headData = Array()
-        var tailData = Array()
-
-        for (i, item) in result.enumerated() {
-            if i >= index {
-                headData.append(item)
-            }
-            else {
-                tailData.append(item)
-            }
-        }
-
-        headData.append(contentsOf: tailData)
-
-        return headData
     }
 
     ///   Checks if test returns true for all the elements in self
@@ -151,18 +100,18 @@ extension Array {
     public func testAll(is condition: Bool) -> Bool {
         return testAll { ($0 as? Bool) ?? !condition == condition }
     }
-
 }
 
 extension Array where Element: Equatable {
+
     ///   Checks if the main array contains the parameter array
     public func contains(_ array: [Element]) -> Bool {
-        return array.testAll { self.firstIndex(of: $0) ?? -1 >= 0 }
+        return array.testAll { self.index(of: $0) ?? -1 >= 0 }
     }
 
     ///   Checks if self contains a list of items.
     public func contains(_ elements: Element...) -> Bool {
-        return elements.testAll { self.firstIndex(of: $0) ?? -1 >= 0 }
+        return elements.testAll { self.index(of: $0) ?? -1 >= 0 }
     }
 
     ///   Returns the indexes of the object
@@ -177,20 +126,20 @@ extension Array where Element: Equatable {
 
     ///   Removes the first given object
     public mutating func removeFirst(_ element: Element) {
-        guard let index = firstIndex(of: element) else { return }
+        guard let index = index(of: element) else { return }
         self.remove(at: index)
     }
 
     ///   Removes all occurrences of the given object(s), at least one entry is needed.
     public mutating func removeAll(_ firstElement: Element?, _ elements: Element...) {
         var removeAllArr = [Element]()
-
+        
         if let firstElementVal = firstElement {
             removeAllArr.append(firstElementVal)
         }
-
-        elements.forEach({ element in removeAllArr.append(element) })
-
+        
+        elements.forEach({element in removeAllArr.append(element)})
+        
         removeAll(removeAllArr)
     }
 
@@ -202,7 +151,7 @@ extension Array where Element: Equatable {
 
     ///   Difference of self and the input arrays.
     public func difference(_ values: [Element]...) -> [Element] {
-        var result: [Element] = [Element]()
+        var result = [Element]()
         elements: for element in self {
             for value in values {
                 //  if a value is in both self and one of the values arrays
@@ -258,16 +207,17 @@ extension Array where Element: Equatable {
     public func unique() -> Array {
         return reduce([]) { $0.contains($1) ? $0 : $0 + [$1] }
     }
-
+    
     // Remove first collection element that is equal to the given `object`:
     public mutating func remove(object: Element) {
-        if let index = firstIndex(of: object) {
+        if let index = index(of: object) {
             remove(at: index)
         }
     }
 }
 
 extension Array where Element: Hashable {
+
     ///   Removes all occurrences of the given object(s)
     public mutating func removeAll(_ elements: [Element]) {
         let elementsSet = Set(elements)
@@ -276,266 +226,121 @@ extension Array where Element: Hashable {
     }
 }
 
+// MARK: - Deprecated 1.8
+
+extension Array {
+
+    ///   Checks if array contains at least 1 instance of the given object type
+    @available(*, deprecated: 1.8, renamed: "containsType(of:)")
+    public func containsInstanceOf<T>(_ element: T) -> Bool {
+        return containsType(of: element)
+    }
+
+    ///   Gets the object at the specified index, if it exists.
+    @available(*, deprecated: 1.8, renamed: "get(at:)")
+    public func get(_ index: Int) -> Element? {
+        return get(at: index)
+    }
+
+    ///   Checks if all elements in the array are true of false
+    @available(*, deprecated: 1.8, renamed: "testAll(is:)")
+    public func testIfAllIs(_ condition: Bool) -> Bool {
+        return testAll(is: condition)
+    }
+}
+
 extension Array where Element: Equatable {
+
     ///   Removes the first given object
-    @available(*, deprecated, renamed: "removeFirst(_:)")
+    @available(*, deprecated: 1.8, renamed: "removeFirst(_:)")
     public mutating func removeFirstObject(_ object: Element) {
         removeFirst(object)
     }
 }
 
-extension Array where Element == DictionaryClosure {
-    public mutating func dequeue(_ value: [String: Any]? = nil) {
-        guard self.count > 0 || self.first != nil else { return }
-        let work = self.removeFirst()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-            work(value)
-        }
-    }
+// MARK: - Deprecated 1.7
 
-    public mutating func enqueue(_ work: @escaping DictionaryClosure) {
-        self.append(work)
+extension Array {
+
+    ///   Prepends an object to the array.
+    @available(*, deprecated: 1.7, renamed: "insertFirst(_:)")
+    public mutating func insertAsFirst(_ newElement: Element) {
+        insertFirst(newElement)
     }
 
 }
 
-extension Array where Element == VoidClosure {
-    public mutating func dequeue() {
+extension Array where Element: Equatable {
+
+    ///   Checks if the main array contains the parameter array
+    @available(*, deprecated: 1.7, renamed: "contains(_:)")
+    public func containsArray(_ array: [Element]) -> Bool {
+        return contains(array)
+    }
+
+    ///   Returns the indexes of the object
+    @available(*, deprecated: 1.7, renamed: "indexes(of:)")
+    public func indexesOf(_ object: Element) -> [Int] {
+        return indexes(of: object)
+    }
+
+    ///   Returns the last index of the object
+    @available(*, deprecated: 1.7, renamed: "lastIndex(_:)")
+    public func lastIndexOf(_ object: Element) -> Int? {
+        return lastIndex(of: object)
+    }
+
+    ///   Removes the first given object
+    @available(*, deprecated: 1.7, renamed: "removeFirstObject(_:)")
+    public mutating func removeObject(_ object: Element) {
+        removeFirstObject(object)
+    }
+
+}
+
+// MARK: - Deprecated 1.6
+
+extension Array {
+
+    ///   Creates an array with values generated by running each value of self
+    /// through the mapFunction and discarding nil return values.
+    @available(*, deprecated: 1.6, renamed: "flatMap(_:)")
+    public func mapFilter<V>(mapFunction map: (Element) -> (V)?) -> [V] {
+        return compactMap { map($0) }
+    }
+
+    ///   Iterates on each element of the array with its index.  (Index, Element)
+    @available(*, deprecated: 1.6, renamed: "forEachEnumerated(_:)")
+    public func each(_ call: @escaping (Int, Element) -> Void) {
+        forEachEnumerated(call)
+    }
+
+}
+
+extension Array where Element == DictionaryClosure {
+    public mutating func dequeue(_ value: Dictionary<String,Any>? = nil){
+        objc_sync_enter(self)
         guard self.count > 0 || self.first != nil else { return }
+        
         let work = self.removeFirst()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-            work()
-        }
+        defer { work(value) }
+        objc_sync_exit(self)
     }
-
-    public mutating func enqueue(_ work: @escaping VoidClosure) {
+    
+    public mutating func enqueue(_ work: @escaping DictionaryClosure) {
+        objc_sync_enter(self)
         self.append(work)
+        objc_sync_exit(self)
     }
-
+    
 }
 
 extension Array where Element: NSObject {
     public func clone() -> Array {
-        var copiedArray = [Element]()
+        var copiedArray = Array<Element>()
         for element in self {
             copiedArray.append(element.copy() as! Element)
         }
         return copiedArray
-    }
-}
-
-extension Array where Element == UIButton {
-    public mutating func sw_addUtilityButton(with normal: UIImage?, selectedImg: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.setBackgroundImage(normal, for: .normal)
-        button.setBackgroundImage(selectedImg, for: .highlighted)
-        self.append(button)
-    }
-    public mutating func sw_addUtilityButton(with color: UIColor?, title: String?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.append(button)
-    }
-    public mutating func sw_addUtilityButton(with color: UIColor?, attributedTitle title: NSAttributedString?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setAttributedTitle(title, for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        self.append(button)
-    }
-    public mutating func sw_addUtilityButton(with color: UIColor?, icon: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setImage(icon, for: .normal)
-        self.append(button)
-    }
-    public mutating func sw_addUtilityButton(with color: UIColor?, normalIcon: UIImage?, selectedIcon: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setImage(normalIcon, for: .normal)
-        button.setImage(selectedIcon, for: .highlighted)
-        button.setImage(selectedIcon, for: .selected)
-        self.append(button)
-    }
-}
-
-// extension Optional where Wrapped == Array<Any> {
-//    public var count: Int {
-//        return self?.count ?? 0
-//    }
-// }
-
-extension Array where Element: UIView {
-    /// reused된 View를 리턴
-    /// - Parameters:
-    ///   - parentView: 아이템뷰가 들어갈 부모뷰
-    ///   - size: 아이템 기본 사이즈
-    /// - Returns: reused 된 View
-    @inline(__always) public mutating func getReusedView(parentView: UIView, size: CGSize = .zero) -> Element {
-        var view: Element?
-
-        for item in self {
-            if item.isHidden {
-                item.isHidden = false
-                view = item
-                break
-            }
-        }
-
-        if view == nil {
-            if WG_CommonFunc.isXibFileExists(Element.className) {
-                view = Element.fromXib()
-                if size != .zero {
-                    view?.bounds = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-                }
-            }
-            else {
-                view = Element(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-            }
-
-            view?.isHidden = false
-            self.append(view!)
-
-            if let p = parentView as? UIStackView {
-                p.addArrangedSubview(view!)
-            }
-            else {
-                parentView.addSubview(view!)
-            }
-
-        }
-
-        return view!
-    }
-
-    @inline(__always) public func setHiddenAll(_ value: Bool) {
-        self.forEach { $0.isHidden = value }
-    }
-
-    @inline(__always) public func getNoHiddenViews() -> [Element] {
-        return  self.filter({ $0.isHidden == false })
-    }
-
-    /// 아이템을 왼쪽에서부터 배치 ( reused 되는 cell에서는  width fit false로 두지 말것 )
-    /// - Parameters:
-    ///   - maxLineCount: 0: 무한,  1이상이면 maxLine
-    ///   - spacing: 아이템 간격
-    ///   - fit: filt 여부
-    /// - Returns fit된 부모 사이즈
-    @discardableResult
-    @inline(__always) public func sizeThatFits(maxLineCount: Int, spacing: (inset: UIEdgeInsets, columnSpacing: CGFloat, lineSpacing: CGFloat), fit: (width: Bool, height: Bool)) -> CGSize {
-        guard let superView = self[safe: 0]?.superview else { return .zero }
-
-        var x: CGFloat = spacing.inset.left
-        var y: CGFloat = spacing.inset.top
-        var maxX: CGFloat = 0
-        var maxY: CGFloat = spacing.inset.top
-        var lineCount: Int = 0
-
-        if superView.translatesAutoresizingMaskIntoConstraints == false, superView.ec.isWidth, maxLineCount == 1, fit.width == true {
-            superView.ec.reset(.width)
-            superView.layoutIfNeeded()
-        }
-
-        for v in getNoHiddenViews() {
-            v.x = x
-            v.y = y
-            if v.maxX > superView.w {
-                x = spacing.inset.left
-                if maxY == spacing.inset.top {
-                    y = maxY
-                }
-                else {
-                    y = maxY + spacing.lineSpacing
-                }
-
-                v.x = x
-                v.y = y
-
-                lineCount += 1
-            }
-
-            if maxLineCount > 0, lineCount >= maxLineCount {
-                v.isHidden = true
-                continue
-            }
-
-            x = v.maxX + spacing.columnSpacing
-            maxX = Swift.max(maxX, v.maxX)
-            maxY = Swift.max(maxY, v.maxY)
-        }
-
-        let contentSize = CGSize(width: ceilUI(maxX + spacing.inset.right), height: ceilUI(maxY + spacing.inset.bottom))
-
-        if fit.width {
-            if superView.translatesAutoresizingMaskIntoConstraints == false, superView.ec.isWidth {
-                superView.ec.width = contentSize.width
-            }
-            else if superView.w != contentSize.w {
-                superView.w = contentSize.w
-            }
-        }
-        if fit.height {
-            if superView.translatesAutoresizingMaskIntoConstraints == false, superView.ec.isHeight {
-                superView.ec.height = contentSize.height
-            }
-            else if superView.h != contentSize.h {
-                superView.h = contentSize.h
-            }
-        }
-
-        return contentSize
-    }
-
-    /// 아이템을 배치
-    /// - Parameters:
-    ///   - maxLineCount: 0: 무한,  1이상이면 maxLine
-    ///   - spacing: 아이템 간격
-    ///   - fit: filt 여부
-    /// - Returns fit된 부모 사이즈
-    @discardableResult
-    @inline(__always) public func sizeThatFitsVertical(maxLineCount: Int, spacing: (inset: UIEdgeInsets, lineSpacing: CGFloat), fit: (width: Bool, height: Bool)) -> CGSize {
-        guard let superView = self[safe: 0]?.superview else { return .zero }
-
-        var y: CGFloat = spacing.inset.top
-        var maxX: CGFloat = 0
-        var maxY: CGFloat = 0
-
-        for (i, v) in getNoHiddenViews().enumerated() {
-            if maxLineCount > 0, i >= maxLineCount {
-                v.isHidden = true
-                continue
-            }
-
-            v.x = spacing.inset.left
-            v.y = y
-            y = v.maxY + spacing.lineSpacing
-            maxX = Swift.max(maxX, v.maxX)
-            maxY = v.maxY
-        }
-
-        let contentSize = CGSize(width: maxX + spacing.inset.right, height: maxY + spacing.inset.bottom)
-
-        if fit.width {
-            if superView.w != contentSize.w {
-                superView.w = contentSize.w
-            }
-            if superView.ec.isWidth {
-                superView.ec.width = contentSize.width
-            }
-        }
-        if fit.height {
-            if superView.h != contentSize.h {
-                superView.h = contentSize.h
-            }
-            if superView.ec.isHeight {
-                superView.ec.height = contentSize.height
-            }
-        }
-
-        return contentSize
     }
 }

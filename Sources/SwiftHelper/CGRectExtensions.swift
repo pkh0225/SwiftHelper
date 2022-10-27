@@ -20,18 +20,16 @@ extension CGRect {
     public var x: CGFloat {
         get {
             return self.origin.x
-        }
-        set(value) {
+        } set(value) {
             self.origin.x = value
         }
     }
-
+    
     ///   Y value of CGRect's origin
     public var y: CGFloat {
         get {
             return self.origin.y
-        }
-        set(value) {
+        } set(value) {
             self.origin.y = value
         }
     }
@@ -40,8 +38,7 @@ extension CGRect {
     public var w: CGFloat {
         get {
             return self.size.width
-        }
-        set(value) {
+        } set(value) {
             self.size.width = value
         }
     }
@@ -50,71 +47,14 @@ extension CGRect {
     public var h: CGFloat {
         get {
             return self.size.height
-        }
-        set(value) {
+        } set(value) {
             self.size.height = value
         }
     }
-
+    
     /// EZSE : Surface Area represented by a CGRectangle
     public var area: CGFloat {
         return self.h * self.w
-    }
-
-    public var center: CGPoint {
-        get {
-            return CGPoint(x: x + (w / 2.0), y: y + (h / 2.0))
-        }
-        set {
-            x = newValue.x - (w / 2.0)
-            y = newValue.y - (h / 2.0)
-        }
-    }
-}
-
-extension CGSize {
-    public func ratioSize(setWidth: CGFloat) -> CGSize {
-        return CGSize(width: setWidth, height: ratioHeight(setWidth: setWidth) )
-    }
-
-    public func ratioSize(setHeight: CGFloat) -> CGSize {
-        return CGSize(width: ratioWidth(setHeight: setHeight), height: setHeight)
-    }
-
-    public func ratioHeight(setWidth: CGFloat) -> CGFloat {
-        guard self.width != 0 else { return 0 }
-        if self.width == setWidth {
-            return self.height
-        }
-        let origin: CGFloat = self.height * setWidth / self.width
-        return ceilUI(origin)
-    }
-
-    public func ratioWidth(setHeight: CGFloat) -> CGFloat {
-        guard self.height != 0 else { return 0 }
-        if self.height == setHeight {
-            return self.width
-        }
-        let origin: CGFloat = self.width * setHeight / self.height
-        return ceilUI(origin)
-    }
-
-    public var w: CGFloat {
-        get {
-            return self.width
-        }
-        set(value) {
-            self.width = value
-        }
-    }
-
-    public var h: CGFloat {
-        get {
-            return self.height
-        }
-        set(value) {
-            self.height = value
-        }
     }
 }
 

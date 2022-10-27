@@ -9,62 +9,65 @@
 
 import UIKit
 
-public var cacheControllerViewNibs = NSCache<NSString, UIViewController>()
+//extension UINavigationController {
+//    func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> ()) {
+//        pushViewController(viewController, animated: animated)
+//
+//        if let coordinator = transitionCoordinator, animated {
+//            coordinator.animate(alongsideTransition: nil) { _ in
+//                completion()
+//            }
+//        } else {
+//            completion()
+//        }
+//    }
+//
+//    func popViewController(animated: Bool, completion: @escaping () -> ()) {
+//        popViewController(animated: animated)
+//
+//        if let coordinator = transitionCoordinator, animated {
+//            coordinator.animate(alongsideTransition: nil) { _ in
+//                completion()
+//            }
+//        } else {
+//            completion()
+//        }
+//    }
+//}
+    
 
+////Extension:- UIViewController iPhoneX - Bottom SafeLayoutGuide 색칠
+//private static let insetBackgroundViewTag = 98721 //Cool number
+//
+//func paintSafeAreaBottomInset(withColor color: UIColor) {
+//    guard #available(iOS 11.0, *) else {
+//        return
+//    }
+//    if let insetView = view.viewWithTag(UIViewController.insetBackgroundViewTag) {
+//        insetView.backgroundColor = color
+//        return
+//    }
+//
+//    let insetView = UIView(frame: .zero)
+//    insetView.tag = UIViewController.insetBackgroundViewTag
+//    insetView.translatesAutoresizingMaskIntoConstraints = false
+//    view.addSubview(insetView)
+//    view.sendSubview(toBack: insetView)
+//
+//    insetView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+//    insetView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+//    insetView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+//    insetView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+//
+//    insetView.backgroundColor = color
+//}
+    
+
+    
+    
 extension UIViewController {
-    public var isModal: Bool {
-        if let index = navigationController?.viewControllers.firstIndex(of: self), index > 0 {
-            return false
-        }
-        else if presentingViewController != nil {
-            return true
-        }
-        else if let navigationController = navigationController, navigationController.presentingViewController?.presentedViewController == navigationController {
-            return true
-        }
-        else if let tabBarController = tabBarController, tabBarController.presentingViewController is UITabBarController {
-            return true
-        }
-        else {
-            return false
-        }
-    }
-
-    private struct AssociatedKeys {
-        static var cache: UInt8 = 0
-    }
-
-    public var cache: Bool {
-        get {
-            if let info: Bool = objc_getAssociatedObject(self, &AssociatedKeys.cache) as? Bool {
-                return info
-            }
-            return false
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociatedKeys.cache, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
-    public class func fromXib(cache: Bool = false) -> Self {
-        return fromXib(cache: cache, as: self)
-    }
-
-    private class func fromXib<T: UIViewController>(cache: Bool = false, as type: T.Type) -> T {
-        if cache, let vc = cacheControllerViewNibs.object(forKey: self.className as NSString) {
-            return vc as! T
-        }
-        let vc = T(nibName: T.className, bundle: nil)
-        if cache && DeinitManager.shared.isRun == false {
-            cacheControllerViewNibs.countLimit = 100
-            cacheControllerViewNibs.setObject(vc, forKey: self.className as NSString)
-            vc.cache = cache
-        }
-        return vc
-    }
-
     public var parentVCs: [UIViewController] {
-        var vcs: [UIViewController] = [UIViewController]()
+        var vcs = [UIViewController]()
         var vc: UIViewController? = self.parent
         while vc != nil {
             vcs.append(vc!)
@@ -72,11 +75,11 @@ extension UIViewController {
         }
         return vcs
     }
-
+    
     public var topParentVC: UIViewController? {
         var vcs = parentVCs
-
-        if let navi: UINavigationController = vcs.last as? UINavigationController {
+        
+        if let navi = vcs.last as? UINavigationController {
             vcs.remove(object: navi)
             if let lastVC = vcs.last {
                 return lastVC
@@ -84,8 +87,8 @@ extension UIViewController {
         }
         return nil
     }
-
-    public func getParentVC<T: UIViewController>(type: T.Type) -> T? {
+    
+    public func getParentVC<T:UIViewController>(type: T.Type) -> T? {
         for vc in parentVCs {
             if let vcT = vc as? T {
                 return vcT
@@ -93,31 +96,141 @@ extension UIViewController {
         }
         return nil
     }
-
+    
     // MARK: - Notifications
-
+    
+    ///  Adds an NotificationCenter with name and Selector
+    open func addNotificationObserver(_ name: String, selector: Selector) {
+        NotificationCenter.default.addObserver(self, selector: selector, name: NSNotification.Name(rawValue: name), object: nil)
+    }
+    
+    ///  Removes an NSNotificationCenter for name
+    open func removeNotificationObserver(_ name: String) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: name), object: nil)
+    }
+    
     ///  Removes NotificationCenter'd observer
-    public func removeNotificationObserver() {
+    open func removeNotificationObserver() {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
+    #if os(iOS)
+    
+    ///  Adds a NotificationCenter Observer for keyboardWillShowNotification()
+    ///
+    /// ⚠️ You also need to implement ```keyboardWillShowNotification(_ notification: Notification)```
+    open func addKeyboardWillShowNotification() {
+        self.addNotificationObserver(UIResponder.keyboardWillShowNotification.rawValue, selector: #selector(UIViewController.keyboardWillShowNotification(_:)))
+    }
+    
+    ///   Adds a NotificationCenter Observer for keyboardDidShowNotification()
+    ///
+    /// ⚠️ You also need to implement ```keyboardDidShowNotification(_ notification: Notification)```
+    public func addKeyboardDidShowNotification() {
+        self.addNotificationObserver(UIResponder.keyboardDidShowNotification.rawValue, selector: #selector(UIViewController.keyboardDidShowNotification(_:)))
+    }
+    
+    ///   Adds a NotificationCenter Observer for keyboardWillHideNotification()
+    ///
+    /// ⚠️ You also need to implement ```keyboardWillHideNotification(_ notification: Notification)```
+    open func addKeyboardWillHideNotification() {
+        self.addNotificationObserver(UIResponder.keyboardWillHideNotification.rawValue, selector: #selector(UIViewController.keyboardWillHideNotification(_:)))
+    }
+    
+    ///   Adds a NotificationCenter Observer for keyboardDidHideNotification()
+    ///
+    /// ⚠️ You also need to implement ```keyboardDidHideNotification(_ notification: Notification)```
+    open func addKeyboardDidHideNotification() {
+        self.addNotificationObserver(UIResponder.keyboardDidHideNotification.rawValue, selector: #selector(UIViewController.keyboardDidHideNotification(_:)))
+    }
+    
+    ///  Removes keyboardWillShowNotification()'s NotificationCenter Observer
+    open func removeKeyboardWillShowNotification() {
+        self.removeNotificationObserver(UIResponder.keyboardWillShowNotification.rawValue)
+    }
+    
+    ///  Removes keyboardDidShowNotification()'s NotificationCenter Observer
+    open func removeKeyboardDidShowNotification() {
+        self.removeNotificationObserver(UIResponder.keyboardDidShowNotification.rawValue)
+    }
+    
+    ///  Removes keyboardWillHideNotification()'s NotificationCenter Observer
+    open func removeKeyboardWillHideNotification() {
+        self.removeNotificationObserver(UIResponder.keyboardWillHideNotification.rawValue)
+    }
+    
+    ///  Removes keyboardDidHideNotification()'s NotificationCenter Observer
+    open func removeKeyboardDidHideNotification() {
+        self.removeNotificationObserver(UIResponder.keyboardDidHideNotification.rawValue)
+    }
+    
+    @objc open func keyboardDidShowNotification(_ notification: Notification) {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            
+            let frame = value.cgRectValue
+            keyboardDidShowWithFrame(frame)
+        }
+    }
+    
+    @objc open func keyboardWillShowNotification(_ notification: Notification) {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            
+            let frame = value.cgRectValue
+            keyboardWillShowWithFrame(frame)
+        }
+    }
+    
+    @objc open func keyboardWillHideNotification(_ notification: Notification) {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            
+            let frame = value.cgRectValue
+            keyboardWillHideWithFrame(frame)
+        }
+    }
+    
+    @objc open func keyboardDidHideNotification(_ notification: Notification) {
+        if let nInfo = (notification as NSNotification).userInfo, let value = nInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            
+            let frame = value.cgRectValue
+            keyboardDidHideWithFrame(frame)
+        }
+    }
+    
+    open func keyboardWillShowWithFrame(_ frame: CGRect) {
+        
+    }
+    
+    open func keyboardDidShowWithFrame(_ frame: CGRect) {
+        
+    }
+    
+    open func keyboardWillHideWithFrame(_ frame: CGRect) {
+        
+    }
+    
+    open func keyboardDidHideWithFrame(_ frame: CGRect) {
+        
+    }
+    
     //  Makes the UIViewController register tap events and hides keyboard when clicked somewhere in the ViewController.
-    public func hideKeyboardWhenTappedAround(cancelTouches: Bool = false) {
+    open func hideKeyboardWhenTappedAround(cancelTouches: Bool = false) {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = cancelTouches
         view.addGestureRecognizer(tap)
     }
-
+    
+    #endif
+    
     //  Dismisses keyboard
     @objc open func dismissKeyboard() {
         view.endEditing(true)
     }
-
+    
     // MARK: - VC Container
-
+    
     ///  Returns maximum y of the ViewController
-    public var top: CGFloat {
-        if let me: UINavigationController = self as? UINavigationController, let visibleViewController: UIViewController = me.visibleViewController {
+    open var top: CGFloat {
+        if let me = self as? UINavigationController, let visibleViewController = me.visibleViewController {
             return visibleViewController.top
         }
         if let nav = self.navigationController {
@@ -132,10 +245,10 @@ extension UIViewController {
             return view.top
         }
     }
-
+    
     ///  Returns minimum y of the ViewController
-    public var bottom: CGFloat {
-        if let me: UINavigationController = self as? UINavigationController, let visibleViewController: UIViewController = me.visibleViewController {
+    open var bottom: CGFloat {
+        if let me = self as? UINavigationController, let visibleViewController = me.visibleViewController {
             return visibleViewController.bottom
         }
         if let tab = tabBarController {
@@ -150,10 +263,10 @@ extension UIViewController {
             return view.bottom
         }
     }
-
+    
     ///  Returns Tab Bar's height
-    public var tabBarHeight: CGFloat {
-        if let me: UINavigationController = self as? UINavigationController, let visibleViewController: UIViewController = me.visibleViewController {
+    open var tabBarHeight: CGFloat {
+        if let me = self as? UINavigationController, let visibleViewController = me.visibleViewController {
             return visibleViewController.tabBarHeight
         }
         if let tab = self.tabBarController {
@@ -161,10 +274,10 @@ extension UIViewController {
         }
         return 0
     }
-
+    
     ///  Returns Navigation Bar's height
-    public var navigationBarHeight: CGFloat {
-        if let me: UINavigationController = self as? UINavigationController, let visibleViewController: UIViewController = me.visibleViewController {
+    open var navigationBarHeight: CGFloat {
+        if let me = self as? UINavigationController, let visibleViewController = me.visibleViewController {
             return visibleViewController.navigationBarHeight
         }
         if let nav = self.navigationController {
@@ -172,11 +285,11 @@ extension UIViewController {
         }
         return 0
     }
-
+    
     ///  Returns Navigation Bar's color
-    public var navigationBarColor: UIColor? {
+    open var navigationBarColor: UIColor? {
         get {
-            if let me: UINavigationController = self as? UINavigationController, let visibleViewController: UIViewController = me.visibleViewController {
+            if let me = self as? UINavigationController, let visibleViewController = me.visibleViewController {
                 return visibleViewController.navigationBarColor
             }
             return navigationController?.navigationBar.tintColor
@@ -184,32 +297,33 @@ extension UIViewController {
             navigationController?.navigationBar.barTintColor = value
         }
     }
-
+    
     ///  Returns current Navigation Bar
-    public var navBar: UINavigationBar? {
+    open var navBar: UINavigationBar? {
         return navigationController?.navigationBar
     }
-
+    
     /// EZSwiftExtensions
-    public var applicationFrame: CGRect {
+    open var applicationFrame: CGRect {
         return CGRect(x: view.x, y: top, width: view.w, height: bottom - top)
     }
-
+    
     // MARK: - VC Flow
-
+    
     ///  Pushes a view controller onto the receiver’s stack and updates the display.
-    public func pushVC(_ vc: UIViewController) {
+    open func pushVC(_ vc: UIViewController) {
         navigationController?.pushViewController(vc, animated: true)
     }
-
+    
     ///  Pops the top view controller from the navigation stack and updates the display.
-    @objc open func popVC(_ animated: Bool = false) {
+    open func popVC(_ animated: Bool = true) {
         navigationController?.popViewController(animated: animated)
     }
-
-    public func popVC(popVCs: [UIViewController]) {
+    
+    open func popVC(popVCs: [UIViewController]) {
+        
         guard let nv = navigationController else { return }
-        let vcs = nv.viewControllers.filter({ vc -> Bool in
+        let vcs = nv.viewControllers.filter({ (vc) -> Bool in
             return !popVCs.contains(vc)
         })
         nv.viewControllers = vcs
@@ -224,75 +338,54 @@ extension UIViewController {
             navigationController?.isNavigationBarHidden = newValue
         }
     }
-
+    
     ///   Added extension for popToRootViewController
-    public func popToRootVC(_ animated: Bool = false) {
+    open func popToRootVC(_ animated: Bool = true) {
         navigationController?.popToRootViewController(animated: true)
     }
-
+    
     ///  Presents a view controller modally.
-    public func presentVC(_ vc: UIViewController) {
+    open func presentVC(_ vc: UIViewController) {
         present(vc, animated: true, completion: nil)
     }
-
+    
     ///  Dismisses the view controller that was presented modally by the view controller.
-    public func dismissVC(completion: (() -> Void)? ) {
+    open func dismissVC(completion: (() -> Void)? ) {
         dismiss(animated: true, completion: completion)
     }
-
+    
     ///  Adds the specified view controller as a child of the current view controller.
-    public func addAsChildViewController(_ vc: UIViewController, toView: UIView) {
+    open func addAsChildViewController(_ vc: UIViewController, toView: UIView) {
         self.addChild(vc)
         toView.addSubview(vc.view)
         vc.didMove(toParent: self)
     }
-
+    
     ///  Adds image named: as a UIImageView in the Background
-    public func setBackgroundImage(_ named: String) {
+    open func setBackgroundImage(_ named: String) {
         let image = UIImage(named: named)
         let imageView = UIImageView(frame: view.frame)
         imageView.image = image
         view.addSubview(imageView)
         view.sendSubviewToBack(imageView)
     }
-
+    
     ///  Adds UIImage as a UIImageView in the Background
-    public func setBackgroundImage(_ image: UIImage) {
+    @nonobjc func setBackgroundImage(_ image: UIImage) {
         let imageView = UIImageView(frame: view.frame)
         imageView.image = image
         view.addSubview(imageView)
         view.sendSubviewToBack(imageView)
     }
-
+    
     #if os(iOS)
 
-    @available(*, deprecated)
+    @available(*, deprecated: 1.9)
     public func hideKeyboardWhenTappedAroundAndCancelsTouchesInView() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
     }
     #endif
-
-    /// iPhone에서는 present 함수와 동작 동일, iPad 에서는 popover 처리를 해줌.
-    public func presentOnto(_ viewControllerToPresent: UIViewController, animated flag: Bool, sender: Any? = nil, completion: (() -> Void)? = nil) {
-        if UIDevice.current.getiPhoneScreen() == .iPad {
-            viewControllerToPresent.modalPresentationStyle = .popover
-            let ppc = viewControllerToPresent.popoverPresentationController
-            if let sender = sender as? UIButton {
-                ppc?.barButtonItem = UIBarButtonItem(customView: sender)
-            }
-            else {
-                // sender 정보가 없거나(불특정 이벤트 등으로 popover 해야 하는 상황) 좌표를 특정하기 어려운 경우 center에 배치
-                ppc?.sourceView = self.view
-                ppc?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-            }
-            ppc?.permittedArrowDirections = .any
-            self.present(viewControllerToPresent, animated: flag, completion: completion)
-        }
-        else {
-            self.present(viewControllerToPresent, animated: flag, completion: completion)
-        }
-    }
 }
 
 #endif

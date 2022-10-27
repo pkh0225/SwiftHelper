@@ -9,6 +9,7 @@
 import Foundation
 
 extension Dictionary {
+   
     ///   Returns the value of a random Key-Value pair from the Dictionary
     public func random() -> Value? {
         return Array(values).random()
@@ -17,9 +18,9 @@ extension Dictionary {
     ///   Union of self and the input dictionaries.
     public func union(_ dictionaries: Dictionary...) -> Dictionary {
         var result = self
-        dictionaries.forEach {
-            $0.forEach {
-                result[$0] = $1
+        dictionaries.forEach { (dictionary) -> Void in
+            dictionary.forEach { (key, value) -> Void in
+                result[key] = value
             }
         }
         return result
@@ -117,7 +118,6 @@ extension Dictionary {
     }
 
     ///   Unserialize JSON string into Dictionary
-
     public static func constructFromJSON (json: String) -> Dictionary? {
         if let data = (try? JSONSerialization.jsonObject(
             with: json.data(using: String.Encoding.utf8,
@@ -131,12 +131,10 @@ extension Dictionary {
     }
 
     ///   Serialize Dictionary into JSON string
-    public func jsonString() -> String? {
+    public func formatJSON() -> String? {
         if let jsonData = try? JSONSerialization.data(withJSONObject: self, options: JSONSerialization.WritingOptions()) {
-            if let jsonStr: String = String(data: jsonData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue)) {
-                return jsonStr
-            }
-            return ""
+            let jsonStr = String(data: jsonData, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+            return String(jsonStr ?? "")
         }
         return nil
     }
@@ -170,3 +168,4 @@ public func += <KeyType, ValueType> (left: inout [KeyType: ValueType], right: [K
 public func - <K, V: Equatable> (first: [K: V], second: [K: V]) -> [K: V] {
     return first.difference(second)
 }
+
