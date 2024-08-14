@@ -34,7 +34,6 @@
 		20FE36522C6C344D0000255D /* JSONSerializableExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36292C6C344C0000255D /* JSONSerializableExtension.swift */; };
 		20FE36532C6C344D0000255D /* TimerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362A2C6C344C0000255D /* TimerExtensions.swift */; };
 		20FE36542C6C344D0000255D /* DictionaryExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362B2C6C344C0000255D /* DictionaryExtensions.swift */; };
-		20FE36552C6C344D0000255D /* UICollectionViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362C2C6C344C0000255D /* UICollectionViewExtension.swift */; };
 		20FE36562C6C344D0000255D /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362D2C6C344C0000255D /* UITableViewExtension.swift */; };
 		20FE36572C6C344D0000255D /* NSLayoutConstraintExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362E2C6C344C0000255D /* NSLayoutConstraintExtension.swift */; };
 		20FE36582C6C344D0000255D /* CGRectExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE362F2C6C344C0000255D /* CGRectExtensions.swift */; };
@@ -84,7 +83,6 @@
 		20FE36292C6C344C0000255D /* JSONSerializableExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONSerializableExtension.swift; sourceTree = "<group>"; };
 		20FE362A2C6C344C0000255D /* TimerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerExtensions.swift; sourceTree = "<group>"; };
 		20FE362B2C6C344C0000255D /* DictionaryExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryExtensions.swift; sourceTree = "<group>"; };
-		20FE362C2C6C344C0000255D /* UICollectionViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICollectionViewExtension.swift; sourceTree = "<group>"; };
 		20FE362D2C6C344C0000255D /* UITableViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
 		20FE362E2C6C344C0000255D /* NSLayoutConstraintExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSLayoutConstraintExtension.swift; sourceTree = "<group>"; };
 		20FE362F2C6C344C0000255D /* CGRectExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGRectExtensions.swift; sourceTree = "<group>"; };
@@ -167,7 +165,6 @@
 				20FE361B2C6C344B0000255D /* UIAccessibilityExtensions.swift */,
 				20FE36282C6C344C0000255D /* UIAlertControllerExtension.swift */,
 				20FE36262C6C344C0000255D /* UIButtonExtension.swift */,
-				20FE362C2C6C344C0000255D /* UICollectionViewExtension.swift */,
 				20FE36172C6C344B0000255D /* UIColorExtensions.swift */,
 				20FE36232C6C344C0000255D /* UIDeviceExtensions.swift */,
 				20FE36102C6C344B0000255D /* UIImageExtension.swift */,
@@ -343,7 +340,6 @@
 				20FE36562C6C344D0000255D /* UITableViewExtension.swift in Sources */,
 				20FE36402C6C344D0000255D /* UIColorExtensions.swift in Sources */,
 				20FE36502C6C344D0000255D /* UIStackViewExtension.swift in Sources */,
-				20FE36552C6C344D0000255D /* UICollectionViewExtension.swift in Sources */,
 				520F389921229A890081B956 /* TestViewController.swift in Sources */,
 				20FE364B2C6C344D0000255D /* UIStoryboardExtensions.swift in Sources */,
 				20FE36452C6C344D0000255D /* NSObjectExtensions.swift in Sources */,
