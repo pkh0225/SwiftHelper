@@ -11,19 +11,19 @@ import UIKit
 class ClosureQueueController: UIViewController {
 
     var closureQeeue = [DictionaryClosure]()
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         closureQeeue.enqueue { _ in
-            UIAlertController.showMessage("Test 111")
+            UIAlertController.alert(title: "Test 111")
         }
         closureQeeue.enqueue { _ in
-            UIAlertController.showMessage("Test 222")
+            UIAlertController.alert(title:"Test 222")
         }
         closureQeeue.enqueue { _ in
-            UIAlertController.showMessage("Test 333")
+            UIAlertController.alert(title:"Test 333")
         }
     }
     
@@ -36,7 +36,7 @@ class ClosureQueueController: UIViewController {
         sender.tag += 1
         let count = sender.tag
         closureQeeue.enqueue { _ in
-            UIAlertController.showMessage("Test \(count)")
+            UIAlertController.alert(title:"Test \(count)")
         }
     }
     
