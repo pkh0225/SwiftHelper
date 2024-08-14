@@ -304,22 +304,22 @@ extension UICollectionView {
     }
 }
 
-extension UICollectionReusableView {
-    private struct AssociatedKeys {
-        static var indexPath: UInt8 = 0
-    }
-    public var indexPath: IndexPath {
-        get {
-            if let indexPath: IndexPath = objc_getAssociatedObject(self, &AssociatedKeys.indexPath) as? IndexPath {
-                return indexPath
-            }
-            return IndexPath(row: 0, section: 0)
-
-        }
-        set { objc_setAssociatedObject(self, &AssociatedKeys.indexPath, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-    }
-
-    public func getRow() -> String {
-        return "\(indexPath.row)"
-    }
-}
+//extension UICollectionReusableView {
+//    private struct AssociatedKeys {
+//        static var indexPath: UInt8 = 0
+//    }
+//    public var indexPath: IndexPath {
+//        get {
+//            if let indexPath: IndexPath = objc_getAssociatedObject(self, &AssociatedKeys.indexPath) as? IndexPath {
+//                return indexPath
+//            }
+//            return IndexPath(row: 0, section: 0)
+//
+//        }
+//        set { objc_setAssociatedObject(self, &AssociatedKeys.indexPath, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+//    }
+//
+//    public func getRow() -> String {
+//        return "\(indexPath.row)"
+//    }
+//}
