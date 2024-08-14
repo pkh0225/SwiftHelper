@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20FA8C592C6C5D2600837939 /* EasyConstraints in Frameworks */ = {isa = PBXBuildFile; productRef = 20FA8C582C6C5D2600837939 /* EasyConstraints */; };
 		20FE36382C6C344D0000255D /* CGColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE360E2C6C344B0000255D /* CGColorExtensions.swift */; };
 		20FE36392C6C344D0000255D /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36102C6C344B0000255D /* UIImageExtension.swift */; };
 		20FE363A2C6C344D0000255D /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36112C6C344B0000255D /* DoubleExtension.swift */; };
@@ -44,7 +45,6 @@
 		20FE365E2C6C344D0000255D /* LocaleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36352C6C344C0000255D /* LocaleExtensions.swift */; };
 		20FE365F2C6C344D0000255D /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36362C6C344C0000255D /* DispatchQueue.swift */; };
 		20FE36602C6C344D0000255D /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36372C6C344C0000255D /* UIImageViewExtension.swift */; };
-		20FE36632C6C354A0000255D /* EasyConstraints in Frameworks */ = {isa = PBXBuildFile; productRef = 20FE36622C6C354A0000255D /* EasyConstraints */; };
 		20FE36652C6C40BD0000255D /* PropertyWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36642C6C40BD0000255D /* PropertyWrapper.swift */; };
 		20FE36692C6C45390000255D /* DefineClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36682C6C45390000255D /* DefineClosure.swift */; };
 		520F389721229A890081B956 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389621229A890081B956 /* AppDelegate.swift */; };
@@ -97,7 +97,7 @@
 		20FE36372C6C344C0000255D /* UIImageViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageViewExtension.swift; sourceTree = "<group>"; };
 		20FE36642C6C40BD0000255D /* PropertyWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyWrapper.swift; sourceTree = "<group>"; };
 		20FE36682C6C45390000255D /* DefineClosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefineClosure.swift; sourceTree = "<group>"; };
-		520F389321229A890081B956 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		520F389321229A890081B956 /* TestSwiftHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestSwiftHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		520F389621229A890081B956 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		520F389821229A890081B956 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		520F389B21229A890081B956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -114,7 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20FE36632C6C354A0000255D /* EasyConstraints in Frameworks */,
+				20FA8C592C6C5D2600837939 /* EasyConstraints in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +221,7 @@
 			children = (
 				520F38E821229CA10081B956 /* README.md */,
 				20DC7CA62908D22100C34851 /* Sources */,
-				520F389521229A890081B956 /* Test */,
+				520F389521229A890081B956 /* TestSwiftHelper */,
 				520F389421229A890081B956 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -229,12 +229,12 @@
 		520F389421229A890081B956 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				520F389321229A890081B956 /* Test.app */,
+				520F389321229A890081B956 /* TestSwiftHelper.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		520F389521229A890081B956 /* Test */ = {
+		520F389521229A890081B956 /* TestSwiftHelper */ = {
 			isa = PBXGroup;
 			children = (
 				520F389621229A890081B956 /* AppDelegate.swift */,
@@ -246,15 +246,15 @@
 				520F389F21229A8A0081B956 /* LaunchScreen.storyboard */,
 				520F38A221229A8A0081B956 /* Info.plist */,
 			);
-			path = Test;
+			path = TestSwiftHelper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		520F389221229A890081B956 /* Test */ = {
+		520F389221229A890081B956 /* TestSwiftHelper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 520F38A521229A8A0081B956 /* Build configuration list for PBXNativeTarget "Test" */;
+			buildConfigurationList = 520F38A521229A8A0081B956 /* Build configuration list for PBXNativeTarget "TestSwiftHelper" */;
 			buildPhases = (
 				520F388F21229A890081B956 /* Sources */,
 				520F389021229A890081B956 /* Frameworks */,
@@ -264,12 +264,12 @@
 			);
 			dependencies = (
 			);
-			name = Test;
+			name = TestSwiftHelper;
 			packageProductDependencies = (
-				20FE36622C6C354A0000255D /* EasyConstraints */,
+				20FA8C582C6C5D2600837939 /* EasyConstraints */,
 			);
 			productName = Test;
-			productReference = 520F389321229A890081B956 /* Test.app */;
+			productReference = 520F389321229A890081B956 /* TestSwiftHelper.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -288,7 +288,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 520F388E21229A890081B956 /* Build configuration list for PBXProject "Test" */;
+			buildConfigurationList = 520F388E21229A890081B956 /* Build configuration list for PBXProject "TestSwiftHelper" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -298,13 +298,13 @@
 			);
 			mainGroup = 520F388A21229A890081B956;
 			packageReferences = (
-				20FE36612C6C354A0000255D /* XCRemoteSwiftPackageReference "EasyConstraints" */,
+				20FA8C572C6C5D2600837939 /* XCRemoteSwiftPackageReference "EasyConstraints" */,
 			);
 			productRefGroup = 520F389421229A890081B956 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				520F389221229A890081B956 /* Test */,
+				520F389221229A890081B956 /* TestSwiftHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -520,13 +520,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LW3F5LSN8X;
-				INFOPLIST_FILE = Test/Info.plist;
+				INFOPLIST_FILE = TestSwiftHelper/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TestSwiftHelper;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Test.Extenstoin;
+				PRODUCT_BUNDLE_IDENTIFIER = TestSwiftHelper.Extenstoin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -544,13 +545,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LW3F5LSN8X;
-				INFOPLIST_FILE = Test/Info.plist;
+				INFOPLIST_FILE = TestSwiftHelper/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TestSwiftHelper;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Test.Extenstoin;
+				PRODUCT_BUNDLE_IDENTIFIER = TestSwiftHelper.Extenstoin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -562,7 +564,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		520F388E21229A890081B956 /* Build configuration list for PBXProject "Test" */ = {
+		520F388E21229A890081B956 /* Build configuration list for PBXProject "TestSwiftHelper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				520F38A321229A8A0081B956 /* Debug */,
@@ -571,7 +573,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		520F38A521229A8A0081B956 /* Build configuration list for PBXNativeTarget "Test" */ = {
+		520F38A521229A8A0081B956 /* Build configuration list for PBXNativeTarget "TestSwiftHelper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				520F38A621229A8A0081B956 /* Debug */,
@@ -583,7 +585,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		20FE36612C6C354A0000255D /* XCRemoteSwiftPackageReference "EasyConstraints" */ = {
+		20FA8C572C6C5D2600837939 /* XCRemoteSwiftPackageReference "EasyConstraints" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pkh0225/EasyConstraints.git";
 			requirement = {
@@ -594,9 +596,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		20FE36622C6C354A0000255D /* EasyConstraints */ = {
+		20FA8C582C6C5D2600837939 /* EasyConstraints */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 20FE36612C6C354A0000255D /* XCRemoteSwiftPackageReference "EasyConstraints" */;
+			package = 20FA8C572C6C5D2600837939 /* XCRemoteSwiftPackageReference "EasyConstraints" */;
 			productName = EasyConstraints;
 		};
 /* End XCSwiftPackageProductDependency section */
