@@ -362,11 +362,11 @@ extension Array where Element == UIButton {
     }
 }
 
-// extension Optional where Wrapped == Array<Any> {
-//    public var count: Int {
-//        return self?.count ?? 0
-//    }
-// }
+extension Optional where Wrapped: Collection {
+    public var count: Int {
+        return (self as? [Any])?.count ?? 0
+    }
+}
 
 extension Array where Element: UIView {
     /// reused된 View를 리턴
