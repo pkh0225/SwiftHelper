@@ -22,6 +22,12 @@ extension Appliable {
     }
 
     @discardableResult
+    @inline(__always) public func also<T>(_ block: (inout Self) -> T) -> T {
+        var copy = self
+        return block(&copy)
+    }
+    
+    @discardableResult
     @inline(__always) public func run<T>(_ block: (Self) -> T) -> T {
         return block(self)
     }
