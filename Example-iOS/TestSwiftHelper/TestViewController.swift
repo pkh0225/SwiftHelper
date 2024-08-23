@@ -14,7 +14,7 @@ class TestViewController: UITableViewController {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self)
 
-        let testObject = TestClass().apply {
+        let testObject = TestStruct().apply {
             $0.a = 1111
             $0.b = "9999"
         }
@@ -32,7 +32,7 @@ class TestViewController: UITableViewController {
         print("### 3 \(testObject.des())")
         print("### 3 runTestObject result = \(runTestObject)")
 
-        let o = Person().apply {
+        let o = PersonClass().apply {
             $0.name = "park"
             $0.age = 10
         }
@@ -118,23 +118,24 @@ class TestViewController: UITableViewController {
 }
 
 
-struct TestClass: Appliable {
+struct TestStruct: Appliable {
     var a: Int = 12345
     var b: String = "TestClass"
 }
-class Person: NSObject {
+
+class PersonClass: NSObject {
     var name: String = ""
     var age: Int = 0
     var array = [Int]()
-    var objArray = [TestClass]()
+    var objArray = [TestStruct]()
 
     override init() {
         array = [1,2,3,4,5]
-        objArray.append(TestClass().apply {
+        objArray.append(TestStruct().apply {
             $0.a = 1
             $0.b = "1"
         })
-        objArray.append(TestClass().apply {
+        objArray.append(TestStruct().apply {
             $0.a = 2
             $0.b = "2"
         })

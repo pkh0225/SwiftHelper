@@ -55,12 +55,23 @@ extension Appliable {
 
 extension NSObject: Appliable {}
 extension Appliable where Self: AnyObject {}
+extension Appliable where Self: Any {}
 extension Bool: Appliable {}
 extension String: Appliable {}
 extension Character: Appliable {}
 extension Int: Appliable {}
+extension Int8: Appliable {}
+extension Int16: Appliable {}
+extension Int32: Appliable {}
+extension Int64: Appliable {}
 extension UInt: Appliable {}
+extension UInt8: Appliable {}
+extension UInt16: Appliable {}
+extension UInt32: Appliable {}
+extension UInt64: Appliable {}
 extension Float: Appliable {}
+@available(iOS 14.0, *)
+extension Float16: Appliable {}
 extension Double: Appliable {}
 extension CGFloat: Appliable {}
 extension Array: Appliable {}
