@@ -12,8 +12,8 @@ import UIKit
     return block(object)
 }
 
-public protocol Appliable {}
-extension Appliable {
+public protocol ScopeAble {}
+extension ScopeAble {
     @discardableResult
     @inline(__always) public func apply(_ block: (inout Self) -> Void) -> Self {
         var copy = self
@@ -40,6 +40,10 @@ extension Appliable {
         return block(&copy)
     }
 
+    @inline(__always) public func takeIf(_ block: (Self) -> Bool) -> Self? {
+        return block(self) ? self : nil
+    }
+
     @inline(__always) public func des() -> String {
         var stringList = ["\n\t****** \(String(describing: type(of: self))) ******"]
         let mirror: Mirror = Mirror(reflecting: self)
@@ -53,32 +57,32 @@ extension Appliable {
     }
 }
 
-extension NSObject: Appliable {}
-extension Appliable where Self: AnyObject {}
-extension Appliable where Self: Any {}
-extension Bool: Appliable {}
-extension String: Appliable {}
-extension Character: Appliable {}
-extension Int: Appliable {}
-extension Int8: Appliable {}
-extension Int16: Appliable {}
-extension Int32: Appliable {}
-extension Int64: Appliable {}
-extension UInt: Appliable {}
-extension UInt8: Appliable {}
-extension UInt16: Appliable {}
-extension UInt32: Appliable {}
-extension UInt64: Appliable {}
-extension Float: Appliable {}
+extension NSObject: ScopeAble {}
+extension ScopeAble where Self: AnyObject {}
+extension ScopeAble where Self: Any {}
+extension Bool: ScopeAble {}
+extension String: ScopeAble {}
+extension Character: ScopeAble {}
+extension Int: ScopeAble {}
+extension Int8: ScopeAble {}
+extension Int16: ScopeAble {}
+extension Int32: ScopeAble {}
+extension Int64: ScopeAble {}
+extension UInt: ScopeAble {}
+extension UInt8: ScopeAble {}
+extension UInt16: ScopeAble {}
+extension UInt32: ScopeAble {}
+extension UInt64: ScopeAble {}
+extension Float: ScopeAble {}
 @available(iOS 14.0, *)
-extension Float16: Appliable {}
-extension Double: Appliable {}
-extension CGFloat: Appliable {}
-extension Array: Appliable {}
-extension Set: Appliable {}
-extension Dictionary: Appliable {}
-extension UIEdgeInsets: Appliable {}
-extension UIRectEdge: Appliable {}
-extension CGRect: Appliable {}
-extension CGPoint: Appliable {}
-extension CGSize: Appliable {}
+extension Float16: ScopeAble {}
+extension Double: ScopeAble {}
+extension CGFloat: ScopeAble {}
+extension Array: ScopeAble {}
+extension Set: ScopeAble {}
+extension Dictionary: ScopeAble {}
+extension UIEdgeInsets: ScopeAble {}
+extension UIRectEdge: ScopeAble {}
+extension CGRect: ScopeAble {}
+extension CGPoint: ScopeAble {}
+extension CGSize: ScopeAble {}

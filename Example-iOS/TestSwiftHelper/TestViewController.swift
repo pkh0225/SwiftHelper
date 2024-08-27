@@ -65,7 +65,11 @@ class TestViewController: UITableViewController {
             $0.age = 18
         }
 
-        print("### 8 \(o.des())")
+        o.takeIf { $0.age > 10 }?.run { obj in
+            print("### 8 takeIf \(obj)")
+        }
+
+        print("### 99 \(o.des())")
 
     }
 
@@ -118,7 +122,7 @@ class TestViewController: UITableViewController {
 }
 
 
-struct TestStruct: Appliable {
+struct TestStruct: ScopeAble {
     var a: Int = 12345
     var b: String = "TestClass"
 }
