@@ -16,13 +16,13 @@ class ClosureQueueController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        closureQeeue.enqueue { _ in
+        closureQeeue.addAction { _ in
             UIAlertController.alert(title: "Test 111")
         }
-        closureQeeue.enqueue { _ in
+        closureQeeue.addAction { _ in
             UIAlertController.alert(title:"Test 222")
         }
-        closureQeeue.enqueue { _ in
+        closureQeeue.addAction { _ in
             UIAlertController.alert(title:"Test 333")
         }
     }
@@ -35,12 +35,12 @@ class ClosureQueueController: UIViewController {
     @IBAction func onInQueue(_ sender: UIButton) {
         sender.tag += 1
         let count = sender.tag
-        closureQeeue.enqueue { _ in
+        closureQeeue.addAction { _ in
             UIAlertController.alert(title:"Test \(count)")
         }
     }
     
     @IBAction func onDequeue(_ sender: UIButton) {
-        closureQeeue.dequeue()
+        closureQeeue.nextRun()
     }
 }

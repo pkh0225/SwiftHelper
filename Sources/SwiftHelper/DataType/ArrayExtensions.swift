@@ -285,7 +285,7 @@ extension Array where Element: Equatable {
 }
 
 extension Array where Element == (_ value: [String: Any]?) -> Void {
-    public mutating func dequeue(_ value: [String: Any]? = nil) {
+    public mutating func nextRun(_ value: [String: Any]? = nil) {
         guard self.count > 0 || self.first != nil else { return }
         let work = self.removeFirst()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
@@ -293,14 +293,14 @@ extension Array where Element == (_ value: [String: Any]?) -> Void {
         }
     }
 
-    public mutating func enqueue(_ work: @escaping (_ value: [String: Any]?) -> Void) {
+    public mutating func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
         self.append(work)
     }
 
 }
 
 extension Array where Element == () -> Void {
-    public mutating func dequeue() {
+    public mutating func nextRun() {
         guard self.count > 0 || self.first != nil else { return }
         let work = self.removeFirst()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
@@ -308,7 +308,7 @@ extension Array where Element == () -> Void {
         }
     }
 
-    public mutating func enqueue(_ work: @escaping () -> Void) {
+    public mutating func addAction(_ work: @escaping () -> Void) {
         self.append(work)
     }
 
