@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		200019CB2C9D0B9D00E2094A /* MemoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */; };
+		200019CD2C9D0DFC00E2094A /* PushProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CC2C9D0DFC00E2094A /* PushProtocol.swift */; };
+		200019CF2C9D2CAC00E2094A /* ScopeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */; };
 		20FA8C592C6C5D2600837939 /* EasyConstraints in Frameworks */ = {isa = PBXBuildFile; productRef = 20FA8C582C6C5D2600837939 /* EasyConstraints */; };
 		20FA8C6A2C6C74B300837939 /* ScopeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FA8C692C6C74B300837939 /* ScopeFunction.swift */; };
 		20FD4E712C9D04FA00FA7C4B /* WeakWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */; };
@@ -58,6 +61,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryViewController.swift; sourceTree = "<group>"; };
+		200019CC2C9D0DFC00E2094A /* PushProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushProtocol.swift; sourceTree = "<group>"; };
+		200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeViewController.swift; sourceTree = "<group>"; };
 		20FA8C692C6C74B300837939 /* ScopeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeFunction.swift; sourceTree = "<group>"; };
 		20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakWrapper.swift; sourceTree = "<group>"; };
 		20FE360E2C6C344B0000255D /* CGColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGColorExtensions.swift; sourceTree = "<group>"; };
@@ -121,6 +127,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		200019D02C9D2CC600E2094A /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				520F389A21229A890081B956 /* Main.storyboard */,
+				520F38EE21229FDA0081B956 /* AutoLayoutController.swift */,
+				520F38F02122B7D90081B956 /* ClosureQueueController.swift */,
+				200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */,
+				200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
 		20DC7CA62908D22100C34851 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -133,7 +151,6 @@
 		20DC7CA72908D22100C34851 /* SwiftHelper */ = {
 			isa = PBXGroup;
 			children = (
-				20FD4E6F2C9D04BD00FA7C4B /* Rapper */,
 				20FD4E6E2C9D046100FA7C4B /* Layout */,
 				20FD4E6D2C9D044D00FA7C4B /* Json */,
 				20FD4E6C2C9D044400FA7C4B /* Dispatc */,
@@ -170,17 +187,10 @@
 			path = Layout;
 			sourceTree = "<group>";
 		};
-		20FD4E6F2C9D04BD00FA7C4B /* Rapper */ = {
-			isa = PBXGroup;
-			children = (
-				20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */,
-			);
-			path = Rapper;
-			sourceTree = "<group>";
-		};
 		20FE36662C6C44E10000255D /* Wrapper */ = {
 			isa = PBXGroup;
 			children = (
+				20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */,
 				20FE36642C6C40BD0000255D /* PropertyWrapper.swift */,
 			);
 			path = Wrapper;
@@ -213,6 +223,7 @@
 				20FE36182C6C344B0000255D /* UITextFieldExtensions.swift */,
 				20FE361A2C6C344B0000255D /* UIViewControllerExtensions.swift */,
 				20FE36142C6C344B0000255D /* UIViewExtensions.swift */,
+				200019CC2C9D0DFC00E2094A /* PushProtocol.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -271,9 +282,7 @@
 			children = (
 				520F389621229A890081B956 /* AppDelegate.swift */,
 				520F389821229A890081B956 /* TestViewController.swift */,
-				520F38EE21229FDA0081B956 /* AutoLayoutController.swift */,
-				520F38F02122B7D90081B956 /* ClosureQueueController.swift */,
-				520F389A21229A890081B956 /* Main.storyboard */,
+				200019D02C9D2CC600E2094A /* VC */,
 				520F389D21229A8A0081B956 /* Assets.xcassets */,
 				520F389F21229A8A0081B956 /* LaunchScreen.storyboard */,
 				520F38A221229A8A0081B956 /* Info.plist */,
@@ -360,7 +369,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				200019CD2C9D0DFC00E2094A /* PushProtocol.swift in Sources */,
 				20FE36432C6C344D0000255D /* UIViewControllerExtensions.swift in Sources */,
+				200019CB2C9D0B9D00E2094A /* MemoryViewController.swift in Sources */,
 				20FE36532C6C344D0000255D /* TimerExtensions.swift in Sources */,
 				20FE36542C6C344D0000255D /* DictionaryExtensions.swift in Sources */,
 				20FE36582C6C344D0000255D /* CGRectExtensions.swift in Sources */,
@@ -393,6 +404,7 @@
 				20FE36462C6C344D0000255D /* CGSizeExtension.swift in Sources */,
 				20FE363D2C6C344D0000255D /* UIViewExtensions.swift in Sources */,
 				20FE365B2C6C344D0000255D /* OptionSetExtension.swift in Sources */,
+				200019CF2C9D2CAC00E2094A /* ScopeViewController.swift in Sources */,
 				20FD4E712C9D04FA00FA7C4B /* WeakWrapper.swift in Sources */,
 				20FE36492C6C344D0000255D /* IntExtensions.swift in Sources */,
 				20FE363A2C6C344D0000255D /* DoubleExtension.swift in Sources */,

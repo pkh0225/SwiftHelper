@@ -8,7 +8,8 @@
 
 import UIKit
 
-class ClosureQueueController: UIViewController {
+class ClosureQueueController: UIViewController, PushProtocol {
+    static var storyboardName: String = "Main"
 
     var closureQeeue = [DictionaryClosure]()
 

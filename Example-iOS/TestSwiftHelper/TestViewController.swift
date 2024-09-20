@@ -8,140 +8,85 @@
 
 import UIKit
 
-class TestViewController: UITableViewController {
+typealias TypePushController = UIViewController & PushProtocol
 
+class TestViewController: UITableViewController, PushProtocol {
+    static var storyboardName: String = "Main"
+
+    var vcList = [(title: String, vc: TypePushController.Type)]()
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self)
 
-        let testObject = TestStruct().apply {
-            $0.a = 1111
-            $0.b = "9999"
-        }
-        print("### 1 \(testObject.des())")
-
-        testObject.run {
-            print("### 2 run a \($0.a)")
-            print("### 2 run b \($0.b)")
-        }
-        print("### 2 \(testObject.des())")
-
-        let runTestObject = testObject.run {
-            return $0.a + 100
-        }
-        print("### 3 \(testObject.des())")
-        print("### 3 runTestObject result = \(runTestObject)")
-
-        let o = PersonClass().apply {
-            $0.name = "park"
-            $0.age = 10
-        }
-        print("### 4 \(o.des())")
-
-        o.run {
-            $0.name = "han"
-            $0.age = 28
-        }
-        print("### 5 \(o.des())")
-
-        let runTest = o.run {
-            $0.name = "han2"
-            $0.age = 28
-            return $0.age > 18
-        }
-        print("### 6 \(o.des())")
-        print("### 6 runTest result = \(runTest)")
-
-        let withTest = with(o) {
-            $0.name = "Kim"
-            $0.age = 12
-            return $0.age > 18
-        }
-        print("### 7 \(o.des())")
-        print("### 7 withTest result = \(withTest)")
-
-        with(o) {
-            $0.name = "Kim2"
-            $0.age = 18
-        }
-
-        o.takeIf { $0.age > 10 }?.run { obj in
-            print("### 8 takeIf \(obj)")
-        }
-
-        print("### 99 \(o.des())")
-
+        setData()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func setData() {
+        vcList.append(("AutoLayout", AutoLayoutController.self))
+        vcList.append(("Closure Queue", ClosureQueueController.self))
+        vcList.append(("Memory", MemoryViewController.self))
+        vcList.append(("Scope", SccopeViewController.self))
     }
+}
 
-    func assembleModule(identifier: String) -> UIViewController {
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        let vc = storyboard.instantiateViewController(withIdentifier: identifier)
-        return vc
-    }
-    
-    
+// MARK: - UITableView Delegate
+extension TestViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return vcList.count
     }
-    
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(UITableViewCell.self, for: indexPath)
-        switch indexPath.row {
-        case 0:
-            cell.textLabel?.text = "UIView AutoLayout Extensions"
-        case 1:
-            cell.textLabel?.text = "Closure Queue"
-        default:
-            break
-        }
-        
+        cell.textLabel?.text = vcList[indexPath.row].title
         return cell
     }
-    
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-            let vc = assembleModule(identifier: AutoLayoutController.className)
-            self.navigationController?.pushViewController(vc, animated: true)
-            
-        case 1:
-            let vc = assembleModule(identifier: ClosureQueueController.className)
-            self.navigationController?.pushViewController(vc, animated: true)
-            
-        default:
-            break
-        }
+        let vcType = vcList[indexPath.row].vc
+        vcType.pushViewController()
     }
 }
 
+func makeDebugTextView(value: String) {
+    gcd_main_safe {
+        guard let window = KeyWindow() else { return }
+        let view: UIView = UIView(frame: CGRect(x: 10,
+                                                 y: window.safeAreaInsets.top + 10,
+                                                 w: UIScreen.main.bounds.width - 20,
+                                                 h: UIScreen.main.bounds.height - 20 - window.safeAreaInsets.top - window.safeAreaInsets.bottom))
+        view.borderColor = .gray
+        view.borderWidth = 1
+        view.clipsToBounds = true
+        window.addSubview(view)
 
-struct TestStruct: ScopeAble {
-    var a: Int = 12345
-    var b: String = "TestClass"
-}
+        let textView: UITextView = UITextView(frame: CGRect(x: 0, y: 0, w: view.w, h: view.h - 45))
+        textView.backgroundColor = .white
+        textView.isEditable = false
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.text = value
+        textView.textContainerInset = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
+        view.addSubview(textView)
 
-class PersonClass: NSObject {
-    var name: String = ""
-    var age: Int = 0
-    var array = [Int]()
-    var objArray = [TestStruct]()
+        let btn: UIButton = UIButton(frame: CGRect(x: 0, y: textView.h, w: textView.w, h: 45))
+        btn.backgroundColor = .green
+        btn.setTitle("닫기", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        view.addSubview(btn)
+        btn.addAction(for: .touchUpInside) { [weak view] _ in
+            guard let view else { return }
+            UIView.animate(withDuration: 0.2) {
+                view.alpha = 0
+                view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+            } completion: { _ in
+                view.removeFromSuperview()
+            }
+        }
 
-    override init() {
-        array = [1,2,3,4,5]
-        objArray.append(TestStruct().apply {
-            $0.a = 1
-            $0.b = "1"
-        })
-        objArray.append(TestStruct().apply {
-            $0.a = 2
-            $0.b = "2"
-        })
+        view.alpha = 0.1
+        view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        UIView.animate(withDuration: 0.2) {
+            view.alpha = 1
+            view.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }
     }
 }

@@ -9,34 +9,59 @@
 import UIKit
 import EasyConstraints
 
-class AutoLayoutController: UIViewController {
+class AutoLayoutController: UIViewController, PushProtocol {
+    static var storyboardName: String = "Main"
 
     @IBOutlet weak var view1: UIView!
     @IBOutlet weak var view2: UIView!
     @IBOutlet weak var view3: UIView!
-    
-    
+
+
     @IBOutlet weak var textField1: UITextField!
     @IBOutlet weak var textField2: UITextField!
     @IBOutlet weak var textField3: UITextField!
     @IBOutlet weak var textField4: UITextField!
     @IBOutlet weak var textField5: UITextField!
     @IBOutlet weak var textField6: UITextField!
-    
-    
+
+
+    class AAA {
+        var bbb: BBB?
+
+        deinit {
+            print("deinit AAA")
+        }
+    }
+    class BBB {
+        var array = [AAA]()
+
+        deinit {
+            print("deinit BBB")
+        }
+    }
+
+    var aaa: AAA?
+
+    deinit {
+        print("deinit AutoLayoutController")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setDefaultConstrains()
-        
-        // Do any additional setup after loading the view.
+
+        let a = AAA()
+        a.bbb = BBB()
+        a.bbb?.array.append(a)
+        self.aaa = a
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
+
+
     func setDefaultConstrains()  {
         textField1.text = "\(view1.ec.leadingDefault)"
         textField2.text = "\(view1.ec.trailingDefault)"
@@ -45,7 +70,7 @@ class AutoLayoutController: UIViewController {
         textField5.text = "\(view2.ec.widthDefault)"
         textField6.text = "\(view2.ec.heightDefault)"
 
-        
+
         view1.ec.leading = view1.ec.leadingDefault
         view1.ec.trailing = view1.ec.trailingDefault
         view2.ec.top = view2.ec.topDefault
@@ -55,50 +80,50 @@ class AutoLayoutController: UIViewController {
     }
 
     /*
-    // MARK: - Navigation
+     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
     @IBAction func onView1Leading(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view1.ec.leading = value
         }
     }
-    
+
     @IBAction func onView1Trailing(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view1.ec.trailing = value
         }
     }
-    
+
     @IBAction func onView2Top(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view2.ec.top = value
         }
     }
-    
+
     @IBAction func onView2Trailing(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view2.ec.top = value
         }
     }
-    
+
     @IBAction func onView2Width(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view2.ec.width = value
         }
     }
-    
+
     @IBAction func onView2Height(_ sender: UITextField) {
         if let value = sender.text?.toCGFloat() {
             view2.ec.height = value
         }
     }
-    
+
     @IBAction func onDefaultContraints(_ sender: Any) {
         setDefaultConstrains()
     }
@@ -114,6 +139,6 @@ class AutoLayoutController: UIViewController {
             sender.setTitle("gone", for: .normal)
             view3.ec.gone = false
         }
-        
+
     }
 }
