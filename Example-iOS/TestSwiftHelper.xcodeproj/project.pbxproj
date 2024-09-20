@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		20FA8C592C6C5D2600837939 /* EasyConstraints in Frameworks */ = {isa = PBXBuildFile; productRef = 20FA8C582C6C5D2600837939 /* EasyConstraints */; };
 		20FA8C6A2C6C74B300837939 /* ScopeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FA8C692C6C74B300837939 /* ScopeFunction.swift */; };
+		20FD4E712C9D04FA00FA7C4B /* WeakWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */; };
 		20FE36382C6C344D0000255D /* CGColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE360E2C6C344B0000255D /* CGColorExtensions.swift */; };
 		20FE36392C6C344D0000255D /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36102C6C344B0000255D /* UIImageExtension.swift */; };
 		20FE363A2C6C344D0000255D /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FE36112C6C344B0000255D /* DoubleExtension.swift */; };
@@ -58,6 +59,7 @@
 
 /* Begin PBXFileReference section */
 		20FA8C692C6C74B300837939 /* ScopeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeFunction.swift; sourceTree = "<group>"; };
+		20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakWrapper.swift; sourceTree = "<group>"; };
 		20FE360E2C6C344B0000255D /* CGColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGColorExtensions.swift; sourceTree = "<group>"; };
 		20FE36102C6C344B0000255D /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		20FE36112C6C344B0000255D /* DoubleExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
@@ -131,16 +133,49 @@
 		20DC7CA72908D22100C34851 /* SwiftHelper */ = {
 			isa = PBXGroup;
 			children = (
+				20FD4E6F2C9D04BD00FA7C4B /* Rapper */,
+				20FD4E6E2C9D046100FA7C4B /* Layout */,
+				20FD4E6D2C9D044D00FA7C4B /* Json */,
+				20FD4E6C2C9D044400FA7C4B /* Dispatc */,
 				20FE366C2C6C46780000255D /* DataType */,
 				20FE366B2C6C45C70000255D /* Scope */,
 				20FE366A2C6C45960000255D /* UI */,
 				20FE36672C6C45200000255D /* Define */,
 				20FE36662C6C44E10000255D /* Wrapper */,
-				20FE36362C6C344C0000255D /* DispatchQueue.swift */,
-				20FE36292C6C344C0000255D /* JSONSerializableExtension.swift */,
-				20FE362E2C6C344C0000255D /* NSLayoutConstraintExtension.swift */,
 			);
 			path = SwiftHelper;
+			sourceTree = "<group>";
+		};
+		20FD4E6C2C9D044400FA7C4B /* Dispatc */ = {
+			isa = PBXGroup;
+			children = (
+				20FE36362C6C344C0000255D /* DispatchQueue.swift */,
+			);
+			path = Dispatc;
+			sourceTree = "<group>";
+		};
+		20FD4E6D2C9D044D00FA7C4B /* Json */ = {
+			isa = PBXGroup;
+			children = (
+				20FE36292C6C344C0000255D /* JSONSerializableExtension.swift */,
+			);
+			path = Json;
+			sourceTree = "<group>";
+		};
+		20FD4E6E2C9D046100FA7C4B /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				20FE362E2C6C344C0000255D /* NSLayoutConstraintExtension.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
+		20FD4E6F2C9D04BD00FA7C4B /* Rapper */ = {
+			isa = PBXGroup;
+			children = (
+				20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */,
+			);
+			path = Rapper;
 			sourceTree = "<group>";
 		};
 		20FE36662C6C44E10000255D /* Wrapper */ = {
@@ -358,6 +393,7 @@
 				20FE36462C6C344D0000255D /* CGSizeExtension.swift in Sources */,
 				20FE363D2C6C344D0000255D /* UIViewExtensions.swift in Sources */,
 				20FE365B2C6C344D0000255D /* OptionSetExtension.swift in Sources */,
+				20FD4E712C9D04FA00FA7C4B /* WeakWrapper.swift in Sources */,
 				20FE36492C6C344D0000255D /* IntExtensions.swift in Sources */,
 				20FE363A2C6C344D0000255D /* DoubleExtension.swift in Sources */,
 				20FE36422C6C344D0000255D /* UITapGestureRecognizerExtension.swift in Sources */,
