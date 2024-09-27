@@ -44,4 +44,16 @@ class ClosureQueueController: UIViewController, PushProtocol {
     @IBAction func onDequeue(_ sender: UIButton) {
         closureQeeue.nextRun()
     }
+
+
+    @IBAction func onMainQueue(_ sender: UIButton) {
+        DispatchQueue.global(qos: .userInteractive).async {
+            for i in 0..<999 {
+                DispatchQueue.main.async {
+                    print(i)
+                }
+            }
+        }
+
+    }
 }

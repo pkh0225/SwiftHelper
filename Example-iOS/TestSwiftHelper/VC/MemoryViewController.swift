@@ -12,7 +12,7 @@ class MemoryViewController: UIViewController, PushProtocol {
     static var storyboardName: String = ""
 
     class AAA {
-        var bbb: BBB?
+        weak var bbb: BBB?
 
         deinit {
             print("deinit AAA")
@@ -27,7 +27,7 @@ class MemoryViewController: UIViewController, PushProtocol {
         }
     }
 
-    var aaa: AAA?
+    var testDataa: AAA?
 
     deinit {
         print("deinit MemoryViewController")
@@ -38,10 +38,23 @@ class MemoryViewController: UIViewController, PushProtocol {
         self.title = "Memory"
         self.view.backgroundColor = .white
 
+        let btn = UIButton(frame: CGRect(x: 100, y: 100, width: 100, height: 100)).apply { [weak self] obj in
+            guard let self else { return }
+            obj.setTitle("click", for: .normal)
+            obj.backgroundColor = .green
+            obj.addAction(for: .touchUpInside) { [weak self] btn in
+                guard let self else { return }
+                print(self.testDataa?.bbb)
+            }
+        }
+        self.view.addSubview(btn)
+
+
         let a = AAA()
-        a.bbb = BBB()
+        let b = BBB()
+        a.bbb = b
         a.bbb?.array.append(WeakWrapper(value: a))
 //        a.bbb?.array.append(a)
-        self.aaa = a
+        self.testDataa = a
     }
 }
