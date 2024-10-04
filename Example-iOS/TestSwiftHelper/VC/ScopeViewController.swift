@@ -2,7 +2,7 @@
 //  ScopeViewController.swift
 //  TestSwiftHelper
 //
-//  Created by 박길호(파트너) - 서비스개발담당App개발팀 on 9/20/24.
+//  Created by 박길호 on 9/20/24.
 //  Copyright © 2024 pkh. All rights reserved.
 //
 
@@ -11,6 +11,11 @@ import UIKit
 class SccopeViewController: UIViewController, PushProtocol {
     static var storyboardName: String = ""
     
+
+    struct TS {
+        var a = ""
+    }
+
     struct TestStruct: ScopeAble {
         var a: Int = 12345
         var b: String = "TestClass"

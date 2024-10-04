@@ -25,35 +25,9 @@ class AutoLayoutController: UIViewController, PushProtocol {
     @IBOutlet weak var textField6: UITextField!
 
 
-    class AAA {
-        var bbb: BBB?
-
-        deinit {
-            print("deinit AAA")
-        }
-    }
-    class BBB {
-        var array = [AAA]()
-
-        deinit {
-            print("deinit BBB")
-        }
-    }
-
-    var aaa: AAA?
-
-    deinit {
-        print("deinit AutoLayoutController")
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setDefaultConstrains()
-
-        let a = AAA()
-        a.bbb = BBB()
-        a.bbb?.array.append(a)
-        self.aaa = a
     }
 
     override func didReceiveMemoryWarning() {

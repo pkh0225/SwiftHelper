@@ -2,7 +2,7 @@
 //  CGColorExtensions.swift
 //  WiggleSDK
 //
-//  Created by 전선수(파트너) - 서비스개발담당App개발팀 on 1/17/24.
+//  Created by 전선수 on 1/17/24.
 //  Copyright © 2024 mykim. All rights reserved.
 //
 
