@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		200019CB2C9D0B9D00E2094A /* MemoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */; };
-		200019CD2C9D0DFC00E2094A /* PushProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CC2C9D0DFC00E2094A /* PushProtocol.swift */; };
+		200019CD2C9D0DFC00E2094A /* RouterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CC2C9D0DFC00E2094A /* RouterProtocol.swift */; };
 		200019CF2C9D2CAC00E2094A /* ScopeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */; };
 		20FA8C592C6C5D2600837939 /* EasyConstraints in Frameworks */ = {isa = PBXBuildFile; productRef = 20FA8C582C6C5D2600837939 /* EasyConstraints */; };
 		20FA8C6A2C6C74B300837939 /* ScopeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FA8C692C6C74B300837939 /* ScopeFunction.swift */; };
@@ -62,7 +62,7 @@
 
 /* Begin PBXFileReference section */
 		200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryViewController.swift; sourceTree = "<group>"; };
-		200019CC2C9D0DFC00E2094A /* PushProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushProtocol.swift; sourceTree = "<group>"; };
+		200019CC2C9D0DFC00E2094A /* RouterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterProtocol.swift; sourceTree = "<group>"; };
 		200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeViewController.swift; sourceTree = "<group>"; };
 		20FA8C692C6C74B300837939 /* ScopeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeFunction.swift; sourceTree = "<group>"; };
 		20FD4E702C9D04FA00FA7C4B /* WeakWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakWrapper.swift; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 				20FE36182C6C344B0000255D /* UITextFieldExtensions.swift */,
 				20FE361A2C6C344B0000255D /* UIViewControllerExtensions.swift */,
 				20FE36142C6C344B0000255D /* UIViewExtensions.swift */,
-				200019CC2C9D0DFC00E2094A /* PushProtocol.swift */,
+				200019CC2C9D0DFC00E2094A /* RouterProtocol.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -369,7 +369,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				200019CD2C9D0DFC00E2094A /* PushProtocol.swift in Sources */,
+				200019CD2C9D0DFC00E2094A /* RouterProtocol.swift in Sources */,
 				20FE36432C6C344D0000255D /* UIViewControllerExtensions.swift in Sources */,
 				200019CB2C9D0B9D00E2094A /* MemoryViewController.swift in Sources */,
 				20FE36532C6C344D0000255D /* TimerExtensions.swift in Sources */,

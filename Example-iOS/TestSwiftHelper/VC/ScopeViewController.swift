@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SccopeViewController: UIViewController, PushProtocol {
+class SccopeViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""
     
 

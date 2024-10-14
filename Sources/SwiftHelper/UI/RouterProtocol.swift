@@ -41,7 +41,7 @@ public class ViewControllerCache {
     }
 }
 
-protocol PushProtocol: UIViewController {
+protocol RouterProtocol: UIViewController {
     /// 초기화 시 vc를 init하는 데 필요한 스토리보드 이름, 없거나 xib만 존재 시 해당 필드는 빈 값("")으로 정의 가능.
     static var storyboardName: String { get }
     
@@ -50,7 +50,7 @@ protocol PushProtocol: UIViewController {
     static func isAllowSameVCPush() -> Bool
 }
 
-extension PushProtocol {
+extension RouterProtocol {
     static func isAllowSameVCPush() -> Bool {
         return false
     }

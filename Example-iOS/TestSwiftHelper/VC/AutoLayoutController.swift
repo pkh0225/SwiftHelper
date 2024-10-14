@@ -9,7 +9,7 @@
 import UIKit
 import EasyConstraints
 
-class AutoLayoutController: UIViewController, PushProtocol {
+class AutoLayoutController: UIViewController, RouterProtocol {
     static var storyboardName: String = "Main"
 
     @IBOutlet weak var view1: UIView!

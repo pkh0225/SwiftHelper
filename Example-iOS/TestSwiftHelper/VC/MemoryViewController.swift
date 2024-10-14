@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MemoryViewController: UIViewController, PushProtocol {
+class MemoryViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""
 
     class AAA {

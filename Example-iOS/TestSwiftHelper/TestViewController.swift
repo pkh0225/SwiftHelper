@@ -8,9 +8,9 @@
 
 import UIKit
 
-typealias TypePushController = UIViewController & PushProtocol
+typealias TypePushController = UIViewController & RouterProtocol
 
-class TestViewController: UITableViewController, PushProtocol {
+class TestViewController: UITableViewController, RouterProtocol {
     static var storyboardName: String = "Main"
 
     var vcList = [(title: String, vc: TypePushController.Type)]()
