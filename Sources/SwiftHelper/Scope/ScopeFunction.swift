@@ -162,7 +162,7 @@ extension JSONEncoder: ScopeAble {}
 
 extension UIEdgeInsets: ScopeAble {}
 extension UIRectEdge: ScopeAble {}
-extension UIOffset: ScopeAble{}
+extension UIOffset: ScopeAble {}
 
 extension CGRect: ScopeAble {}
 extension CGPoint: ScopeAble {}
