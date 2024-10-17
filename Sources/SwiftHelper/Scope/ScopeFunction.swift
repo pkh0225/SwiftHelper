@@ -134,24 +134,25 @@ extension ScopeAble {
 extension NSObject: ScopeAble {}
 extension ScopeAble where Self: AnyObject {}
 extension ScopeAble where Self: Any {}
-//extension Bool: ScopeAble {}
-//extension String: ScopeAble {}
-//extension Character: ScopeAble {}
-//extension Int: ScopeAble {}
-//extension Int8: ScopeAble {}
-//extension Int16: ScopeAble {}
-//extension Int32: ScopeAble {}
-//extension Int64: ScopeAble {}
-//extension UInt: ScopeAble {}
-//extension UInt8: ScopeAble {}
-//extension UInt16: ScopeAble {}
-//extension UInt32: ScopeAble {}
-//extension UInt64: ScopeAble {}
-//extension Float: ScopeAble {}
-//@available(iOS 14.0, *)
-//extension Float16: ScopeAble {}
-//extension Double: ScopeAble {}
-//extension CGFloat: ScopeAble {}
+
+extension Bool: ScopeAble {}
+extension String: ScopeAble {}
+extension Character: ScopeAble {}
+extension Int: ScopeAble {}
+extension Int8: ScopeAble {}
+extension Int16: ScopeAble {}
+extension Int32: ScopeAble {}
+extension Int64: ScopeAble {}
+extension UInt: ScopeAble {}
+extension UInt8: ScopeAble {}
+extension UInt16: ScopeAble {}
+extension UInt32: ScopeAble {}
+extension UInt64: ScopeAble {}
+extension Float: ScopeAble {}
+@available(iOS 14.0, *)
+extension Float16: ScopeAble {}
+extension Double: ScopeAble {}
+extension CGFloat: ScopeAble {}
 
 extension Array: ScopeAble {}
 extension Set: ScopeAble {}
