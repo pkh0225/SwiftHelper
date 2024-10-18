@@ -17,7 +17,11 @@ public class ObjectInfoMap {
     }
 }
 
-public var Object_Info_Cache = NSCache<NSString, ObjectInfoMap>()
+public var Object_Info_Cache = {
+    let cache = NSCache<NSString, ObjectInfoMap>()
+    cache.countLimit = 500
+    return cache
+}()
 
 @inline(__always) public func swiftClassFromString(_ className: String, bundleName: String = "WiggleSDK") -> AnyClass? {
     // get the project name
@@ -232,7 +236,6 @@ extension NSObject {
 
     @inline(__always) public func ivarInfoList() -> [IvarInfo] {
 //        print(String(describing: type(of:self)))
-        Object_Info_Cache.countLimit = 100
         if let info: ObjectInfoMap = Object_Info_Cache.object(forKey: self.className as NSString) {
             return info.ivarInfoList
         }

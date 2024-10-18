@@ -9,8 +9,6 @@
 
 import UIKit
 
-public var cacheControllerViewNibs = NSCache<NSString, UIViewController>()
-
 extension UIViewController {
     /// UIViewController가 진입시 viewDidAppear에서 한번만 필요한 기능 호출하기
     public var isFirstShow: Bool { isBeingDismissed || isMovingFromParent }
@@ -47,23 +45,6 @@ extension UIViewController {
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.cache, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-    }
-
-    public class func fromXib(cache: Bool = false) -> Self {
-        return fromXib(cache: cache, as: self)
-    }
-
-    private class func fromXib<T: UIViewController>(cache: Bool = false, as type: T.Type) -> T {
-        if cache, let vc = cacheControllerViewNibs.object(forKey: self.className as NSString) {
-            return vc as! T
-        }
-        let vc = T(nibName: T.className, bundle: nil)
-        if cache {
-            cacheControllerViewNibs.countLimit = 100
-            cacheControllerViewNibs.setObject(vc, forKey: self.className as NSString)
-            vc.cache = cache
-        }
-        return vc
     }
 
     public var parentVCs: [UIViewController] {

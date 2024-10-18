@@ -9,12 +9,12 @@ import WebKit
 public class ViewCacheManager {
     @Atomic static var cacheViewNibs: NSCache<NSString, UIView> = {
         var c = NSCache<NSString, UIView>()
-        c.countLimit = 150
+        c.countLimit = 300
         return c
     }()
     @Atomic static var cacheNibs: NSCache<NSString, UINib> = {
         var c = NSCache<NSString, UINib>()
-        c.countLimit = 150
+        c.countLimit = 300
         return c
     }()
 

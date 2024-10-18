@@ -9,7 +9,12 @@ import UIKit
 // #colorLiteral(red: 0.9607843137, green: 0.6509803922, blue: 0.137254902, alpha: 1)
 
 extension UIColor {
-    private static var hexStringColorCache = NSCache<NSString, UIColor>()
+    private static var hexStringColorCache =
+    {
+        let cache = NSCache<NSString, UIColor>()
+        cache.countLimit = 300
+        return cache
+    }()
 
     ///   init method with RGB values from 0 to 255, instead of 0 to 1. With alpha(default:1)
     public convenience init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat = 1) {
@@ -55,7 +60,6 @@ extension UIColor {
 
         let color: UIColor = UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0, green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0, blue: CGFloat(rgbValue & 0x0000FF) / 255.0, alpha: alpha)
 
-        hexStringColorCache.countLimit = 100
         hexStringColorCache.setObject(color, forKey: key as NSString)
         return color
     }
