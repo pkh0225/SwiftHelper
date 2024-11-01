@@ -51,6 +51,7 @@ protocol RouterProtocol: UIViewController {
 }
 
 extension RouterProtocol {
+    static var storyboardName: String { return  "" }
     static func isAllowSameVCPush() -> Bool {
         return false
     }
