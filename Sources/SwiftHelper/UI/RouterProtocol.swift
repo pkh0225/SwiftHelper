@@ -41,7 +41,7 @@ public class ViewControllerCache {
     }
 }
 
-protocol RouterProtocol: UIViewController {
+public protocol RouterProtocol: UIViewController {
     /// 초기화 시 vc를 init하는 데 필요한 스토리보드 이름, 없거나 xib만 존재 시 해당 필드는 빈 값("")으로 정의 가능.
     static var storyboardName: String { get }
     
@@ -50,7 +50,7 @@ protocol RouterProtocol: UIViewController {
     static func isAllowSameVCPush() -> Bool
 }
 
-extension RouterProtocol {
+public extension RouterProtocol {
     static var storyboardName: String { return  "" }
     static func isAllowSameVCPush() -> Bool {
         return false
@@ -79,7 +79,7 @@ extension RouterProtocol {
     }
 
     // MARK:- getViewController
-    static public func getViewController(cache: Bool = false) -> Self {
+    static func getViewController(cache: Bool = false) -> Self {
         if cache {
             if let vc = ViewControllerCache.cacheViewControllers.object(forKey: self.className as NSString) {
                 return vc as! Self
@@ -96,7 +96,7 @@ extension RouterProtocol {
     }
 
     // MARK:- pushViewController
-    static public func pushViewController(animated: Bool = true, vcClosure: ((Self) -> Void)? = nil) {
+    static func pushViewController(animated: Bool = true, vcClosure: ((Self) -> Void)? = nil) {
         guard let navi = MainNavigation() else { return }
         if navi.viewControllers.last is Self {
             if !Self.isAllowSameVCPush() {
@@ -108,7 +108,7 @@ extension RouterProtocol {
         navi.pushViewController(vc, animated: animated)
     }
 
-    static public func transparentPresentViewController(animated: Bool = true, completion: (() -> Void)? = nil, vcClosure: ((Self) -> Void)? = nil) {
+    static func transparentPresentViewController(animated: Bool = true, completion: (() -> Void)? = nil, vcClosure: ((Self) -> Void)? = nil) {
         guard let navi = MainNavigation() else { return }
         let vc = getViewController()
         vc.modalPresentationStyle = .overFullScreen
