@@ -72,49 +72,9 @@ extension CGRect {
     }
 }
 
-extension CGSize {
-    public func ratioSize(setWidth: CGFloat) -> CGSize {
-        return CGSize(width: setWidth, height: ratioHeight(setWidth: setWidth) )
-    }
-
-    public func ratioSize(setHeight: CGFloat) -> CGSize {
-        return CGSize(width: ratioWidth(setHeight: setHeight), height: setHeight)
-    }
-
-    public func ratioHeight(setWidth: CGFloat) -> CGFloat {
-        guard self.width != 0 else { return 0 }
-        if self.width == setWidth {
-            return self.height
-        }
-        let origin: CGFloat = self.height * setWidth / self.width
-        return decimalCut(origin, count: 5)
-    }
-
-    public func ratioWidth(setHeight: CGFloat) -> CGFloat {
-        guard self.height != 0 else { return 0 }
-        if self.height == setHeight {
-            return self.width
-        }
-        let origin: CGFloat = self.width * setHeight / self.height
-        return decimalCut(origin, count: 5)
-    }
-
-    public var w: CGFloat {
-        get {
-            return self.width
-        }
-        set(value) {
-            self.width = value
-        }
-    }
-
-    public var h: CGFloat {
-        get {
-            return self.height
-        }
-        set(value) {
-            self.height = value
-        }
+extension UIEdgeInsets {
+    static func all(_ value: CGFloat) -> UIEdgeInsets {
+        .init(top: value, left: value, bottom: value, right: value)
     }
 }
 
