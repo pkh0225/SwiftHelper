@@ -125,7 +125,7 @@ extension JSONSerializable {
         }
 
         do {
-            let data = try JSONSerialization.data(withJSONObject: representation, options: [.prettyPrinted])
+            let data = try JSONSerialization.data(withJSONObject: representation, options: [.prettyPrinted, .sortedKeys])
             return String(data: data, encoding: String.Encoding.utf8)
         }
         catch {
