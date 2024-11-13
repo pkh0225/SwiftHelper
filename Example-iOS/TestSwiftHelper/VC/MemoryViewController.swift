@@ -42,7 +42,7 @@ class MemoryViewController: UIViewController, RouterProtocol {
             obj.backgroundColor = .green
             obj.addAction(for: .touchUpInside) { [weak self] btn in
                 guard let self else { return }
-                print(self.testDataa?.bbb)
+                print(self.testDataa?.bbb ?? "")
             }
         }
         self.view.addSubview(btn)
@@ -75,7 +75,7 @@ class Deallocator {
 
 extension UIViewController {
     private struct AssociatedKeys {
-        static var deallocator: UInt8 = 0
+        nonisolated(unsafe) static var deallocator: UInt8 = 0
     }
 
     class func swizzleMethodForDealloc() {

@@ -39,3 +39,19 @@ class WeakWrapper<T: AnyObject> {
         self.value = value
     }
 }
+
+struct UncheckedSendableWrappers<Value>: @unchecked Sendable {
+    let values: [Value]
+    init(values: Value...) {
+        self.values = values
+    }
+}
+
+struct UncheckedSendableWrapper<Value>: @unchecked Sendable {
+    let value: Value
+    init(_ value: Value) {
+        self.value = value
+    }
+}
+
+

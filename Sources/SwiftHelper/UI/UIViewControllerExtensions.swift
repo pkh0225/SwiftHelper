@@ -32,7 +32,7 @@ extension UIViewController {
     }
 
     private struct AssociatedKeys {
-        static var cache: UInt8 = 0
+        nonisolated(unsafe) static var cache: UInt8 = 0
     }
 
     public var cache: Bool {

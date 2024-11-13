@@ -8,6 +8,7 @@
 
 import UIKit
 
+@MainActor
 @inline(__always) public func KeyWindow() -> UIWindow? {
     if #available(iOS 13.0, *) {
         let scenes = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -18,11 +19,13 @@ import UIKit
     }
 }
 
+@MainActor
 @inline(__always) public func MainNavigation() -> UINavigationController? {
     guard let navigationController = KeyWindow()?.rootViewController as? UINavigationController else { return nil }
     return navigationController
 }
 
+@MainActor
 public class ViewControllerCache {
     @Atomic static var cacheViewControllers: NSCache<NSString, UIViewController> = {
         var c = NSCache<NSString, UIViewController>()

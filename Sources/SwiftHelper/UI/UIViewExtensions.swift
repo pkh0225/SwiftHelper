@@ -6,21 +6,31 @@
 import UIKit
 import WebKit
 
-public class ViewCacheManager {
-    @Atomic static var cacheViewNibs: NSCache<NSString, UIView> = {
-        var c = NSCache<NSString, UIView>()
-        c.countLimit = 300
-        return c
-    }()
-    @Atomic static var cacheNibs: NSCache<NSString, UINib> = {
-        var c = NSCache<NSString, UINib>()
-        c.countLimit = 300
-        return c
-    }()
+final class ViewCacheManager {
+    nonisolated(unsafe) static let shared = ViewCacheManager()
+    private let queue = DispatchQueue(label: "com.ViewCacheManager.queue")
+    private var cacheViewXibs = NSCache<NSString, UIView>()
 
-    public static func cacheRemoveAll() {
-        self.cacheViewNibs.removeAllObjects()
-        self.cacheNibs.removeAllObjects()
+    init() {
+        cacheViewXibs.countLimit = 300
+    }
+
+    func cacheRemoveAll() {
+        queue.sync {
+            cacheViewXibs.removeAllObjects()
+        }
+    }
+
+    func setObject(_ obj: UIView, forKey key: String) {
+        queue.sync {
+            cacheViewXibs.setObject(obj, forKey: key as NSString)
+        }
+    }
+
+    func object(forKey key: String) -> UIView? {
+        return queue.sync {
+            cacheViewXibs.object(forKey: key as NSString)
+        }
     }
 }
 
@@ -786,13 +796,14 @@ extension UIView {
 }
 
 // MARK: - Gesture Extensions
-private var TapGesture_Key: UInt8 = 0
-private var SwipeGesture_Key: UInt8 = 0
-private var PanGesture_Key: UInt8 = 0
-private var PinchGesture_Key: UInt8 = 0
-private var LongPressGesture_Key: UInt8 = 0
+nonisolated(unsafe) private var TapGesture_Key: UInt8 = 0
+nonisolated(unsafe) private var SwipeGesture_Key: UInt8 = 0
+nonisolated(unsafe) private var PanGesture_Key: UInt8 = 0
+nonisolated(unsafe) private var PinchGesture_Key: UInt8 = 0
+nonisolated(unsafe) private var LongPressGesture_Key: UInt8 = 0
 
-private class ClosureSleeve {
+@MainActor
+private final class ClosureSleeve: @unchecked Sendable {
     let closure: (_ recognizer: UIGestureRecognizer) -> Void
 
     init (_ closure: @escaping (_ recognizer: UIGestureRecognizer) -> Void) {
@@ -888,22 +899,17 @@ extension UIView {
         if !Thread.isMainThread {
             fatalError("not main thread")
         }
-        if cache, let view = ViewCacheManager.cacheViewNibs.object(forKey: self.className as NSString) {
+        if cache, let view = ViewCacheManager.shared.object(forKey: self.className) {
             return view as! T
-        }
-        else if let nib = ViewCacheManager.cacheNibs.object(forKey: self.className as NSString) {
-            return nib.instantiate(withOwner: nil, options: nil).first as! T
         }
         else if let path: String = Bundle.main.path(forResource: className, ofType: "nib") {
             if FileManager.default.fileExists(atPath: path) {
                 let nib = UINib(nibName: self.className, bundle: nil)
                 let view = nib.instantiate(withOwner: nil, options: nil).first as! T
 
-                ViewCacheManager.cacheNibs.setObject(nib, forKey: self.className as NSString)
-//                let view: UIView = Bundle.main.loadNibNamed(self.className, owner: nil, options: nil)!.first as! UIView
                 if cache {
-                    ViewCacheManager.cacheViewNibs.setObject(view, forKey: self.className as NSString)
                     view.cache = cache
+                    ViewCacheManager.shared.setObject(view, forKey: self.className)
                 }
                 return view
             }
@@ -958,13 +964,13 @@ extension UIView {
 
 extension UIView {
     private struct AssociatedKeys {
-        static var cache: UInt8 = 0
-        static var unitName: UInt8 = 0
-        static var tagName: UInt8 = 0
-        static var tagValue: UInt8 = 0
-        static var stretchImage: UInt8 = 0
-        static var strechPoint: UInt8 = 0
-        static var resizeImageSize: UInt8 = 0
+        nonisolated(unsafe) static var cache: UInt8 = 0
+        nonisolated(unsafe) static var unitName: UInt8 = 0
+        nonisolated(unsafe) static var tagName: UInt8 = 0
+        nonisolated(unsafe) static var tagValue: UInt8 = 0
+        nonisolated(unsafe) static var stretchImage: UInt8 = 0
+        nonisolated(unsafe) static var strechPoint: UInt8 = 0
+        nonisolated(unsafe) static var resizeImageSize: UInt8 = 0
     }
 
     public var cache: Bool {

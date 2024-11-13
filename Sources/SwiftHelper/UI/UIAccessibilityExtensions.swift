@@ -9,6 +9,7 @@
 import UIKit
 
 extension UIAccessibility {
+    @MainActor
     public static func setFocusTo(_ object: Any?) {
         if UIAccessibility.isVoiceOverRunning {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

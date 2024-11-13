@@ -15,8 +15,6 @@
     import UIKit
 #endif
 
-public var cacheLocalizedNibs = NSCache<NSString, Bundle>()
-
 public class ColorChangeTextItem {
     public var text: String = ""
     public var font: UIFont?

@@ -8,7 +8,7 @@
 
 import UIKit
 
-private var controlAction_Key: UInt8 = 0
+nonisolated(unsafe) private var controlAction_Key: UInt8 = 0
 
 private class ClosureSleeve {
     let closure: (_ btn: UIButton) -> Void

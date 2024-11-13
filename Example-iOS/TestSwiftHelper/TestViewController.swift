@@ -47,46 +47,45 @@ extension TestViewController {
     }
 }
 
+@MainActor
 func makeDebugTextView(value: String) {
-    gcd_main_safe {
-        guard let window = KeyWindow() else { return }
-        let view: UIView = UIView(frame: CGRect(x: 10,
-                                                 y: window.safeAreaInsets.top + 10,
-                                                 w: UIScreen.main.bounds.width - 20,
-                                                 h: UIScreen.main.bounds.height - 20 - window.safeAreaInsets.top - window.safeAreaInsets.bottom))
-        view.borderColor = .gray
-        view.borderWidth = 1
-        view.clipsToBounds = true
-        window.addSubview(view)
-
-        let textView: UITextView = UITextView(frame: CGRect(x: 0, y: 0, w: view.w, h: view.h - 45))
-        textView.backgroundColor = .white
-        textView.isEditable = false
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.text = value
-        textView.textContainerInset = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
-        view.addSubview(textView)
-
-        let btn: UIButton = UIButton(frame: CGRect(x: 0, y: textView.h, w: textView.w, h: 45))
-        btn.backgroundColor = .green
-        btn.setTitle("닫기", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        view.addSubview(btn)
-        btn.addAction(for: .touchUpInside) { [weak view] _ in
-            guard let view else { return }
-            UIView.animate(withDuration: 0.2) {
-                view.alpha = 0
-                view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            } completion: { _ in
-                view.removeFromSuperview()
-            }
-        }
-
-        view.alpha = 0.1
-        view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+    guard let window = KeyWindow() else { return }
+    let view: UIView = UIView(frame: CGRect(x: 10,
+                                            y: window.safeAreaInsets.top + 10,
+                                            w: UIScreen.main.bounds.width - 20,
+                                            h: UIScreen.main.bounds.height - 20 - window.safeAreaInsets.top - window.safeAreaInsets.bottom))
+    view.borderColor = .gray
+    view.borderWidth = 1
+    view.clipsToBounds = true
+    window.addSubview(view)
+    
+    let textView: UITextView = UITextView(frame: CGRect(x: 0, y: 0, w: view.w, h: view.h - 45))
+    textView.backgroundColor = .white
+    textView.isEditable = false
+    textView.font = UIFont.systemFont(ofSize: 16)
+    textView.text = value
+    textView.textContainerInset = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
+    view.addSubview(textView)
+    
+    let btn: UIButton = UIButton(frame: CGRect(x: 0, y: textView.h, w: textView.w, h: 45))
+    btn.backgroundColor = .green
+    btn.setTitle("닫기", for: .normal)
+    btn.setTitleColor(.black, for: .normal)
+    view.addSubview(btn)
+    btn.addAction(for: .touchUpInside) { [weak view] _ in
+        guard let view else { return }
         UIView.animate(withDuration: 0.2) {
-            view.alpha = 1
-            view.transform = CGAffineTransform(scaleX: 1, y: 1)
+            view.alpha = 0
+            view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        } completion: { _ in
+            view.removeFromSuperview()
         }
+    }
+    
+    view.alpha = 0.1
+    view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+    UIView.animate(withDuration: 0.2) {
+        view.alpha = 1
+        view.transform = CGAffineTransform(scaleX: 1, y: 1)
     }
 }

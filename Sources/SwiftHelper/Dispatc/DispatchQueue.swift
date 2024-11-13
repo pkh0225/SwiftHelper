@@ -8,69 +8,21 @@
 
 import UIKit
 
-public func gcd_main_safe(_ block: @escaping () -> Void) {
+@preconcurrency public func gcd_main_safe(_ work: @escaping @Sendable @convention(block) () -> Void) {
     if Thread.isMainThread {
-        block()
+        work()
     }
     else {
-        DispatchQueue.main.async(execute: block)
+        DispatchQueue.main.async(execute: work)
     }
 }
 
-public func gcd_main_after(_ delay: Double, _ block: @escaping () -> Void) {
+@preconcurrency public func gcd_main_after(_ delay: Double, _ work: @escaping @Sendable @convention(block) () -> Void) {
     if delay <= 0 {
-        DispatchQueue.main.async {
-            block()
-        }
+        DispatchQueue.main.async(execute: work)
     }
     else {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            block()
-        }
-    }
-}
-/// 여러개의 비동기코드를 처리한 후 완료 이벤트를 받고 싶을때 사용
-///
-/// 예제
-/// gcd_group([{ (group) in
-///   내부에서 async로 처리됨
-///    for i in (0..<10) {
-///        print("1:\(i)")
-///    }
-///    }, { (group) in
-///   내부에서 async로 처리됨
-///        for i in (0..<10) {
-///            print("2:\(i)")
-///        }
-///    }, { (group) in
-///   ❗️내부에서 async로 처리되는데 또 async를 되어질때 (통신단 등등..)
-///        let queue = DispatchQueue(label: "queue\(1234)")
-///        group.enter() ❗️<-- group에 등록❗️
-///        queue.async {
-///            for i in (0..<1000) {
-///                print("----3:\(i)")
-///            }
-///            group.leave() ❗️<-- group에 해제❗️
-///        }
-///
-///    }]) {
-///        print("\n\n\t--- completion ---\n\n")
-/// }
-/// - Parameters:
-///   - works: 비동기로 실행할 코드
-///   - completion: 비동기로 처리된 코드가 다 수행된 후 완료 이벤트
-public func gcd_group(_ works: [(_ group: DispatchGroup) -> Void], completion: @escaping () -> Void) {
-    let group = DispatchGroup()
-
-    for (idx, work) in works.enumerated() {
-        let queue = DispatchQueue(label: "queue\(idx)")
-        queue.async(group: group) {
-            work(group)
-        }
-    }
-    group.wait()
-    group.notify(queue: .main) {
-        completion()
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 }
 
@@ -101,7 +53,7 @@ public func timeElapsedInSecondsWhenRunningCode(operation: () -> Void) -> Double
 
 // 앱 실행중 한번임
 public extension DispatchQueue {
-    private static var _onceTracker = [String]()
+    nonisolated(unsafe) private static var _onceTracker = [String]()
 
     class func once(file: String = #file,
                            function: String = #function,

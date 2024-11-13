@@ -285,7 +285,7 @@ extension Array where Element: Equatable {
 }
 
 extension Array where Element == (_ value: [String: Any]?) -> Void {
-    public mutating func nextRun(_ value: [String: Any]? = nil) {
+    @preconcurrency public mutating func nextRun(_ value: [String: Any]? = nil) {
         guard self.count > 0 || self.first != nil else { return }
         let work = self.removeFirst()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
@@ -293,7 +293,7 @@ extension Array where Element == (_ value: [String: Any]?) -> Void {
         }
     }
 
-    public mutating func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
+    @preconcurrency public mutating func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
         self.append(work)
     }
 
@@ -325,12 +325,14 @@ extension Array where Element: NSObject {
 }
 
 extension Array where Element == UIButton {
+    @MainActor
     public mutating func sw_addUtilityButton(with normal: UIImage?, selectedImg: UIImage?) {
         let button: UIButton = UIButton(type: .custom)
         button.setBackgroundImage(normal, for: .normal)
         button.setBackgroundImage(selectedImg, for: .highlighted)
         self.append(button)
     }
+    @MainActor
     public mutating func sw_addUtilityButton(with color: UIColor?, title: String?) {
         let button: UIButton = UIButton(type: .custom)
         button.backgroundColor = color
@@ -339,6 +341,7 @@ extension Array where Element == UIButton {
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         self.append(button)
     }
+    @MainActor
     public mutating func sw_addUtilityButton(with color: UIColor?, attributedTitle title: NSAttributedString?) {
         let button: UIButton = UIButton(type: .custom)
         button.backgroundColor = color
@@ -346,12 +349,14 @@ extension Array where Element == UIButton {
         button.setTitleColor(UIColor.white, for: .normal)
         self.append(button)
     }
+    @MainActor
     public mutating func sw_addUtilityButton(with color: UIColor?, icon: UIImage?) {
         let button: UIButton = UIButton(type: .custom)
         button.backgroundColor = color
         button.setImage(icon, for: .normal)
         self.append(button)
     }
+    @MainActor
     public mutating func sw_addUtilityButton(with color: UIColor?, normalIcon: UIImage?, selectedIcon: UIImage?) {
         let button: UIButton = UIButton(type: .custom)
         button.backgroundColor = color
@@ -374,6 +379,7 @@ extension Array where Element: UIView {
     ///   - parentView: 아이템뷰가 들어갈 부모뷰
     ///   - size: 아이템 기본 사이즈
     /// - Returns: reused 된 View
+    @MainActor
     @inline(__always) public mutating func getReusedView(parentView: UIView, size: CGSize = .zero) -> Element {
         func isXibFileExists(_ fileName: String) -> Bool {
             if let path: String = Bundle.main.path(forResource: fileName, ofType: "nib") {
@@ -419,44 +425,13 @@ extension Array where Element: UIView {
         return view!
     }
 
+    @MainActor
     @inline(__always) public func setHiddenAll(_ value: Bool) {
         self.forEach { $0.isHidden = value }
     }
 
+    @MainActor
     @inline(__always) public func getNoHiddenViews() -> [Element] {
         return  self.filter({ $0.isHidden == false })
-    }
-}
-
-@available(iOS 13.0, *)
-extension Sequence {
-    public func concurrentMap<T>(_ transform: @escaping (Element) async -> T) async -> [T] {
-        let tasks = map { element in
-            Task {
-                await transform(element)
-            }
-        }
-
-        return await tasks.asyncMap { task in
-            await task.value
-        }
-    }
-
-    public func asyncMap<T>(_ transform: (Element) async -> T) async -> [T] {
-        var values = [T]()
-        for element in self {
-            await values.append(transform(element))
-        }
-        return values
-    }
-
-    public func concurrentForEach(_ operation: @escaping (Element) async -> Void) async {
-        await withTaskGroup(of: Void.self) { group in
-            for element in self {
-                group.addTask {
-                    await operation(element)
-                }
-            }
-        }
     }
 }

@@ -69,7 +69,7 @@ extension UITableView {
 
 extension UITableViewCell {
     private struct AssociatedKeys {
-        static var indexPath: UInt8 = 0
+        nonisolated(unsafe) static var indexPath: UInt8 = 0
     }
     public var indexPath: IndexPath {
         get {

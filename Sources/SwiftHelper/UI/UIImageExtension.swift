@@ -9,8 +9,7 @@
 import Foundation
 import UIKit
 
-private var tintColorImageCache = NSCache<NSString, UIImage>()
-
+@MainActor
 extension UIImage {
     public enum fileType: String {
         case gif = ".gif"
@@ -46,6 +45,7 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return newImage!
     }
+    @MainActor
     public class func imageWithImage(image: UIImage?, scaledToMaxWidth width: CGFloat, maxHeight height: CGFloat) -> UIImage? {
         guard let image else { return nil }
         let oldWidth: CGFloat = image.size.width
@@ -322,6 +322,7 @@ extension UIImage {
 
 }
 // 이미지회전
+@MainActor
 extension UIImage {
     // 회전된 이미지로 다시 그리기.
     public func rotateImage(by radian: CGFloat) -> UIImage {
@@ -371,6 +372,7 @@ extension UIImage {
 }
 
 // 업로드용 이미지
+@MainActor
 extension UIImage {
     // 정책 : 1500으로 리사이징 했는데도 maxSize가 넘을 경우 1000으로 리사이징. 그래도 maxSize 넘으면 실패
     @objc public func resizeUploadImage(maxSize: Int = 10) -> UIImage? {

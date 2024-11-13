@@ -7,8 +7,6 @@
 
 import UIKit
 
-var CellBackGroundColorIndex = 0
-
 struct CellColor {
     public let cellBackGroundColorInfo: [UIColor] =
         [

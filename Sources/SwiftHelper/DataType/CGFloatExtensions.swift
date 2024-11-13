@@ -15,7 +15,7 @@ import UIKit
 /// 0.5 보다 크면 0.5
 /// - Returns: 0.5 단위 버림 처리
 // CommonFuncTests - O
-@inline(__always) public func floorUI(_ value: CGFloat) -> CGFloat {
+@MainActor @inline(__always) public func floorUI(_ value: CGFloat) -> CGFloat {
     guard value != 0 else { return 0 }
     let roundValue = round(value)
     let floorValue = floor(value)
@@ -31,7 +31,7 @@ import UIKit
 /// 0.333 이하면 0.333
 /// 0.666 이하면 0.666
 /// 0.666 보다 크면 1
-@inline(__always) public func ceilUI(_ value: CGFloat) -> CGFloat {
+@MainActor @inline(__always) public func ceilUI(_ value: CGFloat) -> CGFloat {
     guard value != 0 else { return 0 }
     let screenScale = UIScreen.main.scale
     guard screenScale > 0 else { return value }
