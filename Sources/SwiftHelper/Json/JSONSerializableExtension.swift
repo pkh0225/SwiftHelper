@@ -9,14 +9,22 @@
 import Foundation
 
 public protocol JSONSerializable {
+    var debug: Bool { get }
     var JSONRepresentation: [String: Any] { get }
 }
 
 extension JSONSerializable {
+    public var debug: Bool { false }
     public var JSONRepresentation: [String: Any] {
         var representation: [String: Any] = [String: Any]()
 
         let mirrored_object: Mirror = Mirror(reflecting: self)
+
+//        if debug {
+//            for case let (label?, value) in mirrored_object.children {
+//                print("label: \(label), value: \(value)")
+//            }
+//        }
 
         representation = getMirrorToDic(mirrored_object: mirrored_object)
 
@@ -29,15 +37,6 @@ extension JSONSerializable {
 
         for case let (label?, value) in mirrored_object.children {
 //            print("label: \(label), value: \(value)")
-            if label == "_descriptionTab" {
-                continue
-            }
-            if label == "_debugJsonDic" {
-                continue
-            }
-            if label == "_debugAnyData" {
-                continue
-            }
 
             let mir = Mirror(reflecting: value)
             if mir.displayStyle == .enum {
@@ -50,8 +49,8 @@ extension JSONSerializable {
                 case let value as [Any]:
                     var addArray = [Any]()
                     for item in value {
-                        if let subArray: [JSONSerializable] = item as? [JSONSerializable] {
-                            var addSubArray: [[String: Any]] = [[String: Any]]()
+                        if let subArray = item as? [JSONSerializable] {
+                            var addSubArray = [[String: Any]]()
                             for subItem: JSONSerializable in subArray {
                                 let dic = subItem.JSONRepresentation
                                 if dic.isEmpty == false {
@@ -63,18 +62,18 @@ extension JSONSerializable {
                             }
 
                         }
-                        else if let strArray: String = item as? String {
+                        else if let strArray = item as? String {
                             if strArray.isEmpty == false {
                                 addArray.append(strArray)
                             }
                         }
-                        else if let item: JSONSerializable = item as? JSONSerializable {
+                        else if let item = item as? JSONSerializable {
                             let dic = item.JSONRepresentation
                             if dic.isEmpty == false {
                                 addArray.append(dic)
                             }
                         }
-                        else if let dic: [String: String] = item as? [String: String] {
+                        else if let dic = item as? [String: Any] {
                             if dic.isEmpty == false {
                                 addArray.append(dic)
                             }
@@ -110,9 +109,7 @@ extension JSONSerializable {
 
         if let parent: Mirror = mirrored_object.superclassMirror {
             let dic: [String: Any] = getMirrorToDic(mirrored_object: parent)
-            if dic.isEmpty == false {
-                representation += dic
-            }
+            dic.forEach { representation[$0.key] = $0.value }
 
         }
         return representation
