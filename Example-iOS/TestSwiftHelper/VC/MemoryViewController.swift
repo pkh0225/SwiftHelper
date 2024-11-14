@@ -58,21 +58,6 @@ class MemoryViewController: UIViewController, RouterProtocol {
     }
 }
 
-
-class Deallocator {
-    var onDeallocate: () -> Void
-
-    init(onDeallocate: @escaping () -> Void) {
-        self.onDeallocate = onDeallocate
-    }
-
-    deinit {
-        onDeallocate()
-    }
-}
-
-
-
 extension UIViewController {
     private struct AssociatedKeys {
         nonisolated(unsafe) static var deallocator: UInt8 = 0

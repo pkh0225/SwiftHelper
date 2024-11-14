@@ -11,19 +11,15 @@ import UIKit
 class ClosureQueueController: UIViewController, RouterProtocol {
     static var storyboardName: String = "Main"
 
-    var closureQeeue = [DictionaryClosure]()
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        closureQeeue.addAction { _ in
+        ActionQueue.shared.addAction { _ in
             UIAlertController.alert(title: "Test 111")
         }
-        closureQeeue.addAction { _ in
+        ActionQueue.shared.addAction { _ in
             UIAlertController.alert(title:"Test 222")
         }
-        closureQeeue.addAction { _ in
+        ActionQueue.shared.addAction { _ in
             UIAlertController.alert(title:"Test 333")
         }
     }
@@ -36,13 +32,13 @@ class ClosureQueueController: UIViewController, RouterProtocol {
     @IBAction func onInQueue(_ sender: UIButton) {
         sender.tag += 1
         let count = sender.tag
-        closureQeeue.addAction { _ in
+        ActionQueue.shared.addAction { _ in
             UIAlertController.alert(title:"Test \(count)")
         }
     }
     
     @IBAction func onDequeue(_ sender: UIButton) {
-        closureQeeue.nextRun()
+        ActionQueue.shared.nextRun()
     }
 
 

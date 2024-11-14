@@ -8,21 +8,29 @@
 
 import UIKit
 
-@preconcurrency public func gcd_main_safe(_ work: @escaping @Sendable @convention(block) () -> Void) {
+@preconcurrency public func gcd_main_safe(_ work: @escaping @convention(block) () -> Void) {
+    let ucsw = UncheckedSendableWrapper(value: work)
     if Thread.isMainThread {
-        work()
+        ucsw.value()
     }
     else {
-        DispatchQueue.main.async(execute: work)
+        DispatchQueue.main.async {
+            ucsw.value()
+        }
     }
 }
 
-@preconcurrency public func gcd_main_after(_ delay: Double, _ work: @escaping @Sendable @convention(block) () -> Void) {
+@preconcurrency public func gcd_main_after(_ delay: Double, _ work: @escaping @convention(block) () -> Void) {
+    let ucsw = UncheckedSendableWrapper(value: work)
     if delay <= 0 {
-        DispatchQueue.main.async(execute: work)
+        DispatchQueue.main.async {
+            ucsw.value()
+        }
     }
     else {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            ucsw.value()
+        }
     }
 }
 
@@ -80,5 +88,31 @@ public extension DispatchQueue {
 
         _onceTracker.append(token)
         block()
+    }
+}
+
+public final class ActionQueue {
+    nonisolated(unsafe) static let shared = ActionQueue()
+    private let queue = DispatchQueue(label: "com.ActionQueue.queue")
+    private var actions: [(_ value: [String: Any]?) -> Void] = []
+
+    public init() {}
+    
+    @preconcurrency public func nextRun(_ value: [String: Any]? = nil) {
+        queue.sync {
+            guard !self.actions.isEmpty, let work = self.actions.first else { return }
+            let ucswValue = UncheckedSendableWrapper(value: value)
+            let ucswWork = UncheckedSendableWrapper(value: work)
+            self.actions.removeFirst()
+            DispatchQueue.main.async {
+                ucswWork.value(ucswValue.value)
+            }
+        }
+    }
+
+    @preconcurrency public func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
+        queue.sync {
+            self.actions.append(work)
+        }
     }
 }

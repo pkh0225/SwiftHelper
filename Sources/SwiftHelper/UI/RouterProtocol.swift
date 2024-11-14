@@ -26,13 +26,13 @@ import UIKit
 }
 
 @MainActor
-public class ViewControllerCache {
-    @Atomic static var cacheViewControllers: NSCache<NSString, UIViewController> = {
+public final class ViewControllerCache {
+    static var cacheViewControllers: NSCache<NSString, UIViewController> = {
         var c = NSCache<NSString, UIViewController>()
         c.countLimit = 150
         return c
     }()
-    @Atomic static var cacheStoryBoardInstance: NSCache<NSString, UIStoryboard> = {
+    static var cacheStoryBoardInstance: NSCache<NSString, UIStoryboard> = {
         var c = NSCache<NSString, UIStoryboard>()
         c.countLimit = 150
         return c
@@ -44,6 +44,9 @@ public class ViewControllerCache {
     }
 }
 
+
+/// Navigation Push Helper
+@MainActor
 public protocol RouterProtocol: UIViewController {
     /// 초기화 시 vc를 init하는 데 필요한 스토리보드 이름, 없거나 xib만 존재 시 해당 필드는 빈 값("")으로 정의 가능.
     static var storyboardName: String { get }
