@@ -38,7 +38,15 @@ import Foundation
 public class WeakWrapper<T: AnyObject> {
     weak var value: T?
 
-    init(value: T) {
+    public init(value: T) {
+        self.value = value
+    }
+}
+
+public struct UncheckedSendableWrapper<Value>: @unchecked Sendable {
+    public let value: Value
+
+    public init(_ value: Value) {
         self.value = value
     }
 }
@@ -46,11 +54,13 @@ public class WeakWrapper<T: AnyObject> {
 public struct UncheckedSendableWrappers<Value1, Value2>: @unchecked Sendable {
     public let value1: Value1
     public let value2: Value2
+
+    public init(value1: Value1, value2: Value2) {
+        self.value1 = value1
+        self.value2 = value2
+    }
 }
 
-public struct UncheckedSendableWrapper<Value>: @unchecked Sendable {
-    public let value: Value
-}
 
 
 
