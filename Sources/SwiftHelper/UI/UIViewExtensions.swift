@@ -6,30 +6,31 @@
 import UIKit
 import WebKit
 
-final class ViewCacheManager {
-    nonisolated(unsafe) static let shared = ViewCacheManager()
+@MainActor
+final class ViewCacheManager: Sendable {
+    static let shared = ViewCacheManager()
     private let queue = DispatchQueue(label: "com.ViewCacheManager.queue")
-    private var cacheViewXibs = NSCache<NSString, UIView>()
+    nonisolated(unsafe) private var cacheViewXibs = NSCache<NSString, UIView>()
 
     init() {
-        cacheViewXibs.countLimit = 300
+        self.cacheViewXibs.countLimit = 300
     }
 
     func cacheRemoveAll() {
         queue.sync {
-            cacheViewXibs.removeAllObjects()
+            self.cacheViewXibs.removeAllObjects()
         }
     }
 
     func setObject(_ obj: UIView, forKey key: String) {
-        queue.sync {
-            cacheViewXibs.setObject(obj, forKey: key as NSString)
+        self.queue.async(flags: .barrier) {
+            self.cacheViewXibs.setObject(obj, forKey: key as NSString)
         }
     }
 
     func object(forKey key: String) -> UIView? {
-        return queue.sync {
-            cacheViewXibs.object(forKey: key as NSString)
+        return self.queue.sync {
+            self.cacheViewXibs.object(forKey: key as NSString)
         }
     }
 }

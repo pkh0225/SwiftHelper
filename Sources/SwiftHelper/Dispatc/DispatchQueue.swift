@@ -91,10 +91,10 @@ public extension DispatchQueue {
     }
 }
 
-public final class ActionQueue {
-    nonisolated(unsafe) static let shared = ActionQueue()
+public final class ActionQueue: Sendable {
+    static let shared = ActionQueue()
     private let queue = DispatchQueue(label: "com.ActionQueue.queue")
-    private var actions: [(_ value: [String: Any]?) -> Void] = []
+    nonisolated(unsafe) private var actions: [(_ value: [String: Any]?) -> Void] = []
 
     public init() {}
     
@@ -109,9 +109,10 @@ public final class ActionQueue {
         }
     }
 
-    @preconcurrency public func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
-        queue.sync {
-            self.actions.append(work)
+    @preconcurrency public func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
+        let ucsw = UncheckedSendableWrapper(work)
+        self.queue.async(flags: .barrier) {
+            self.actions.append(ucsw.value)
         }
     }
 }
