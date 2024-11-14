@@ -9,7 +9,7 @@
 import UIKit
 
 @preconcurrency public func gcd_main_safe(_ work: @escaping @convention(block) () -> Void) {
-    let ucsw = UncheckedSendableWrapper(value: work)
+    let ucsw = UncheckedSendableWrapper(work)
     if Thread.isMainThread {
         ucsw.value()
     }
@@ -21,7 +21,7 @@ import UIKit
 }
 
 @preconcurrency public func gcd_main_after(_ delay: Double, _ work: @escaping @convention(block) () -> Void) {
-    let ucsw = UncheckedSendableWrapper(value: work)
+    let ucsw = UncheckedSendableWrapper(work)
     if delay <= 0 {
         DispatchQueue.main.async {
             ucsw.value()
@@ -101,11 +101,10 @@ public final class ActionQueue {
     @preconcurrency public func nextRun(_ value: [String: Any]? = nil) {
         queue.sync {
             guard !self.actions.isEmpty, let work = self.actions.first else { return }
-            let ucswValue = UncheckedSendableWrapper(value: value)
-            let ucswWork = UncheckedSendableWrapper(value: work)
+            let ucsw = UncheckedSendableWrappers(value1: work, value2: value)
             self.actions.removeFirst()
             DispatchQueue.main.async {
-                ucswWork.value(ucswValue.value)
+                ucsw.value1(ucsw.value2)
             }
         }
     }
