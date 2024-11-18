@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftHelper
 
 class SccopeViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""

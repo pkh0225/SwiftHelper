@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftHelper
 
 class MemoryViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""

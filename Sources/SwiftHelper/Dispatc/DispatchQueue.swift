@@ -92,7 +92,7 @@ public extension DispatchQueue {
 }
 
 public final class ActionQueue: Sendable {
-    static let shared = ActionQueue()
+    public static let shared = ActionQueue()
     private let queue = DispatchQueue(label: "com.ActionQueue.queue")
     nonisolated(unsafe) private var actions: [(_ value: [String: Any]?) -> Void] = []
 

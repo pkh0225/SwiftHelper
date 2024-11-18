@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftHelper
 
 typealias TypePushController = UIViewController & RouterProtocol
 
@@ -22,7 +23,6 @@ class TestViewController: UITableViewController, RouterProtocol {
     }
 
     func setData() {
-        vcList.append(("AutoLayout", AutoLayoutController.self))
         vcList.append(("Closure Queue", ClosureQueueController.self))
         vcList.append(("Memory", MemoryViewController.self))
         vcList.append(("Scope", SccopeViewController.self))
