@@ -7,31 +7,21 @@ import UIKit
 import WebKit
 
 @MainActor
-final class ViewCacheManager: Sendable {
-    static let shared = ViewCacheManager()
-    private let queue = DispatchQueue(label: "com.ViewCacheManager.queue")
-    nonisolated(unsafe) private var cacheViewXibs = NSCache<NSString, UIView>()
+public class ViewCacheManager {
+    static var cacheViewNibs: NSCache<NSString, UIView> = {
+        var c = NSCache<NSString, UIView>()
+        c.countLimit = 500
+        return c
+    }()
+    static var cacheNibs: NSCache<NSString, UINib> = {
+        var c = NSCache<NSString, UINib>()
+        c.countLimit = 500
+        return c
+    }()
 
-    init() {
-        self.cacheViewXibs.countLimit = 300
-    }
-
-    func cacheRemoveAll() {
-        queue.sync {
-            self.cacheViewXibs.removeAllObjects()
-        }
-    }
-
-    func setObject(_ obj: UIView, forKey key: String) {
-        self.queue.async(flags: .barrier) {
-            self.cacheViewXibs.setObject(obj, forKey: key as NSString)
-        }
-    }
-
-    func object(forKey key: String) -> UIView? {
-        return self.queue.sync {
-            self.cacheViewXibs.object(forKey: key as NSString)
-        }
+    public static func cacheRemoveAll() {
+        self.cacheViewNibs.removeAllObjects()
+        self.cacheNibs.removeAllObjects()
     }
 }
 
@@ -892,38 +882,37 @@ extension UIView {
 
 // MARK: - UIView Extension Xib
 extension UIView {
-    public class func fromXib(cache: Bool = false) -> Self {
+    class func fromXib(cache: Bool = false) -> Self {
         return fromXib(cache: cache, as: self)
     }
 
-    private class func fromXib<T: UIView>(cache: Bool = false, as type: T.Type) -> T {
-        if !Thread.isMainThread {
-            fatalError("not main thread")
-        }
-        if cache, let view = ViewCacheManager.shared.object(forKey: self.className) {
+    private class func fromXib<T>(cache: Bool = false, as type: T.Type) -> T {
+        if cache, let view = ViewCacheManager.cacheViewNibs.object(forKey: self.className as NSString) {
             return view as! T
+        }
+        else if let nib = ViewCacheManager.cacheNibs.object(forKey: self.className as NSString) {
+            return nib.instantiate(withOwner: nil, options: nil).first as! T
         }
         else if let path: String = Bundle.main.path(forResource: className, ofType: "nib") {
             if FileManager.default.fileExists(atPath: path) {
                 let nib = UINib(nibName: self.className, bundle: nil)
                 let view = nib.instantiate(withOwner: nil, options: nil).first as! T
 
+                ViewCacheManager.cacheNibs.setObject(nib, forKey: self.className as NSString)
                 if cache {
-                    view.cache = cache
-                    ViewCacheManager.shared.setObject(view, forKey: self.className)
+                    ViewCacheManager.cacheViewNibs.setObject(view as! UIView, forKey: self.className as NSString)
                 }
                 return view
             }
         }
-
         fatalError("\(className) XIB File Not Exist")
     }
 
     public class func fromXibSize() -> CGSize {
         return fromXib(cache: true).frame.size
     }
-
 }
+
 
 // MARK: - UIView safeAreaLayoutGuide
 extension UIView {
