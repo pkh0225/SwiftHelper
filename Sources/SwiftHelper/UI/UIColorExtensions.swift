@@ -93,10 +93,11 @@ extension UIColor {
 
     ///   Returns random UIColor with random alpha(default: false)
     public static var random: UIColor {
-        let r: CGFloat = CGFloat(arc4random() % 11) / 10.0
-        let g: CGFloat = CGFloat(arc4random() % 11) / 10.0
-        let b: CGFloat = CGFloat(arc4random() % 11) / 10.0
-        return UIColor(red: r, green: g, blue: b, alpha: 1.0)
+        let red = CGFloat.random(in: 0...1)
+        let green = CGFloat.random(in: 0...1)
+        let blue = CGFloat.random(in: 0...1)
+        
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 
     public func toImage(size: CGSize = CGSize(width: 1, height: 1)) -> UIImage? {
