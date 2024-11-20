@@ -98,21 +98,22 @@ public final class ActionQueue: Sendable {
 
     public init() {}
     
-    @preconcurrency public func nextRun(_ value: [String: Any]? = nil) {
+    public func nextRun(_ value: [String: Any]? = nil) {
         queue.sync {
             guard !self.actions.isEmpty, let work = self.actions.first else { return }
-            let ucsw = UncheckedSendableWrappers(value1: work, value2: value)
+            let workWrapper = UncheckedSendableWrapper(work)
+            let valueWrapper = UncheckedSendableWrapper(value)
             self.actions.removeFirst()
             DispatchQueue.main.async {
-                ucsw.value1(ucsw.value2)
+                workWrapper.value(valueWrapper.value)
             }
         }
     }
 
-    @preconcurrency public func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
-        let ucsw = UncheckedSendableWrapper(work)
+    public func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
+        let workWrapper = UncheckedSendableWrapper(work)
         self.queue.async(flags: .barrier) {
-            self.actions.append(ucsw.value)
+            self.actions.append(workWrapper.value)
         }
     }
 }

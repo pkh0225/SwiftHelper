@@ -35,31 +35,6 @@ extension UITextField {
         self.leftViewMode = UITextField.ViewMode.always
     }
 
-    ///   Ways to validate by comparison
-    public enum textFieldValidationOptions: Int {
-        case equalTo
-        case greaterThan
-        case greaterThanOrEqualTo
-        case lessThan
-        case lessThanOrEqualTo
-    }
-
-    ///   Validation length of character counts in UITextField
-    public func validateLength(ofCount count: Int, option: UITextField.textFieldValidationOptions) -> Bool {
-        switch option {
-        case .equalTo:
-            return self.text!.count == count
-        case .greaterThan:
-            return self.text!.count > count
-        case .greaterThanOrEqualTo:
-            return self.text!.count >= count
-        case .lessThan:
-            return self.text!.count < count
-        case .lessThanOrEqualTo:
-            return self.text!.count <= count
-        }
-    }
-
     ///   Validation of email format based on https://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address and https://stackoverflow.com/questions/2049502/what-characters-are-allowed-in-an-email-address
     // TODO match String.isEmail method
     public func validateEmail() -> Bool {

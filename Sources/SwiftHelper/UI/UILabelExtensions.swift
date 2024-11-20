@@ -146,7 +146,8 @@ extension UILabel {
             guard let owner else { return }
             print("\n 🌸 Show Class Name : \(owner.className)\n")
             UIPasteboard.general.string = owner.className
-            UIAlertController.alert(title: nil, message: "\(owner.className) 복사되었습니다!")
+            alert(title: nil, message: "\(owner.className) 복사되었습니다!")
+//            UIAlertController.alert(title: nil, message: "\(owner.className) 복사되었습니다!")
         }
         label.addTapGesture { [weak label] recognizer in
             guard let label else { return }

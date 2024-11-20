@@ -8,7 +8,44 @@
 
 import UIKit
 
-public typealias UIAlertControllerClosure = (_ alertVC: UIAlertController, _ buttonIndex: Int) -> Void
+@MainActor
+class AlertQueue {
+    static var actions: [() -> Void] = []
+
+    public static func nextRun() {
+        DispatchQueue.main.async {
+            guard !self.actions.isEmpty, let work = self.actions.first else { return }
+            work()
+            self.actions.removeFirst()
+        }
+    }
+
+    public static func addAction(work: @escaping () -> Void) {
+        self.actions.append(work)
+    }
+}
+
+@MainActor
+public func alert(title: String?,
+                message: String?,
+                cancelButtonTitle: String? = "확인",
+                otherButtonTitles: [String]? = nil,
+                closure: ((_ alertVC: UIAlertController, _ buttonIndex: Int) -> Void)? = nil) {
+    AlertQueue.addAction {
+        UIAlertController.alert(title: title,
+                                message: message,
+                                cancelButtonTitle: cancelButtonTitle,
+                                otherButtonTitles: otherButtonTitles,
+                                isAutoHide: false,
+                                autoHideClosure: nil) { (alertVC, buttonIndex) in
+            closure?(alertVC, buttonIndex)
+            AlertQueue.nextRun()
+        }
+    }
+    if AlertQueue.actions.count == 1 {
+        AlertQueue.nextRun()
+    }
+}
 
 extension UIAlertController {
     public func getActionIndex(_ action: UIAlertAction) -> Int {
@@ -68,50 +105,49 @@ extension UIAlertController {
     }
 
     public static func alert(title: String?,
-                      message: String? = nil,
-                      cancelButtonTitle: String? = "확인",
-                      otherButtonTitles: String?...,
-                      isAutoHide: Bool = false,
-                             closure: UIAlertControllerClosure? = nil,
-                             autoHideClosure: VoidClosure? = nil) {
-        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                             message: String?,
+                             cancelButtonTitle: String?,
+                             otherButtonTitles: [String]? = nil,
+                             isAutoHide: Bool = false,
+                             autoHideClosure: VoidClosure? = nil,
+                             closure: ((_ alertVC: UIAlertController, _ buttonIndex: Int) -> Void)? = nil) {
+        let alertVC: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        if let cancelTitle = cancelButtonTitle {
-            let cancelAction: UIAlertAction = UIAlertAction(title: cancelTitle, style: .cancel, handler: { (action: UIAlertAction) in
-                if let callBack = closure {
-                    callBack(alert, alert.getActionIndex(action))
-                }
-            })
+        let cancelAction: UIAlertAction = UIAlertAction(title: cancelButtonTitle, style: .cancel, handler: { (action: UIAlertAction) in
+            if let closure {
+                closure(alertVC, alertVC.getActionIndex(action))
+            }
+        })
 
-            alert.addAction(cancelAction)
+        alertVC.addAction(cancelAction)
+
+        if let otherButtonTitles {
+            for title in otherButtonTitles {
+                let otherAction: UIAlertAction = UIAlertAction(title: title, style: .default, handler: { (action: UIAlertAction) in
+                    if let closure {
+                        closure(alertVC, alertVC.getActionIndex(action))
+                    }
+                })
+
+                alertVC.addAction(otherAction)
+            }
         }
 
-        for title in otherButtonTitles {
-            guard let title else { continue }
-            let otherAction: UIAlertAction = UIAlertAction(title: title, style: .default, handler: { (action: UIAlertAction) in
-                if let callBack = closure {
-                    callBack(alert, alert.getActionIndex(action))
-                }
-            })
-
-            alert.addAction(otherAction)
-        }
-
-        alert.show()
+        alertVC.show()
 
         if isAutoHide {
             // auto close
             let deadlineTime: DispatchTime = DispatchTime.now() + .seconds(2)
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                alert.dismiss(animated: true, completion: autoHideClosure)
+                alertVC.dismiss(animated: true, completion: autoHideClosure)
             }
         }
     }
 
     public static func actionSheet(title: String? = nil,
-                            message: String? = nil,
-                            buttonTitles: [String],
-                            closure: UIAlertControllerClosure? = nil) {
+                                   message: String? = nil,
+                                   buttonTitles: [String],
+                                   closure: ((_ alertVC: UIAlertController, _ buttonIndex: Int) -> Void)? = nil) {
         guard buttonTitles.count > 0 else { return }
 
         let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)

@@ -15,13 +15,13 @@ class ClosureQueueController: UIViewController, RouterProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         ActionQueue.shared.addAction { _ in
-            UIAlertController.alert(title: "Test 111")
+            alert(title: "Test 111", message: nil)
         }
         ActionQueue.shared.addAction { _ in
-            UIAlertController.alert(title:"Test 222")
+            alert(title:"Test 222", message: nil)
         }
         ActionQueue.shared.addAction { _ in
-            UIAlertController.alert(title:"Test 333")
+            alert(title:"Test 333", message: nil)
         }
     }
     
@@ -30,11 +30,12 @@ class ClosureQueueController: UIViewController, RouterProtocol {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     @IBAction func onInQueue(_ sender: UIButton) {
         sender.tag += 1
         let count = sender.tag
         ActionQueue.shared.addAction { _ in
-            UIAlertController.alert(title:"Test \(count)")
+            alert(title:"Test \(count)", message: nil)
         }
     }
     
@@ -42,15 +43,18 @@ class ClosureQueueController: UIViewController, RouterProtocol {
         ActionQueue.shared.nextRun()
     }
 
-
     @IBAction func onMainQueue(_ sender: UIButton) {
-        DispatchQueue.global(qos: .userInteractive).async {
-            for i in 0..<999 {
-                DispatchQueue.main.async {
-                    print(i)
+        for i in 0..<5 {
+            alert(title:"Test __(\(i))", message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
+                print(buttonIndex)
+            }
+        }
+        gcd_main_after(0.5) {
+            for i in 10..<15 {
+                alert(title:"Test __(\(i))", message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
+                    print(buttonIndex)
                 }
             }
         }
-
     }
 }

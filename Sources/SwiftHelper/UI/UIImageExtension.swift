@@ -387,7 +387,7 @@ extension UIImage {
 
         defer {
             if success == false {
-                UIAlertController.alert(title: "", message: "최대 \(Int(maxSize))MB 까지 등록 가능합니다.")
+                alert(title: nil, message: "최대 \(Int(maxSize))MB 까지 등록 가능합니다.")
             }
         }
 

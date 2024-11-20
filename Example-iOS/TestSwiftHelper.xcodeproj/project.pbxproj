@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		200019CB2C9D0B9D00E2094A /* MemoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CA2C9D0B9D00E2094A /* MemoryViewController.swift */; };
 		200019CF2C9D2CAC00E2094A /* ScopeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200019CE2C9D2CAC00E2094A /* ScopeViewController.swift */; };
-		2092293C2CEAFCF300E4B140 /* SwiftHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 2092293B2CEAFCF300E4B140 /* SwiftHelper */; };
+		200EB4BD2CEDC0BD0011BD7B /* SwiftHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 200EB4BC2CEDC0BD0011BD7B /* SwiftHelper */; };
 		520F389721229A890081B956 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389621229A890081B956 /* AppDelegate.swift */; };
 		520F389921229A890081B956 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520F389821229A890081B956 /* TestViewController.swift */; };
 		520F389C21229A890081B956 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 520F389A21229A890081B956 /* Main.storyboard */; };
@@ -38,7 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2092293C2CEAFCF300E4B140 /* SwiftHelper in Frameworks */,
+				200EB4BD2CEDC0BD0011BD7B /* SwiftHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,7 +111,7 @@
 			);
 			name = TestSwiftHelper;
 			packageProductDependencies = (
-				2092293B2CEAFCF300E4B140 /* SwiftHelper */,
+				200EB4BC2CEDC0BD0011BD7B /* SwiftHelper */,
 			);
 			productName = Test;
 			productReference = 520F389321229A890081B956 /* TestSwiftHelper.app */;
@@ -143,7 +143,7 @@
 			);
 			mainGroup = 520F388A21229A890081B956;
 			packageReferences = (
-				20DE3CFD2CEAFC5700B5F86A /* XCLocalSwiftPackageReference "../../SwiftHelper" */,
+				200EB4BB2CEDC0BD0011BD7B /* XCLocalSwiftPackageReference "../../SwiftHelper" */,
 			);
 			productRefGroup = 520F389421229A890081B956 /* Products */;
 			projectDirPath = "";
@@ -394,16 +394,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		20DE3CFD2CEAFC5700B5F86A /* XCLocalSwiftPackageReference "../../SwiftHelper" */ = {
+		200EB4BB2CEDC0BD0011BD7B /* XCLocalSwiftPackageReference "../../SwiftHelper" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../SwiftHelper;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2092293B2CEAFCF300E4B140 /* SwiftHelper */ = {
+		200EB4BC2CEDC0BD0011BD7B /* SwiftHelper */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 20DE3CFD2CEAFC5700B5F86A /* XCLocalSwiftPackageReference "../../SwiftHelper" */;
 			productName = SwiftHelper;
 		};
 /* End XCSwiftPackageProductDependency section */

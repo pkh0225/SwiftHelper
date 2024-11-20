@@ -133,14 +133,3 @@ extension JSONSerializable {
         }
     }
 }
-
-extension Optional: JSONSerializable {
-    public var JSONRepresentation: [String: Any] {
-        guard let x = self else { return [String: Any]() }
-        if let value: JSONSerializable = x as? JSONSerializable {
-            return value.JSONRepresentation
-        }
-        return [String: Any]()
-    }
-
-}
