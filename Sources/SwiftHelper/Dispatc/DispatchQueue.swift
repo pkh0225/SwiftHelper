@@ -8,7 +8,7 @@
 
 import UIKit
 
-@preconcurrency public func gcd_main_safe(_ work: @escaping @convention(block) () -> Void) {
+public func gcd_main_safe(_ work: @escaping @convention(block) () -> Void) {
     let ucsw = UncheckedSendableWrapper(work)
     if Thread.isMainThread {
         ucsw.value()
@@ -20,7 +20,7 @@ import UIKit
     }
 }
 
-@preconcurrency public func gcd_main_after(_ delay: Double, _ work: @escaping @convention(block) () -> Void) {
+public func gcd_main_after(_ delay: Double, _ work: @escaping @convention(block) () -> Void) {
     let ucsw = UncheckedSendableWrapper(work)
     if delay <= 0 {
         DispatchQueue.main.async {
