@@ -11,7 +11,6 @@ import SwiftHelper
 
 class SccopeViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""
-    
 
     struct TS {
         var a = ""
