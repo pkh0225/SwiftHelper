@@ -92,28 +92,20 @@ public extension DispatchQueue {
 }
 
 public final class ActionQueue: Sendable {
-    public static let shared = ActionQueue()
-    private let queue = DispatchQueue(label: "com.ActionQueue.queue")
-    nonisolated(unsafe) private var actions: [(_ value: [String: Any]?) -> Void] = []
+    nonisolated(unsafe) static var actions = Queue<(_ value: [String: Any]?) -> Void>()
 
     public init() {}
     
-    public func nextRun(_ value: [String: Any]? = nil) {
-        queue.sync {
-            guard !self.actions.isEmpty, let work = self.actions.first else { return }
+    public static func nextRun(_ value: [String: Any]? = nil) {
+            guard !Self.actions.isEmpty, let work = Self.actions.dequeue() else { return }
             let workWrapper = UncheckedSendableWrapper(work)
             let valueWrapper = UncheckedSendableWrapper(value)
-            self.actions.removeFirst()
             DispatchQueue.main.async {
                 workWrapper.value(valueWrapper.value)
             }
-        }
     }
 
-    public func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
-        let workWrapper = UncheckedSendableWrapper(work)
-        self.queue.async(flags: .barrier) {
-            self.actions.append(workWrapper.value)
-        }
+    public static func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
+            self.actions.enqueue(work)
     }
 }

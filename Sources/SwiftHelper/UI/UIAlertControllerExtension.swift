@@ -10,18 +10,17 @@ import UIKit
 
 @MainActor
 class AlertQueue {
-    static var actions: [() -> Void] = []
+    static var actions = Queue<() -> Void>()
 
     public static func nextRun() {
         DispatchQueue.main.async {
-            guard !self.actions.isEmpty, let work = self.actions.first else { return }
+            guard !self.actions.isEmpty, let work = self.actions.dequeue() else { return }
             work()
-            self.actions.removeFirst()
         }
     }
 
     public static func addAction(work: @escaping () -> Void) {
-        self.actions.append(work)
+        self.actions.enqueue(work)
     }
 }
 
@@ -31,6 +30,9 @@ public func alert(title: String?,
                 cancelButtonTitle: String? = "확인",
                 otherButtonTitles: [String]? = nil,
                 closure: ((_ alertVC: UIAlertController, _ buttonIndex: Int) -> Void)? = nil) {
+    if AlertQueue.actions.isEmpty {
+            AlertQueue.nextRun()
+    }
     AlertQueue.addAction {
         UIAlertController.alert(title: title,
                                 message: message,
@@ -41,9 +43,6 @@ public func alert(title: String?,
             closure?(alertVC, buttonIndex)
             AlertQueue.nextRun()
         }
-    }
-    if AlertQueue.actions.count == 1 {
-        AlertQueue.nextRun()
     }
 }
 

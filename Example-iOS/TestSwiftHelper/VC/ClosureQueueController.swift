@@ -14,13 +14,13 @@ class ClosureQueueController: UIViewController, RouterProtocol {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        ActionQueue.shared.addAction { _ in
+        ActionQueue.addAction { _ in
             alert(title: "Test 111", message: nil)
         }
-        ActionQueue.shared.addAction { _ in
+        ActionQueue.addAction { _ in
             alert(title:"Test 222", message: nil)
         }
-        ActionQueue.shared.addAction { _ in
+        ActionQueue.addAction { _ in
             alert(title:"Test 333", message: nil)
         }
     }
@@ -34,13 +34,13 @@ class ClosureQueueController: UIViewController, RouterProtocol {
     @IBAction func onInQueue(_ sender: UIButton) {
         sender.tag += 1
         let count = sender.tag
-        ActionQueue.shared.addAction { _ in
+        ActionQueue.addAction { _ in
             alert(title:"Test \(count)", message: nil)
         }
     }
     
     @IBAction func onDequeue(_ sender: UIButton) {
-        ActionQueue.shared.nextRun()
+        ActionQueue.nextRun()
     }
 
     @IBAction func onMainQueue(_ sender: UIButton) {
