@@ -8,7 +8,7 @@
 import Foundation
 
 // 스레드 안전한 리스트 기반 큐 구현
-public class Queue<T> {
+public final class Queue<T> {
     // 노드 클래스 정의
     public class Node<T> {
         public var value: T

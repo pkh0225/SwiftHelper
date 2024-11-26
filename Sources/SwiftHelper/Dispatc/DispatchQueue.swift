@@ -91,13 +91,16 @@ public extension DispatchQueue {
     }
 }
 
-public final class ActionQueue: Sendable {
-    nonisolated(unsafe) static var actions = Queue<(_ value: [String: Any]?) -> Void>()
+public final class ActionQueue {
+    public static let shared = ActionQueue()
+    nonisolated(unsafe) private let actions = Queue<(_ value: [String: Any]?) -> Void>()
 
-    public init() {}
-    
-    public static func nextRun(_ value: [String: Any]? = nil) {
-            guard !Self.actions.isEmpty, let work = Self.actions.dequeue() else { return }
+    public var isEmpty: Bool {
+        return actions.isEmpty
+    }
+
+    public func nextRun(_ value: [String: Any]? = nil) {
+            guard !actions.isEmpty, let work = actions.dequeue() else { return }
             let workWrapper = UncheckedSendableWrapper(work)
             let valueWrapper = UncheckedSendableWrapper(value)
             DispatchQueue.main.async {
@@ -105,7 +108,7 @@ public final class ActionQueue: Sendable {
             }
     }
 
-    public static func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
-            self.actions.enqueue(work)
+    public func addAction(_ work: @escaping @convention(block) (_ value: [String: Any]?) -> Void) {
+            actions.enqueue(work)
     }
 }
