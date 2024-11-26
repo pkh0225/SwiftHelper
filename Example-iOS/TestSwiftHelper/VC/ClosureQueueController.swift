@@ -45,14 +45,16 @@ class ClosureQueueController: UIViewController, RouterProtocol {
 
     @IBAction func onMainQueue(_ sender: UIButton) {
         for i in 0..<5 {
-            alert(title:"Test __(\(i))", message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
-                print(buttonIndex)
+            let title = "Test \(i)"
+            alert(title:title, message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
+                print("\(title) = \(buttonIndex)")
             }
         }
         gcd_main_after(0.5) {
             for i in 10..<15 {
-                alert(title:"Test __(\(i))", message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
-                    print(buttonIndex)
+                let title = "Test \(i)"
+                alert(title:title, message: nil, cancelButtonTitle: "취소", otherButtonTitles: ["확인"]) { alertVC,buttonIndex in
+                    print("\(title) = \(buttonIndex)")
                 }
             }
         }

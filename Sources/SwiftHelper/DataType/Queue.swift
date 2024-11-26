@@ -7,18 +7,18 @@
 
 import Foundation
 
-// 노드 클래스 정의
-public class Node<T> {
-    var value: T
-    var next: Node?
-
-    init(value: T) {
-        self.value = value
-    }
-}
-
-// 스레드 안전한 리크드 리스트 기반 큐 구현
+// 스레드 안전한 리스트 기반 큐 구현
 public class Queue<T> {
+    // 노드 클래스 정의
+    public class Node<T> {
+        public var value: T
+        public var next: Node?
+
+        public init(value: T) {
+            self.value = value
+        }
+    }
+
     private var head: Node<T>?
     private var tail: Node<T>?
     private let lock = NSLock()
