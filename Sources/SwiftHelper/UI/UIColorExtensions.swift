@@ -161,6 +161,20 @@ extension UIColor {
 
         return UIColor(red: compRed, green: compGreen, blue: compBlue, alpha: 1.0)
     }
+
+    ///  색상의 밝기를 계산
+    /// - Returns: 계산된 결과
+    public func luminance() -> CGFloat {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        // 밝기 계산
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    }
 }
 
 #endif
