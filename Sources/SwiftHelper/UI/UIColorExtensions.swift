@@ -162,6 +162,19 @@ extension UIColor {
         return UIColor(red: compRed, green: compGreen, blue: compBlue, alpha: 1.0)
     }
 
+    func getComplementaryForColorUsingHSB() -> UIColor {
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        // 보색 계산 (Hue를 180도 이동)
+        let complementaryHue = fmod(hue + 0.5, 1.0) // 0.5는 180도를 의미
+        return UIColor(hue: complementaryHue, saturation: saturation, brightness: brightness, alpha: alpha)
+    }
+
     ///  색상의 밝기를 계산
     /// - Returns: 계산된 결과
     public func luminance() -> CGFloat {
