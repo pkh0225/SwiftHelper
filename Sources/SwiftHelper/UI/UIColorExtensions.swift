@@ -162,7 +162,7 @@ extension UIColor {
         return UIColor(red: compRed, green: compGreen, blue: compBlue, alpha: 1.0)
     }
 
-    func getComplementaryForColorUsingHSB() -> UIColor {
+    public func getComplementaryForColorUsingHSB() -> UIColor {
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
