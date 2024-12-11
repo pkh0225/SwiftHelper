@@ -770,14 +770,24 @@ extension UIView {
 
 // MARK: - Render Extensions
 extension UIView {
-    public func toImage () -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, isOpaque, 0.0)
-        drawHierarchy(in: bounds, afterScreenUpdates: false)
-        let img: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return img!
+    /// 뷰와 그 전체 계층 구조를 UIImage로 변환합니다.
+    /// - `drawHierarchy(in:afterScreenUpdates:)`를 사용하여 뷰 계층 구조 전체를 캡처합니다.
+    ///   텍스트, 이미지, 서브뷰, 오버레이 등이 포함됩니다.
+    /// - 뷰의 전체 시각적 표현을 캡처해야 하는 경우 적합합니다.
+    /// - 참고: 계층 구조가 복잡한 경우 성능 저하가 발생할 수 있습니다.
+    /// - 반환값: 뷰의 전체 계층 구조를 나타내는 `UIImage`.
+    public func toImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: bounds.size)
+        return renderer.image { _ in
+            drawHierarchy(in: bounds, afterScreenUpdates: false)
+        }
     }
-
+    /// 뷰의 Core Animation 레이어만 UIImage로 변환합니다.
+    /// - `layer.render(in:)`를 사용하여 현재 레이어 상태만 캡처합니다.
+    /// - 서브뷰나 오버레이는 포함되지 않으며, 단일 뷰만 캡처됩니다.
+    /// - 화면에 표시되지 않는 뷰도 캡처할 수 있습니다.
+    /// - 빠르게 단일 뷰를 렌더링하거나 특정 레이어만 캡처할 때 적합합니다.
+    /// - 반환값: 뷰의 레이어를 나타내는 `UIImage`.
     public func asImage() -> UIImage {
         let renderer = UIGraphicsImageRenderer(bounds: bounds)
         return renderer.image { rendererContext in
@@ -785,13 +795,6 @@ extension UIView {
         }
     }
 }
-
-// MARK: - Gesture Extensions
-nonisolated(unsafe) private var TapGesture_Key: UInt8 = 0
-nonisolated(unsafe) private var SwipeGesture_Key: UInt8 = 0
-nonisolated(unsafe) private var PanGesture_Key: UInt8 = 0
-nonisolated(unsafe) private var PinchGesture_Key: UInt8 = 0
-nonisolated(unsafe) private var LongPressGesture_Key: UInt8 = 0
 
 @MainActor
 private final class ClosureSleeve: @unchecked Sendable {
@@ -816,8 +819,15 @@ private final class ClosureSleeve: @unchecked Sendable {
         }
     }
 }
-
+// MARK: - Gesture Extensions
 extension UIView {
+    private struct AssociatedGestureKeys {
+        nonisolated(unsafe) static var tapGesture: UInt8 = 0
+        nonisolated(unsafe) static var swipeGesture: UInt8 = 0
+        nonisolated(unsafe) static var panGesture: UInt8 = 0
+        nonisolated(unsafe) static var pinchGesture: UInt8 = 0
+        nonisolated(unsafe) static var longPressGesture: UInt8 = 0
+    }
     /// http://stackoverflow.com/questions/4660371/how-to-add-a-touch-event-to-a-uiview/32182866#32182866
     @discardableResult
     public func addTapGesture(tapNumber: Int = 1, _ closure: @escaping (_ recognizer: UIGestureRecognizer) -> Void) -> UITapGestureRecognizer {
@@ -826,7 +836,7 @@ extension UIView {
         tap.numberOfTapsRequired = tapNumber
         addGestureRecognizer(tap)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &TapGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &AssociatedGestureKeys.tapGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return tap
     }
 
@@ -842,7 +852,7 @@ extension UIView {
 
         addGestureRecognizer(swipe)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &SwipeGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &AssociatedGestureKeys.swipeGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return swipe
     }
 
@@ -852,7 +862,7 @@ extension UIView {
         let pan: UIPanGestureRecognizer = UIPanGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(pan)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &PanGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &AssociatedGestureKeys.panGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return pan
     }
     #if os(iOS)
@@ -863,7 +873,7 @@ extension UIView {
         let pinch: UIPinchGestureRecognizer = UIPinchGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(pinch)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &PinchGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &AssociatedGestureKeys.pinchGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return pinch
     }
 
@@ -875,7 +885,7 @@ extension UIView {
         let longPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(longPress)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &LongPressGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &AssociatedGestureKeys.longPressGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return longPress
     }
 }
