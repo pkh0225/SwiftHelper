@@ -41,7 +41,7 @@ extension UIView {
     }
 }
 
-// MARK: - Frame Extensions
+// MARK: - Frame ExtensionsshowRectLine
 extension UIView {
     /// AutoLayout을 사용하지 않고 add를 하는경우에만 사용..... 🧨 Autolayout을 쓰는 경우는 addSubViewAutoLayout 함수를 이용해주세요
     /// - Parameters:
@@ -577,66 +577,6 @@ extension UIView {
         self.layer.addSublayer(shapeLayer)
     }
 
-    public func showRectLine() {
-        func subViewList(_ view: UIView) -> [UIView] {
-            var result: [UIView] = [UIView]()
-            for sv: UIView in view.subviews {
-                if sv.subviews.count > 0 && (sv is UIButton) == false {
-                    result += subViewList(sv)
-                }
-                result.append(sv)
-            }
-            return result
-        }
-
-        for view: UIView in subViewList(self) {
-            if view is UILabel {
-                view.borderColor = .green
-                view.borderWidth = 1
-            }
-            else if view is UIImageView {
-                view.borderColor = .red
-                view.borderWidth = 1.5
-            }
-            else if view is UITextField {
-                view.borderColor = .darkGray
-                view.borderWidth = 1
-            }
-//            else if view is UIScrollView {
-//                view.borderColor = UIColor(hex: 0xFF7D5A, alpha: 0.6)
-//                view.borderWidth = 1
-//            }
-            else if view is UIStackView {
-                view.borderColor = UIColor(hex: 0xCACF00, alpha: 1)
-                view.borderWidth = 1
-            }
-            else if view is UIButton {
-                view.borderColor = .blue
-                view.borderWidth = 2
-            }
-            else if view is UICollectionViewCell {
-                view.borderColor = .purple
-                view.borderWidth = 1
-            }
-            else if view is UICollectionReusableView {
-                view.borderColor = UIColor(hex: 0x26004c, alpha: 1)
-                view.borderWidth = 1
-            }
-            else if view is UITableViewCell {
-                view.borderColor = .purple
-                view.borderWidth = 1
-            }
-            else if view is WKWebView {
-                view.borderColor = UIColor(hex: 0xFF3E3E, alpha: 1)
-                view.borderWidth = 5
-            }
-            else {
-                view.borderColor = .yellow
-                view.borderWidth = 0.5
-            }
-        }
-    }
-
     public func roundView(withBorderColor color: UIColor? = nil, withBorderWidth width: CGFloat? = nil) {
         self.cornerRadius = min(self.frame.size.height, self.frame.size.width) / 2
         self.layer.borderWidth = width ?? 0
@@ -1083,6 +1023,94 @@ extension UIView {
         }
         else {
             return nil
+        }
+    }
+}
+
+extension UIView {
+    private static var isSwizzledBorderLayer = false
+
+    public static func enableBorderLayerSwizzling() {
+        guard !isSwizzledBorderLayer else { return }
+        isSwizzledBorderLayer = true
+        swizzleBorderLayerMethods()
+
+    }
+
+    public static func disableBorderLayerSwizzling() {
+        guard isSwizzledBorderLayer else { return }
+        isSwizzledBorderLayer = false
+        swizzleBorderLayerMethods() // 다시 교환하여 원래 상태로 복구
+
+    }
+
+    private static func swizzleBorderLayerMethods() {
+        let originalSelector = #selector(layoutSubviews)
+        let swizzledSelector = #selector(swizzled_layoutSubviews)
+
+        guard let originalMethod = class_getInstanceMethod(UIView.self, originalSelector),
+              let swizzledMethod = class_getInstanceMethod(UIView.self, swizzledSelector) else {
+            return
+        }
+
+        method_exchangeImplementations(originalMethod, swizzledMethod)
+    }
+
+    @objc private func swizzled_layoutSubviews() {
+        print("swizzled_layoutSubviews")
+        // 기존 layoutSubviews 호출
+        self.swizzled_layoutSubviews()
+
+        // 추가 동작 (테두리 렌더링)
+        showRectLine()
+    }
+
+    private func showRectLine() {
+        if self is UILabel {
+            self.borderColor = #colorLiteral(red: 0.1960784346, green: 0.3411764801, blue: 0.1019607857, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is UIImageView {
+            self.borderColor = #colorLiteral(red: 0.4392156899, green: 0.01176470611, blue: 0.1921568662, alpha: 1)
+            self.borderWidth = 1
+        }
+        else if self is UITextField {
+            self.borderColor = .darkGray
+            self.borderWidth = 0.5
+        }
+        else if self is UIStackView {
+            self.borderColor = #colorLiteral(red: 1, green: 0.4850212932, blue: 0.4556372166, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is UIButton {
+            self.borderColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is UITableViewCell {
+            self.borderColor = #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is UICollectionViewCell {
+            self.borderColor = #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is UICollectionReusableView {
+            self.borderColor = #colorLiteral(red: 0.1490196078, green: 0, blue: 0.2980392157, alpha: 1)
+            self.borderWidth = 0.5
+        }
+        else if self is WKWebView {
+            self.borderColor = #colorLiteral(red: 0.5954421759, green: 1, blue: 0.981256187, alpha: 1)
+            UIColor(hex: 0xFF3E3E, alpha: 1)
+            self.borderWidth = 3
+        }
+        else if self is UIScrollView {
+            self.borderColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+            UIColor(hex: 0xFF7D5A, alpha: 0.6)
+            self.borderWidth = 0.5
+        }
+        else {
+            self.borderColor = #colorLiteral(red: 0.7254902124, green: 0.4784313738, blue: 0.09803921729, alpha: 1)
+            self.borderWidth = 0.5
         }
     }
 }
