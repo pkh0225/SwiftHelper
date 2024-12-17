@@ -1057,7 +1057,6 @@ extension UIView {
     }
 
     @objc private func swizzled_layoutSubviews() {
-        print("swizzled_layoutSubviews")
         // 기존 layoutSubviews 호출
         self.swizzled_layoutSubviews()
 
