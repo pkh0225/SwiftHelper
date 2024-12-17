@@ -280,7 +280,7 @@ extension NSObject {
 
     }
 
-    public class var className: String {
+    public static var className: String {
         if let name: String = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
             return name
         }
