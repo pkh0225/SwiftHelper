@@ -180,3 +180,28 @@ public func += <KeyType, ValueType> (left: inout [KeyType: ValueType], right: [K
 public func - <K, V: Equatable> (first: [K: V], second: [K: V]) -> [K: V] {
     return first.difference(second)
 }
+
+extension Dictionary where Value == Any? {
+    /// 딕셔너리에서 nil 값을 제거하는 함수
+    public func removeNilValues() -> [Key: Any] {
+        var filteredDictionary = [Key: Any]()
+
+        for (key, value) in self {
+            if let value = value {
+                if let nestedDictionary = value as? [Key: Any?] {
+                    // 재귀적으로 딕셔너리 내의 nil 값을 제거
+                    filteredDictionary[key] = nestedDictionary.removeNilValues()
+                }
+                else if let nestedArray = value as? [Any?] {
+                    // 배열 내의 nil 값을 제거
+                    filteredDictionary[key] = nestedArray.removeNilValues()
+                }
+                else {
+                    filteredDictionary[key] = value
+                }
+            }
+        }
+
+        return filteredDictionary
+    }
+}

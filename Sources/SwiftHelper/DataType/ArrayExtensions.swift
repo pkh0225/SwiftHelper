@@ -343,65 +343,27 @@ extension Optional where Wrapped: Collection {
     }
 }
 
-extension Array where Element: UIView {
-    /// reused된 View를 리턴
-    /// - Parameters:
-    ///   - parentView: 아이템뷰가 들어갈 부모뷰
-    ///   - size: 아이템 기본 사이즈
-    /// - Returns: reused 된 View
-    @MainActor
-    @inline(__always) public mutating func getReusedView(parentView: UIView, size: CGSize = .zero) -> Element {
-        func isXibFileExists(_ fileName: String) -> Bool {
-            if let path: String = Bundle.main.path(forResource: fileName, ofType: "nib") {
-                if FileManager.default.fileExists(atPath: path) {
-                    return true
+extension Array where Element == Any? {
+    /// 배열에서 nil 값을 제거하는 함수
+    public func removeNilValues() -> [Any] {
+        var filteredArray = [Any]()
+
+        for value in self {
+            if let value = value {
+                if let nestedDictionary = value as? [String: Any?] {
+                    // 재귀적으로 딕셔너리 내의 nil 값을 제거
+                    filteredArray.append(nestedDictionary.removeNilValues())
+                }
+                else if let nestedArray = value as? [Any?] {
+                    // 재귀적으로 배열 내의 nil 값을 제거
+                    filteredArray.append(nestedArray.removeNilValues())
+                }
+                else {
+                    filteredArray.append(value)
                 }
             }
-            return false
-        }
-        var view: Element?
-
-        for item in self {
-            if item.isHidden {
-                item.isHidden = false
-                view = item
-                break
-            }
         }
 
-        if view == nil {
-            if isXibFileExists(Element.className) {
-                view = Element.fromXib()
-                if size != .zero {
-                    view?.bounds = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-                }
-            }
-            else {
-                view = Element(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-            }
-
-            view?.isHidden = false
-            self.append(view!)
-
-            if let p = parentView as? UIStackView {
-                p.addArrangedSubview(view!)
-            }
-            else {
-                parentView.addSubview(view!)
-            }
-
-        }
-
-        return view!
-    }
-
-    @MainActor
-    @inline(__always) public func setHiddenAll(_ value: Bool) {
-        self.forEach { $0.isHidden = value }
-    }
-
-    @MainActor
-    @inline(__always) public func getNoHiddenViews() -> [Element] {
-        return  self.filter({ $0.isHidden == false })
+        return filteredArray
     }
 }
