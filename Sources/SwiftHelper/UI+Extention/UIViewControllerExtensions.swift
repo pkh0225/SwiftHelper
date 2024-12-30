@@ -31,22 +31,6 @@ extension UIViewController {
         }
     }
 
-    private struct AssociatedKeys {
-        nonisolated(unsafe) static var cache: UInt8 = 0
-    }
-
-    public var cache: Bool {
-        get {
-            if let info: Bool = objc_getAssociatedObject(self, &AssociatedKeys.cache) as? Bool {
-                return info
-            }
-            return false
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociatedKeys.cache, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
     public var parentVCs: [UIViewController] {
         var vcs: [UIViewController] = [UIViewController]()
         var vc: UIViewController? = self.parent
@@ -277,5 +261,42 @@ extension UIViewController {
         }
     }
 }
+
+
+//extension UIViewController {
+//    private struct AssociatedKeys {
+//        nonisolated(unsafe) static var deinitNotifier: UInt8 = 0
+//    }
+//
+//    public static var isDeinitChecker: Bool = false
+//
+//    public static func enableDeinitChecker() {
+//        guard !isDeinitChecker else { return }
+//        isDeinitChecker = true
+//        swizzleMethodForViewDidLoad()
+//
+//    }
+//
+//    public static func disableDeinitChecker() {
+//        guard isDeinitChecker else { return }
+//        isDeinitChecker = false
+//        swizzleMethodForViewDidLoad() // 다시 교환하여 원래 상태로 복구
+//    }
+//
+//    public static func swizzleMethodForViewDidLoad() {
+//        let originalSelector = #selector(viewDidLoad)
+//        let swizzledSelector = #selector(swizzled_viewDidLoad)
+//        guard
+//            let originalMethod = class_getInstanceMethod(Self.self, originalSelector),
+//            let swizzledMethod = class_getInstanceMethod(Self.self, swizzledSelector)
+//        else { return }
+//        method_exchangeImplementations(originalMethod, swizzledMethod)
+//    }
+//
+//    @objc private func swizzled_viewDidLoad() {
+//        let deinitNotifier = DeinitNotifier { print("swizzled deinit: \(Self.self)") }
+//        objc_setAssociatedObject(self, &AssociatedKeys.deinitNotifier, deinitNotifier, .OBJC_ASSOCIATION_RETAIN)
+//    }
+//}
 
 #endif

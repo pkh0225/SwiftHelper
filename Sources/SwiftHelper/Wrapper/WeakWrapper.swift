@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import UIKit
 /// 약한 참조를 배열이나 딕셔너리등에서 관리하기 위한 래퍼 클래스
 ///
 /// 사용 예:
@@ -58,45 +58,5 @@ public struct UncheckedSendableWrappers<Value1, Value2>: @unchecked Sendable {
     public init(value1: Value1, value2: Value2) {
         self.value1 = value1
         self.value2 = value2
-    }
-}
-
-
-
-
-/// Deinit Checker
-///
-/// 사용 예:
-/// ```swift
-/// extension UIViewController {
-///     private struct AssociatedKeys {
-///         nonisolated(unsafe) static var deallocator: UInt8 = 0
-///     }
-///
-///     class func swizzleMethodForDealloc() {
-///         let originalSelector = #selector(viewDidLoad)
-///         let swizzledSelector = #selector(swizzled_viewDidLoad)
-///         guard
-///             let originalMethod = class_getInstanceMethod(Self.self, originalSelector),
-///             let swizzledMethod = class_getInstanceMethod(Self.self, swizzledSelector)
-///         else { return }
-///         method_exchangeImplementations(originalMethod, swizzledMethod)
-///     }
-///
-///     @objc private func swizzled_viewDidLoad() {
-///         let deallocator = Deallocator { print("swizzled deinit: \(Self.self)") }
-///         objc_setAssociatedObject(self, &AssociatedKeys.deallocator, deallocator, .OBJC_ASSOCIATION_RETAIN)
-///     }
-/// }
-///```
-public class Deallocator {
-    var onDeallocate: () -> Void
-
-    public init(onDeallocate: @escaping () -> Void) {
-        self.onDeallocate = onDeallocate
-    }
-
-    deinit {
-        onDeallocate()
     }
 }

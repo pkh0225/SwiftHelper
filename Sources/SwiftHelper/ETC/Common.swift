@@ -9,7 +9,7 @@ import UIKit
 
 @MainActor
 public func makeDebugTextView(value: String) {
-    guard let window = KeyWindow() else { return }
+    guard let window = keyWindow() else { return }
     let bgView: UIView = UIView(frame: window.bounds)
     bgView.backgroundColor = .black.withAlphaComponent(0.3)
     window.addSubview(bgView)

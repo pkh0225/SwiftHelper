@@ -9,7 +9,7 @@
 import UIKit
 
 @MainActor
-@inline(__always) public func KeyWindow() -> UIWindow? {
+public func keyWindow() -> UIWindow? {
     if #available(iOS 13.0, *) {
         let scenes = UIApplication.shared.connectedScenes.first as? UIWindowScene
         return scenes?.windows.first
@@ -20,8 +20,8 @@ import UIKit
 }
 
 @MainActor
-@inline(__always) public func MainNavigation() -> UINavigationController? {
-    guard let navigationController = KeyWindow()?.rootViewController as? UINavigationController else { return nil }
+public func MainNavigation() -> UINavigationController? {
+    guard let navigationController = keyWindow()?.rootViewController as? UINavigationController else { return nil }
     return navigationController
 }
 
@@ -59,7 +59,7 @@ public protocol RouterProtocol: UIViewController {
 public extension RouterProtocol {
     static var storyboardName: String { return  "" }
     static func isAllowSameVCPush() -> Bool {
-        return false
+        return true
     }
 
     // MARK:- assembleModule
@@ -120,5 +120,23 @@ public extension RouterProtocol {
         vc.modalPresentationStyle = .overFullScreen
         vcClosure?(vc)
         navi.visibleViewController?.present(vc, animated: animated, completion: completion)
+    }
+}
+
+extension UIViewController {
+    private struct AssociatedKeys {
+        nonisolated(unsafe) static var cache: UInt8 = 0
+    }
+
+    public var cache: Bool {
+        get {
+            if let info: Bool = objc_getAssociatedObject(self, &AssociatedKeys.cache) as? Bool {
+                return info
+            }
+            return false
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.cache, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
 }

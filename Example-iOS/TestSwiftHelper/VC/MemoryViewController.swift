@@ -8,38 +8,46 @@
 
 import UIKit
 import SwiftHelper
+import DeinitChecker
 
-class MemoryViewController: UIViewController, RouterProtocol {
+class MemoryViewController: UIViewController, RouterProtocol, DeinitChecker {
+    var deinitNotifier: DeinitNotifier?
+    
     static var storyboardName: String = ""
 
-    class AAA {
+    class AAA: DeinitChecker {
+        var deinitNotifier: DeinitNotifier?
 
         var bbb: BBB?
 
-        deinit {
-            print("\(#function) \(Self.self)")
+        init () {
+            setDeinitNotifier()
         }
     }
-    class BBB {
+    class BBB: DeinitChecker {
+        var deinitNotifier: DeinitNotifier?
 
         var array = [WeakWrapper<AAA>]()
 //        var array = [AAA]()
-
-        deinit {
-            print("\(#function) \(Self.self)")
+        init () {
+            setDeinitNotifier()
         }
     }
 
     var testDataa: AAA?
-
+    var test2VC: Test2ViewController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Memory"
         self.view.backgroundColor = .white
+        DeinitManager.shared.isRun = true
 
-        let btn = TestButton(frame: CGRect(x: 100, y: 100, width: 100, height: 100)).apply { obj in
-            obj.setTitle("click", for: .normal)
+        setDeinitNotifier()
+
+        let btn = TestButton(frame: CGRect(x: 100, y: 100, width: 200, height: 100)).apply { [weak self] obj in
+            guard let self else { return }
+            obj.setTitle("WeakWrapper test", for: .normal)
             obj.backgroundColor = .green
             obj.addAction(for: .touchUpInside) { [weak self] btn in
                 guard let self else { return }
@@ -56,33 +64,87 @@ class MemoryViewController: UIViewController, RouterProtocol {
 
 
         self.testDataa = a
+
+
+        let v = TestView(frame: CGRect(x: 10, y: 210, w: 250, h: 100))
+        v.backgroundColor = .red
+        self.view.addSubview(v)
+
+        let btn2 = TestButton(frame: v.bounds).apply {
+            $0.setTitle("push New ViewController", for: .normal)
+            $0.addAction(for: .touchUpInside) { _ in
+                Self.pushViewController()
+//                print(self)
+//                print(v)
+            }
+        }
+        v.addSubview(btn2)
+
+        test2VC = Test2ViewController()
+        self.addChild(test2VC)
+        self.view.addSubview(test2VC.view)
+        test2VC.view.frame = CGRect(x: 100, y: 350, width: 200, height: 100)
+
+    }
+
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//
+//        if self.isMovingFromParent {
+//            print("------- is being popped")
+//            // 여기서 pop 이벤트 처리
+//
+//
+//        }
+//    }
+}
+
+class Test2ViewController: UIViewController, DeinitChecker {
+    var deinitNotifier: DeinitNotifier?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setDeinitNotifier()
+        view.backgroundColor = .blue
+
+        let button = TestButton()
+        button.frame = self.view.bounds
+        button.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        button.setTitle("Test2ViewController", for: .normal)
+        button.addAction(for: .touchUpInside) { _ in
+            alert(title: "", message: "Test2ViewController")
+//            print(self)
+        }
+        view.addSubview(button)
     }
 }
 
-extension UIViewController {
-    private struct AssociatedKeys {
-        nonisolated(unsafe) static var deallocator: UInt8 = 0
+class TestButton: UIButton, DeinitChecker {
+    var deinitNotifier: DeinitNotifier?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setDeinitNotifier()
     }
 
-    class func swizzleMethodForDealloc() {
-        let originalSelector = #selector(viewDidLoad)
-        let swizzledSelector = #selector(swizzled_viewDidLoad)
-        guard
-            let originalMethod = class_getInstanceMethod(Self.self, originalSelector),
-            let swizzledMethod = class_getInstanceMethod(Self.self, swizzledSelector)
-        else { return }
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setDeinitNotifier()
+    }
+}
+
+class TestView: UIView , DeinitChecker {
+    var deinitNotifier: DeinitNotifier?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setDeinitNotifier()
     }
 
-    @objc private func swizzled_viewDidLoad() {
-        let deallocator = Deallocator { print("swizzled deinit: \(Self.self)") }
-        objc_setAssociatedObject(self, &AssociatedKeys.deallocator, deallocator, .OBJC_ASSOCIATION_RETAIN)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setDeinitNotifier()
     }
 }
 
 
-class TestButton: UIButton {
-    deinit {
-        print("\(#function) \(Self.self)")
-    }
-}

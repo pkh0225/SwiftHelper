@@ -1028,7 +1028,16 @@ extension UIView {
 }
 
 extension UIView {
-    private static var isSwizzledBorderLayer = false
+    public static var isSwizzledBorderLayer = false {
+        didSet {
+            if isSwizzledBorderLayer {
+                enableBorderLayerSwizzling()
+            }
+            else {
+                disableBorderLayerSwizzling()
+            }
+        }
+    }
 
     public static func enableBorderLayerSwizzling() {
         guard !isSwizzledBorderLayer else { return }

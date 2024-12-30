@@ -1,0 +1,15 @@
+{
+  "originHash" : "c758d8ff8a6484d5f674fde26eb2e2bddd9121edce77812365795e9d4bfaa225",
+  "pins" : [
+    {
+      "identity" : "deinitchecker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pkh0225/DeinitChecker.git",
+      "state" : {
+        "revision" : "25d2d09b67d48dbc43f632820b9a22ab2b26db28",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}
