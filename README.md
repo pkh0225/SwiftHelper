@@ -5,7 +5,6 @@
 
 ## 목표
 > 자주 쓰는 functions 모음
- - AutoLayout func (UIViewExtension)
  - Closure Queue func (ArrayExtension)
  - UIScrollView headerView, footerView ,headerViewIsSticky func (UIScrollViewExtension)
  - UIView viewDidDisappear func (UIViewExtension)
