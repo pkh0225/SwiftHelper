@@ -3,7 +3,6 @@
 //  WiggleSDK
 //
 //  Created by 박길호 on 8/13/24.
-//  Copyright © 2024 mykim. All rights reserved.
 //
 
 import UIKit
@@ -20,6 +19,7 @@ extension ScopeAble {
     ///
     /// 이 메서드는 인스턴스의 변경 가능한 복사본을 생성하고, 제공된 클로저에 전달합니다.
     /// 클로저를 실행한 후, 수정된 복사본을 반환합니다.
+    /// Created by 전선수 on 1/5/25.
     ///
     /// - Parameter block: 인스턴스와 동일한 타입의 `inout` 매개변수를 받는 클로저입니다.
     ///                   이 클로저는 인스턴스를 직접 수정할 수 있습니다.
@@ -28,7 +28,7 @@ extension ScopeAble {
     ///
     /// 사용 예:
     /// ```swift
-    /// let label = UILabel() {
+    /// let label = UILabel().apply {
     ///     $0.text = "안녕하세요, Swift!"
     ///     $0.textColor = .blue
     /// }
@@ -87,12 +87,6 @@ extension ScopeAble {
         var copy = self
         return try block(&copy)
     }
-
-//    @discardableResult
-//    @inline(__always) public func `let`<T>(_ block: (inout Self) throws -> T) rethrows -> T {
-//        var copy = self
-//        return try block(&copy)
-//    }
 
     /// 주어진 블록의 결과에 따라 인스턴스를 반환합니다.
     ///
@@ -167,3 +161,27 @@ extension UIOffset: ScopeAble {}
 extension CGRect: ScopeAble {}
 extension CGPoint: ScopeAble {}
 extension CGSize: ScopeAble {}
+
+extension Optional {
+    /// 인스턴스의 nil 검사를 if let 구문이 아니라 .let 으로 대체할 수 있습니다.
+    ///
+    /// 불필요한 local scope의 변수를 생성하지 않고
+    /// 해당 인스턴스와 관련된 로직은 Scope 내에서 처리하여
+    /// 개발자의 실수를 줄이고 코드 가독성을 좋게 합니다.
+    ///
+    /// - Parameter ifLet: Optional 타입이 감싸는 값의 타입(Wrapped)을 매개변수로 받는 클로저입니다.
+    ///                   이 클로저는 인스턴스를 직접 수정할 수 있습니다.
+    /// - Throws: 제공된 클로저에서 발생한 오류를 다시 던집니다.
+    ///
+    /// 사용 예:
+    /// ```swift
+    /// optionalObj?.let {
+    ///     // 옵셔널이 아닐 경우 로직 수행
+    /// }
+    /// ```
+    ///
+    @inline(__always) public func `let`(ifLet: (Wrapped) throws -> ()) rethrows {
+        guard let o = self else { return }
+        try ifLet(o)
+    }
+}
