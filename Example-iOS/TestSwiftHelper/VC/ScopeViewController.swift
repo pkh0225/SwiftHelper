@@ -12,10 +12,6 @@ import SwiftHelper
 class SccopeViewController: UIViewController, RouterProtocol {
     static var storyboardName: String = ""
 
-    struct TS {
-        var a = ""
-    }
-
     struct TestStruct: ScopeAble {
         var a: Int = 12345
         var b: String = "TestClass"
