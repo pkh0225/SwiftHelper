@@ -259,7 +259,6 @@ extension NSObject {
 
 extension NSObject {
     private struct AssociatedKeys {
-        nonisolated(unsafe) static var className: UInt8 = 0
         nonisolated(unsafe) static var observerAble: UInt8 = 0
         nonisolated(unsafe) static var isRequestImpression: UInt8 = 0
     }
@@ -268,28 +267,8 @@ extension NSObject {
         return unsafeBitCast(self, to: Int.self)
     }
 
-    public var className: String {
-        if let name: String = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
-            return name
-        }
-        else {
-            let name: String = String(describing: type(of: self))
-            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            return name
-        }
-
-    }
-
-    public static var className: String {
-        if let name: String = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
-            return name
-        }
-        else {
-            let name: String = String(describing: self)
-            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            return name
-        }
-    }
+    public var className: String { String(describing: type(of:self)) }
+    public class var className: String { String(describing: self) }
 
     public var observerAble: (key: Notification.Name, closure: ((_ value: String) -> Void)?)? {
         get {
