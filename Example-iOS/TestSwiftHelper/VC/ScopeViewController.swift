@@ -42,6 +42,8 @@ class SccopeViewController: UIViewController, RouterProtocol {
         self.view.backgroundColor = .white
 
         test()
+
+        ToastView(text: "102-39748-01239745-09128390-48123-908-0").show()
     }
 
     func test() {

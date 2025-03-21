@@ -77,10 +77,10 @@ public final class ToastView: UIView {
 //        print("ToastComponent deinit")
 //    }
 
-    convenience init(text: String) {
+    public convenience init(text: String) {
         self.init(frame: .zero)
         self.text = text
-        self.backgroundColor = UIColor(white: 1, alpha: 0.8)
+        self.backgroundColor = UIColor(white: 0, alpha: 0.8)
         self.isUserInteractionEnabled = false
     }
 
