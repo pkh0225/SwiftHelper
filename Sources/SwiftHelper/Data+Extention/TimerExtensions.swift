@@ -32,15 +32,4 @@ extension Timer {
         CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, CFRunLoopMode.commonModes)
         return timer
     }
-
-    ///   Run function after x seconds
-    @discardableResult
-    public static func schedule(delay: TimeInterval, _ handler: @escaping (Timer?) -> Void) -> Timer {
-        let fireDate: CFAbsoluteTime = delay + CFAbsoluteTimeGetCurrent()
-        let timer: CFRunLoopTimer? = CFRunLoopTimerCreateWithHandler(kCFAllocatorDefault, fireDate, 0, 0, 0, handler)
-        CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, CFRunLoopMode.commonModes)
-        return timer!
-    }
-
-
 }
