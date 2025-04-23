@@ -27,16 +27,8 @@ public func MainNavigation() -> UINavigationController? {
 
 @MainActor
 public final class ViewControllerCache {
-    static var cacheViewControllers: NSCache<NSString, UIViewController> = {
-        var c = NSCache<NSString, UIViewController>()
-        c.countLimit = 150
-        return c
-    }()
-    static var cacheStoryBoardInstance: NSCache<NSString, UIStoryboard> = {
-        var c = NSCache<NSString, UIStoryboard>()
-        c.countLimit = 150
-        return c
-    }()
+    static let cacheViewControllers = NSCache<NSString, UIViewController>()
+    static let cacheStoryBoardInstance = NSCache<NSString, UIStoryboard>()
 
     public static func cacheRemoveAll() {
         self.cacheViewControllers.removeAllObjects()

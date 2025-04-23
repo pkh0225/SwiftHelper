@@ -8,16 +8,8 @@ import WebKit
 
 @MainActor
 public class ViewCacheManager {
-    static var cacheViewNibs: NSCache<NSString, UIView> = {
-        var c = NSCache<NSString, UIView>()
-        c.countLimit = 500
-        return c
-    }()
-    static var cacheNibs: NSCache<NSString, UINib> = {
-        var c = NSCache<NSString, UINib>()
-        c.countLimit = 500
-        return c
-    }()
+    static let cacheViewNibs = NSCache<NSString, UIView>()
+    static let cacheNibs = NSCache<NSString, UINib>()
 
     public static func cacheRemoveAll() {
         self.cacheViewNibs.removeAllObjects()
