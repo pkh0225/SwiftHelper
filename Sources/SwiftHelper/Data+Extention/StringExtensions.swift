@@ -1052,16 +1052,6 @@ extension String {
         return attributedString
     }
 
-    public func convertHtml() -> NSAttributedString {
-        guard let data = data(using: .unicode) else { return NSAttributedString() }
-           do {
-            return try NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil)
-           }
-           catch {
-               return NSAttributedString()
-           }
-       }
-
     public func substring(from: Int, to: Int) -> String {
         return self[from..<to]
     }
@@ -1340,17 +1330,31 @@ extension NSString {
 
 extension String {
     public var htmlToAttributedString: NSMutableAttributedString? {
-        guard let data = data(using: .utf8) else { return NSMutableAttributedString() }
+        guard let data = data(using: .utf8) else { return nil }
         do {
-            let attr = try NSMutableAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+            let attr = try? NSMutableAttributedString(data: data,
+                                                      options: [
+                                                        .documentType: NSAttributedString.DocumentType.html,
+                                                        .characterEncoding: String.Encoding.utf8.rawValue
+                                                      ],
+                                                      documentAttributes: nil)
             return attr
         }
-        catch {
-            return NSMutableAttributedString()
-        }
     }
-    var htmlToString: String {
-        return htmlToAttributedString?.string ?? ""
+    // HTML 태그 제거 함수 (변환 실패 시 대체용)
+    public func stripHTMLTags() -> String {
+        return self.replacingOccurrences(of: "<[^>]+>", with: "",
+                                      options: .regularExpression,
+                                      range: nil)
+    }
+
+    public func htmlToAttributedStringWithCustomFont(_ font: UIFont) -> NSAttributedString? {
+        if let attributedText = self.replace("\\n", "\n").replace("\n", "<br>").htmlToAttributedString {
+            return attributedText.applyCustomFont(font)
+        }
+        else {
+            return NSAttributedString(string: self.stripHTMLTags())
+        }
     }
 }
 
@@ -1371,5 +1375,39 @@ extension NSMutableParagraphStyle {
                 self.lineBreakStrategy = .standard
             }
         }
+    }
+}
+
+extension NSMutableAttributedString {
+    // HTML 안전 검사 함수 (필요에 따라 구현)
+    public func applyCustomFont(_ font: UIFont) -> Self {
+        let fullRange = NSRange(location: 0, length: self.length)
+        self.enumerateAttribute(.font, in: fullRange) { (value, range, _) in
+            if let originalFont = value as? UIFont {
+                let traits = originalFont.fontDescriptor.symbolicTraits
+                var newFont = font
+
+                // 볼드 스타일 유지
+                if traits.contains(.traitBold) {
+                    newFont = UIFont.boldSystemFont(ofSize: font.pointSize)
+                }
+
+                // 이탤릭 스타일 유지
+                if traits.contains(.traitItalic) {
+                    newFont = UIFont.italicSystemFont(ofSize: font.pointSize)
+                }
+
+                self.addAttribute(.font, value: newFont, range: range)
+            }
+        }
+        return self
+    }
+
+    public func applyCustomColor(_ color: UIColor) -> Self {
+        let fullRange = NSRange(location: 0, length: self.length)
+        self.enumerateAttribute(.foregroundColor, in: fullRange) { (_, range, _) in
+            self.addAttribute(.font, value: color, range: range)
+        }
+        return self
     }
 }

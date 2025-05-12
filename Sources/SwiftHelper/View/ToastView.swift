@@ -171,9 +171,9 @@ public final class ToastView: UIView {
             }
             // 한줄인지 검사(1줄:1.5초 2줄이상:3초)
             let delay = self.textLabel.frame.size.height > TextLineOneSize ? 3 : 1.5
-            Self.timer = Timer.schedule(delay: delay) { [weak self] timer in
+            Self.timer = Timer.schedule(repeatInterval: delay) { [weak self] (timer, _) in
                 guard let self else { return }
-                timer?.invalidate()
+                timer.invalidate()
                 Self.timer = nil
                 self.fadeOut()
             }

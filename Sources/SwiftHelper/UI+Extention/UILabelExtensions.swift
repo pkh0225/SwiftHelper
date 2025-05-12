@@ -166,4 +166,28 @@ extension UILabel {
     }
 }
 
+// HTML
+extension UILabel {
+    public func setHTMLText(_ text: String?, lineBreakMode: NSLineBreakMode = .byTruncatingTail) {
+        self.text = nil
+        self.attributedText = nil
+        guard let text else { return }
+        if let attributedText = text.replace("\\n", "\n").replace("\n", "<br>").htmlToAttributedString {
+            self.attributedText = attributedText.applyCustomFont(self.font)
+        }
+        else {
+            self.attributedText = NSAttributedString(string: text.stripHTMLTags())
+        }
+
+        // 스타일을 유지하면서 필요한 속성 추가하기
+        if let mutableAttr = attributedText?.mutableCopy() as? NSMutableAttributedString {
+            let range = NSRange(location: 0, length: mutableAttr.length)
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineBreakMode = lineBreakMode
+            mutableAttr.addAttribute(.paragraphStyle, value: paragraphStyle, range: range)
+            attributedText = mutableAttr
+        }
+    }
+}
+
 #endif
