@@ -175,19 +175,97 @@ extension UIColor {
         return UIColor(hue: complementaryHue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
 
-    ///  색상의 밝기를 계산
-    /// - Returns: 계산된 결과
-    public func luminance() -> CGFloat {
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
+    /// W3C의 상대 휘도(Relative Luminance) 계산 표준을 따릅니다.
+    public var relativeLuminance: CGFloat {
+        guard let components = cgColor.components, components.count >= 3 else {
+            var white: CGFloat = 0
+            getWhite(&white, alpha: nil)
+            return white
+        }
 
-        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        func adjust(_ colorComponent: CGFloat) -> CGFloat {
+            if colorComponent <= 0.03928 {
+                return colorComponent / 12.92
+            }
+            else {
+                return pow((colorComponent + 0.055) / 1.055, 2.4)
+            }
+        }
 
-        // 밝기 계산
-        return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+        let r = adjust(components[0])
+        let g = adjust(components[1])
+        let b = adjust(components[2])
+
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
     }
+
+    // 주어진 색상이 흰색 배경에서 읽기 힘들 경우(명암비가 낮을 경우),
+    /// 색상의 고유한 톤(Hue)은 유지하면서 충분한 명암비가 확보될 때까지 색상을 어둡게 만듭니다.
+    ///
+    /// - Parameters:
+    ///   - originalTextColor: 조정할 원본 텍스트 색상
+    ///   - backgroundColor: 백그라운드 색상
+    ///   - minimumContrastRatio: 목표로 하는 최소 명암비 (WCAG AA 일반 텍스트 권장치는 4.5)
+    /// - Returns: 조정된 텍스트 색상. 명암비가 충분하면 원본 색상을 그대로 반환합니다.
+    public func adjustedTextColor(originalTextColor: UIColor, backgroundColor: UIColor = .white, minimumContrastRatio: CGFloat = 4.5) -> UIColor {
+        // 1. 현재 텍스트 색상과 흰 배경의 명암비를 계산합니다.
+        let currentContrastRatio = contrastRatio(between: originalTextColor, and: backgroundColor)
+
+        // 2. 명암비가 이미 충분한지 확인합니다.
+        if currentContrastRatio >= minimumContrastRatio {
+            // 충분하면 원본 색상을 그대로 반환합니다.
+            return originalTextColor
+        }
+        else {
+            // 3. 명암비가 부족하면 색상을 어둡게 조정합니다.
+
+            // HSB(색상, 채도, 밝기) 값을 가져옵니다.
+            var hue: CGFloat = 0
+            var saturation: CGFloat = 0
+            var brightness: CGFloat = 0
+            var alpha: CGFloat = 0
+            originalTextColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+            // 목표 명암비를 만족할 때까지 밝기(brightness)를 점진적으로 낮춥니다.
+            var newBrightness = brightness
+            var adjustedColor = originalTextColor
+
+            // 밝기를 0.01씩 줄여가며 적절한 지점을 찾습니다.
+            while newBrightness > 0 {
+                newBrightness -= 0.01
+
+                // 새로운 밝기 값으로 새 색상을 생성합니다.
+                let newlyAdjustedColor = UIColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha)
+
+                // 새 색상과 배경의 명암비를 다시 계산합니다.
+                let newContrastRatio = contrastRatio(between: newlyAdjustedColor, and: backgroundColor)
+
+                // 목표 명암비를 만족하면 루프를 종료하고 해당 색상을 사용합니다.
+                if newContrastRatio >= minimumContrastRatio {
+                    adjustedColor = newlyAdjustedColor
+                    break
+                }
+
+                // 만약 밝기가 0에 도달했는데도 명암비를 만족 못하면
+                // 가장 어두운 버전의 색상이 됩니다.
+                adjustedColor = newlyAdjustedColor
+            }
+
+            return adjustedColor
+        }
+    }
+
+    /// 두 색상의 명암비를 계산하는 함수입니다.
+    public func contrastRatio(between color1: UIColor, and color2: UIColor) -> CGFloat {
+        let luminance1 = color1.relativeLuminance
+        let luminance2 = color2.relativeLuminance
+
+        let lighterLuminance = max(luminance1, luminance2)
+        let darkerLuminance = min(luminance1, luminance2)
+
+        return (lighterLuminance + 0.05) / (darkerLuminance + 0.05)
+    }
+
 }
 
 #endif
