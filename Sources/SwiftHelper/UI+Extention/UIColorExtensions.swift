@@ -198,23 +198,47 @@ extension UIColor {
 
         return 0.2126 * r + 0.7152 * g + 0.0722 * b
     }
+}
 
-    // 주어진 색상이 흰색 배경에서 읽기 힘들 경우(명암비가 낮을 경우),
+extension UIColor {
+    /// 배경에서 충분한 가독성을 갖도록 텍스트 색상을 조정합니다.
+    ///
+    /// 주어진 색상이 흰색 배경에서 읽기 힘들 경우(명암비가 낮을 경우),
     /// 색상의 고유한 톤(Hue)은 유지하면서 충분한 명암비가 확보될 때까지 색상을 어둡게 만듭니다.
     ///
     /// - Parameters:
-    ///   - originalTextColor: 조정할 원본 텍스트 색상
-    ///   - backgroundColor: 백그라운드 색상
+    ///   - backgroundColor: 배경색
     ///   - minimumContrastRatio: 목표로 하는 최소 명암비 (WCAG AA 일반 텍스트 권장치는 4.5)
     /// - Returns: 조정된 텍스트 색상. 명암비가 충분하면 원본 색상을 그대로 반환합니다.
-    public func adjustedTextColor(originalTextColor: UIColor, backgroundColor: UIColor = .white, minimumContrastRatio: CGFloat = 4.5) -> UIColor {
+    ///
+    /*
+     ## 명암비(Contrast Ratio) 범위
+     최소값: 1:1
+
+     두 색상이 완전히 동일할 때의 값입니다. 예를 들어, 흰색 바탕에 흰색 글씨가 있으면 명암비는 1입니다.
+
+     최대값: 21:1
+
+     가장 순수한 검은색과 가장 순수한 흰색 사이의 명암비입니다. 이것이 sRGB 색상 공간에서 나올 수 있는 가장 높은 값입니다.
+
+     ## WCAG 권장 기준
+     실제로 minimumContrastRatio 값을 설정할 때는 웹 접근성 가이드라인(WCAG)에서 권장하는 기준을 주로 사용합니다.
+
+     3.0 (WCAG AA - 큰 텍스트): 아이콘, 제목 등 18pt 이상 또는 14pt 이상 볼드체의 텍스트에 대한 최소 기준입니다.
+
+     4.5 (WCAG AA - 일반 텍스트): 본문과 같은 일반 크기 텍스트에 대한 권장 기준입니다. 가장 일반적으로 사용되는 값입니다.
+
+     7.0 (WCAG AAA - 일반 텍스트): 더 높은 수준의 접근성을 요구하는 경우 사용되는 기준으로, 매우 높은 대비를 보장합니다.
+
+     */
+    public func adjustedTextColor(backgroundColor: UIColor, minimumContrastRatio: CGFloat = 4.5) -> UIColor {
         // 1. 현재 텍스트 색상과 흰 배경의 명암비를 계산합니다.
-        let currentContrastRatio = contrastRatio(between: originalTextColor, and: backgroundColor)
+        let currentContrastRatio = contrastRatio(between: self, and: backgroundColor)
 
         // 2. 명암비가 이미 충분한지 확인합니다.
         if currentContrastRatio >= minimumContrastRatio {
             // 충분하면 원본 색상을 그대로 반환합니다.
-            return originalTextColor
+            return self
         }
         else {
             // 3. 명암비가 부족하면 색상을 어둡게 조정합니다.
@@ -224,11 +248,11 @@ extension UIColor {
             var saturation: CGFloat = 0
             var brightness: CGFloat = 0
             var alpha: CGFloat = 0
-            originalTextColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+            self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
 
             // 목표 명암비를 만족할 때까지 밝기(brightness)를 점진적으로 낮춥니다.
             var newBrightness = brightness
-            var adjustedColor = originalTextColor
+            var adjustedColor = self
 
             // 밝기를 0.01씩 줄여가며 적절한 지점을 찾습니다.
             while newBrightness > 0 {
@@ -257,8 +281,8 @@ extension UIColor {
 
     /// 두 색상의 명암비를 계산하는 함수입니다.
     public func contrastRatio(between color1: UIColor, and color2: UIColor) -> CGFloat {
-        let luminance1 = color1.relativeLuminance
-        let luminance2 = color2.relativeLuminance
+        let luminance1 = color1.luminance()
+        let luminance2 = color2.luminance()
 
         let lighterLuminance = max(luminance1, luminance2)
         let darkerLuminance = min(luminance1, luminance2)
@@ -266,6 +290,16 @@ extension UIColor {
         return (lighterLuminance + 0.05) / (darkerLuminance + 0.05)
     }
 
-}
+    // 밝기 계산
+    public func luminance() -> CGFloat {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
 
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    }
+}
 #endif
