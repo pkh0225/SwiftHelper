@@ -8,30 +8,6 @@
 import Foundation
 import OSLog
 
-// MARK: - 로그 레벨 정의
-public enum LogLevel: String, CaseIterable {
-    case debug = "DEBUG"
-    case info = "INFO"
-    case notice = "NOTICE"
-    case error = "ERROR"
-    case fault = "FAULT"
-
-    var osLogType: OSLogType {
-        switch self {
-        case .debug:
-            return .debug
-        case .info:
-            return .info
-        case .notice:
-            return .default
-        case .error:
-            return .error
-        case .fault:
-            return .fault
-        }
-    }
-}
-
 // MARK: - 커스텀 로거 클래스
 public class Logger {
     public var isDebugPrintEnabled: Bool = false
@@ -144,19 +120,43 @@ public class Logger {
 
 // MARK: - 전역 로거 인스턴스
 public extension Logger {
-    static let shared = Logger()
+    public static let shared = Logger()
 
     // 카테고리별 로거들
-    static let network = Logger(category: "Network")
-    static let ui = Logger(category: "UI")
-    static let database = Logger(category: "Database")
-    static let auth = Logger(category: "Authentication")
+    public static let network = Logger(category: "Network")
+    public static let ui = Logger(category: "UI")
+    public static let database = Logger(category: "Database")
+    public static let auth = Logger(category: "Authentication")
 }
 
 // MARK: - 로그 필터링을 위한 확장
 public extension Logger {
+    // MARK: - 로그 레벨 정의
+    public enum LogLevel: String, CaseIterable {
+        case debug = "DEBUG"
+        case info = "INFO"
+        case notice = "NOTICE"
+        case error = "ERROR"
+        case fault = "FAULT"
+
+        public var osLogType: OSLogType {
+            switch self {
+            case .debug:
+                return .debug
+            case .info:
+                return .info
+            case .notice:
+                return .default
+            case .error:
+                return .error
+            case .fault:
+                return .fault
+            }
+        }
+    }
+
     /// 특정 레벨 이상의 로그만 출력하는 메서드
-    func log(_ level: LogLevel,
+    public func log(_ level: LogLevel,
              _ message: String,
              error: Error? = nil,
              file: String = #file,
