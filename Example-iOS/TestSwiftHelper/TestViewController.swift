@@ -26,6 +26,7 @@ class TestViewController: UITableViewController, RouterProtocol {
         vcList.append(("Closure Queue", ClosureQueueController.self))
         vcList.append(("Memory", MemoryViewController.self))
         vcList.append(("Scope", SccopeViewController.self))
+        vcList.append(("Logger", LoggerTestViewController.self))
     }
 }
 

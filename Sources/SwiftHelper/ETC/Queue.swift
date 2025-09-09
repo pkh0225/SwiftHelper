@@ -2,7 +2,7 @@
 //  LinkedList.swift
 //  SwiftHelper
 //
-//  Created by 박길호(파트너) - 서비스개발담당App개발팀 on 11/26/24.
+//  Created by 박길호 on 11/26/24.
 //
 
 import Foundation
