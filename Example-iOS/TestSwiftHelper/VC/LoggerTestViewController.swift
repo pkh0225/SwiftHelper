@@ -17,6 +17,8 @@ class LoggerTestViewController: UIViewController, RouterProtocol {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("일반 print")
+        logDebug("Test 전역 logDebug")
 
         logger.debug("ViewController viewDidLoad 시작")
         setupUI()

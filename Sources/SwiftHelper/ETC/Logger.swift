@@ -49,9 +49,9 @@ public class Logger {
     @inline(__always) private func getLogMessage(message: String, file: String, function: String, line: Int) -> String {
         let fileName = URL(fileURLWithPath: file).lastPathComponent
         let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "[HH:mm:ss.SSS]"
+        dateFormatter.dateFormat = "HH:mm:ss.SSS"
         let dateString: String = dateFormatter.string(from: Date())
-        let logMessage = "[\(fileName):\(line)]\(dateString) \(function) - \(message)"
+        let logMessage = "[\(fileName):\(line)] [\(dateString)] \(function) - \(message)"
         return logMessage
     }
 
@@ -68,7 +68,7 @@ public class Logger {
         os_log("%@", log: osLog, type: .debug, logMessage)
 
         #if DEBUG
-        if isDebugPrintEnabled { print("🐛 [DEBUG] \(logMessage)") }
+        if isDebugPrintEnabled { print("🐛 [DEBUG] \(message)") }
         #endif
     }
 
@@ -82,7 +82,7 @@ public class Logger {
         os_log("%@", log: osLog, type: .info, logMessage)
 
         #if DEBUG
-        if isDebugPrintEnabled { print("ℹ️ [INFO] \(logMessage)") }
+        if isDebugPrintEnabled { print("ℹ️ [INFO] \(message)") }
         #endif
     }
 
@@ -96,7 +96,7 @@ public class Logger {
         os_log("%@", log: osLog, type: .default, logMessage)
 
         #if DEBUG
-        if isDebugPrintEnabled { print("📢 [NOTICE] \(logMessage)") }
+        if isDebugPrintEnabled { print("📢 [NOTICE] \(message)") }
         #endif
     }
 
@@ -115,7 +115,7 @@ public class Logger {
         os_log("%@", log: osLog, type: .error, logMessage)
 
         #if DEBUG
-        if isDebugPrintEnabled { print("❌ [ERROR] \(logMessage)") }
+        if isDebugPrintEnabled { print("❌ [ERROR] \(message)") }
         #endif
     }
 
@@ -134,7 +134,7 @@ public class Logger {
         os_log("%@", log: osLog, type: .fault, logMessage)
 
         #if DEBUG
-        print("🔥 [FAULT] \(logMessage)")
+        print("🔥 [FAULT] \(message)")
         #endif
 
         // 심각한 오류는 추가 처리 (예: 크래시 리포팅)
