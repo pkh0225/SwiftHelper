@@ -20,4 +20,10 @@ extension Double {
         formatter.locale = NSLocale(localeIdentifier: "ko_KR") as Locale
         return formatter.string(from: date)
     }
+
+    @inline(__always) public func decimalCut(_ count: Int = 3) -> Double {
+        guard count > 0 else { return self }
+        let point: Double = pow(10.0, Double(count))
+        return Double(Int(self * point)) / point
+    }
 }

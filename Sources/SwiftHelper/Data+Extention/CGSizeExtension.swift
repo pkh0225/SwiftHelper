@@ -71,7 +71,7 @@ extension CGSize {
             return self.height
         }
         let origin: CGFloat = self.height * setWidth / self.width
-        return decimalCut(origin, count: 5)
+        return origin.decimalCut(5)
     }
 
     public func ratioWidth(setHeight: CGFloat) -> CGFloat {
@@ -80,7 +80,7 @@ extension CGSize {
             return self.width
         }
         let origin: CGFloat = self.width * setHeight / self.height
-        return decimalCut(origin, count: 5)
+        return origin.decimalCut(5)
     }
 
     public var w: CGFloat {
