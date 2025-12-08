@@ -70,6 +70,14 @@ public struct Clamping<Value: Comparable> {
     }
 }
 
+private protocol AnyOptional {
+    var isNil: Bool { get }
+}
+
+extension Optional: AnyOptional {
+    var isNil: Bool { self == nil }
+}
+
 @propertyWrapper
 public struct UserDefaultWrapper<Value> {
     let key: String
@@ -95,8 +103,13 @@ public struct UserDefaultWrapper<Value> {
             else {
                 userDefault = UserDefaults.standard
             }
-            userDefault.set(newValue, forKey: key)
 
+            if let optional = newValue as? AnyOptional, optional.isNil {
+                userDefault.removeObject(forKey: key)
+            }
+            else {
+                userDefault.set(newValue, forKey: key)
+            }
         }
     }
 
