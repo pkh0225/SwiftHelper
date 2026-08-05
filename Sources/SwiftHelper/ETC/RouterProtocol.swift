@@ -9,14 +9,9 @@
 import UIKit
 
 @MainActor
-public func keyWindow() -> UIWindow? {
-    if #available(iOS 13.0, *) {
-        let scenes = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        return scenes?.windows.first
-    } 
-    else {
-        return UIApplication.shared.windows.first { $0.isKeyWindow }
-    }
+@inline(__always) public func keyWindow() -> UIWindow? {
+    let scenes = UIApplication.shared.connectedScenes.first as? UIWindowScene
+    return scenes?.windows.first { $0.isKeyWindow } ?? scenes?.windows.first
 }
 
 @MainActor

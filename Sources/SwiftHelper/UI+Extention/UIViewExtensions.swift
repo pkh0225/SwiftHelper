@@ -16,100 +16,9 @@ public class ViewCacheManager {
         self.cacheNibs.removeAllObjects()
     }
 }
-
-// MARK: - Custom UIView Initilizers
+// MARK: - Frame Extensions
+@MainActor
 extension UIView {
-    ///   convenience contructor to define a view based on width, height and base coordinates.
-    public convenience init(x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat) {
-        self.init(frame: CGRect(x: x, y: y, width: w, height: h))
-    }
-    ///   puts padding around the view
-    public convenience init(superView: UIView, padding: CGFloat) {
-        self.init(frame: CGRect(x: superView.x + padding, y: superView.y + padding, width: superView.w - padding * 2, height: superView.h - padding * 2))
-    }
-
-    public convenience init(superView: UIView) {
-        self.init(frame: CGRect(origin: CGPoint.zero, size: superView.size))
-    }
-}
-
-// MARK: - Frame ExtensionsshowRectLine
-extension UIView {
-    /// AutoLayout을 사용하지 않고 add를 하는경우에만 사용..... 🧨 Autolayout을 쓰는 경우는 addSubViewAutoLayout 함수를 이용해주세요
-    /// - Parameters:
-    ///   - view: 타켓 뷰
-    ///   - resizingMask: UIView.AutoresizingMask
-    ///   - frame: CGRect
-    public func addSubviewResizingMask(_ view: UIView, resizingMask: UIView.AutoresizingMask = [.flexibleWidth, .flexibleHeight], frame: CGRect = CGRect.zero) {
-        if frame == CGRect.zero {
-            view.frame = self.bounds
-        }
-        else {
-            view.frame = frame
-        }
-
-        view.autoresizingMask = resizingMask
-        self.addSubview(view)
-    }
-
-    ///   add multiple subviews
-    public func addSubviews(_ views: [UIView]) {
-        views.forEach { [weak self] eachView in
-            self?.addSubview(eachView)
-        }
-    }
-
-    ///   resizes this view so it fits the largest subview
-    public func resizeToFitSubviews() {
-        var width: CGFloat = 0
-        var height: CGFloat = 0
-        for someView: UIView in self.subviews {
-            let aView: UIView = someView
-            let newWidth: CGFloat = aView.x + aView.w
-            let newHeight: CGFloat = aView.y + aView.h
-            width = max(width, newWidth)
-            height = max(height, newHeight)
-        }
-        frame = CGRect(x: x, y: y, width: width, height: height)
-    }
-
-    ///   resizes this view so it fits the largest subview
-    public func resizeToFitSubviews(_ tagsToIgnore: [Int]) {
-        var width: CGFloat = 0
-        var height: CGFloat = 0
-        for someView: UIView in self.subviews {
-            let aView: UIView = someView
-            if !tagsToIgnore.contains(someView.tag) {
-                let newWidth: CGFloat = aView.x + aView.w
-                let newHeight: CGFloat = aView.y + aView.h
-                width = max(width, newWidth)
-                height = max(height, newHeight)
-            }
-        }
-        frame = CGRect(x: x, y: y, width: width, height: height)
-    }
-
-    ///   resizes this view so as to fit its width.
-    public func resizeToFitWidth() {
-        let currentHeight = self.h
-        self.sizeToFit()
-        self.h = currentHeight
-    }
-
-    ///   resizes this view so as to fit its height.
-    public func resizeToFitHeight() {
-        let currentWidth = self.w
-        self.sizeToFit()
-        self.w = currentWidth
-    }
-
-    ///   resizes this view so as to fit its height.
-    public func resizeToFitHeight(_ height: CGFloat) {
-        var rt: CGRect = frame
-        rt.size.height = height
-        frame = rt
-    }
-
     ///   getter and setter for the x coordinate of the frame's origin for the view.
     public var x: CGFloat {
         get {
@@ -301,19 +210,33 @@ extension UIView {
     public func alignRight(_ offset: CGFloat) -> CGFloat {
         return self.w - offset
     }
+}
 
-    public func reorderSubViews(_ reorder: Bool = false, tagsToIgnore: [Int] = []) -> CGFloat {
-        var currentHeight: CGFloat = 0
-        for someView: UIView in subviews {
-            if !tagsToIgnore.contains(someView.tag) && !(someView ).isHidden {
-                if reorder {
-                    let aView: UIView = someView
-                    aView.frame = CGRect(x: aView.frame.origin.x, y: currentHeight, width: aView.frame.width, height: aView.frame.height)
-                }
-                currentHeight += someView.frame.height
-            }
+// MARK: - View subView
+@MainActor
+extension UIView {
+    /// AutoLayout을 사용하지 않고 add하는 경우에만 사용
+    /// - Parameters:
+    ///   - view: 타켓 뷰
+    ///   - resizingMask: UIView.AutoresizingMask
+    ///   - frame: CGRect
+    public func addSubviewResizingMask(_ view: UIView, resizingMask: UIView.AutoresizingMask = [.flexibleWidth, .flexibleHeight], frame: CGRect = CGRect.zero) {
+        if frame == CGRect.zero {
+            view.frame = self.bounds
         }
-        return currentHeight
+        else {
+            view.frame = frame
+        }
+
+        view.autoresizingMask = resizingMask
+        self.addSubview(view)
+    }
+
+    ///   add multiple subviews
+    public func addSubviews(_ views: [UIView]) {
+        views.forEach { [weak self] eachView in
+            self?.addSubview(eachView)
+        }
     }
 
     public func removeSubviews() {
@@ -346,7 +269,11 @@ extension UIView {
 
     }
 
-    public class func subViewAllList(_ view: UIView) -> [UIView] {
+    public func subViewAllList() -> [UIView] {
+        return UIView.subViewAllList(self)
+    }
+
+    public static func subViewAllList(_ view: UIView) -> [UIView] {
         var result: [UIView] = [UIView]()
         for sv: UIView in view.subviews {
             if sv.subviews.count > 0 {
@@ -374,21 +301,11 @@ extension UIView {
         }
         return superView
     }
-    
-    public var parentViewController: UIViewController? {
-        var parentResponder: UIResponder? = self
-        while parentResponder != nil {
-            parentResponder = parentResponder!.next
-            if let viewController = parentResponder as? UIViewController {
-                return viewController
-            }
-        }
-        return nil
-    }
+
     ///   Centers view in superview horizontally
     public func centerXInSuperView() {
         guard let parentView = superview else {
-            assertionFailure("SwiftExtensions Error: The view \(String(describing: type(of: self.parentViewController))) doesn't have a superview")
+            assertionFailure("SwiftExtensions Error: The view \(String(describing: type(of: self))) doesn't have a superview")
             return
         }
 
@@ -398,7 +315,7 @@ extension UIView {
     ///   Centers view in superview vertically
     public func centerYInSuperView() {
         guard let parentView = superview else {
-            assertionFailure("SwiftExtensions Error: The view \(String(describing: type(of: self.parentViewController))) doesn't have a superview")
+            assertionFailure("SwiftExtensions Error: The view \(String(describing: type(of: self))) doesn't have a superview")
             return
         }
 
@@ -410,10 +327,10 @@ extension UIView {
         self.centerXInSuperView()
         self.centerYInSuperView()
     }
-
 }
 
-// MARK: Transform Extensions
+// MARK: - Transform Extensions
+@MainActor
 extension UIView {
     public func setRotationX(_ x: CGFloat) {
         var transform: CATransform3D = CATransform3DIdentity
@@ -454,6 +371,7 @@ extension UIView {
 }
 
 // MARK: - Layer Extensions
+@MainActor
 extension UIView {
     @IBInspectable public var tagName: String? {
         get {
@@ -476,7 +394,10 @@ extension UIView {
 
     @IBInspectable open var borderColor: UIColor? {
         get {
-            return UIColor(cgColor: self.layer.borderColor!)
+            if let cgColor = self.layer.borderColor {
+                return UIColor(cgColor: cgColor)
+            }
+            return nil
         }
         set {
             guard self.layer.borderColor != newValue?.cgColor else { return }
@@ -504,7 +425,6 @@ extension UIView {
             guard self.layer.cornerRadius != newValue else { return }
             self.layer.cornerRadius = newValue
             self.layer.masksToBounds = true
-            self.clipsToBounds = true
             setNeedsDisplay()
         }
     }
@@ -569,6 +489,96 @@ extension UIView {
         self.layer.addSublayer(shapeLayer)
     }
 
+    public func showRectLine() {
+        func subViewList(_ view: UIView) -> [UIView] {
+            var result: [UIView] = [UIView]()
+            for sv: UIView in view.subviews {
+                if sv.subviews.count > 0 && (sv is UIButton) == false {
+                    result += subViewList(sv)
+                }
+                result.append(sv)
+            }
+            return result
+        }
+
+        for view: UIView in subViewList(self) {
+            if let label = view as? UILabel {
+                if !(label.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? false) || label.attributedText != nil {
+                    label.borderColor = .green
+                    label.borderWidth = 1
+                }
+            }
+            else if view is UIImageView {
+                view.borderColor = .red
+                view.borderWidth = 1.5
+            }
+            else if view is UITextField {
+                view.borderColor = .darkGray
+                view.borderWidth = 1
+            }
+//            else if view is UIScrollView {
+//                view.borderColor = UIColor(hex: 0xFF7D5A, alpha: 0.6)
+//                view.borderWidth = 1
+//            }
+            else if view is UIStackView {
+                view.borderColor = UIColor(hex: 0xCACF00, alpha: 1)
+                view.borderWidth = 1
+            }
+            else if view is UIButton {
+                view.borderColor = .blue
+                view.borderWidth = 2
+            }
+            else if view is UICollectionViewCell {
+                view.borderColor = .purple
+                view.borderWidth = 1
+            }
+            else if view is UICollectionReusableView {
+                view.borderColor = UIColor(hex: 0x26004c, alpha: 1)
+                view.borderWidth = 1
+            }
+            else if view is UITableViewCell {
+                view.borderColor = .purple
+                view.borderWidth = 1
+            }
+            else if view is WKWebView {
+                view.borderColor = UIColor(hex: 0xFF3E3E, alpha: 1)
+                view.borderWidth = 5
+            }
+            else {
+                view.borderColor = .yellow
+                view.borderWidth = 0.5
+            }
+        }
+    }
+
+    public func showCommonUIRectLine() {
+        Task { @MainActor in
+            try await Task.sleep(nanoseconds: 200_000_000)
+
+            self.borderColor = UIColor(hex: 0xFF336D, alpha: 1)
+            self.borderWidth = 3
+
+            let dot = UIView(frame: CGRect(x: 6, y: 6, width: 6, height: 6))
+            dot.backgroundColor = UIColor(hex: 0xFF336D, alpha: 1)
+            dot.cornerRadius = 3
+            self.addSubview(dot)
+        }
+    }
+
+    public func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+        self.layoutIfNeeded()
+        let topLeft: CGFloat = corners.contains(.topLeft) ? radius : 0
+        let topRight: CGFloat = corners.contains(.topRight) ? radius : 0
+        let bottomLeft: CGFloat = corners.contains(.bottomLeft) ? radius : 0
+        let bottomRight: CGFloat = corners.contains(.bottomRight) ? radius : 0
+        setLayerMaskOperation(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight)
+    }
+
+    public func roundCorners(topLeft: CGFloat = 0, topRight: CGFloat = 0, bottomLeft: CGFloat = 0, bottomRight: CGFloat = 0) {
+        // 원래부터도 cornerRadius와 동시에 있으면 이 값을 무시하고 0으로 적용하고 있었습니다. 따라서 기존 스펙대로 초기화합니다.
+        setLayerMaskOperation(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight)
+    }
+
     public func roundView(withBorderColor color: UIColor? = nil, withBorderWidth width: CGFloat? = nil) {
         self.cornerRadius = min(self.frame.size.height, self.frame.size.width) / 2
         self.layer.borderWidth = width ?? 0
@@ -579,6 +589,63 @@ extension UIView {
         self.layer.mask = nil
         self.layer.borderWidth = 0
     }
+
+    public func addCDNDebugView(targetView: UIView, strUrl: String?) {
+        let debugRemoteImageManagerUrl = "ssgcdn.com/ui/app/small"
+        let debugRemoteDesignImageUrl = "sui.shinsegaecdn.com/ui/m_ssg/img/design"
+
+        let defaultViewTag: Int = 909012312
+        var debugView: UIButton = UIButton()
+
+        if let v: UIButton = targetView.viewWithTag(defaultViewTag) as? UIButton {
+            debugView = v
+        }
+        else {
+            targetView.addSubviewResizingMask(debugView)
+        }
+
+        debugView.addTarget(self, action: #selector(self.showNetworkImageInfo), for: .touchUpInside)
+        debugView.tag = defaultViewTag
+        debugView.isUserInteractionEnabled = false
+        debugView.accessibilityHint = strUrl
+
+        if let urlString: String = strUrl {
+//            println("urlString :: \(urlString)")
+
+            if urlString.contains(debugRemoteImageManagerUrl) {
+                debugView.backgroundColor = .blue
+            }
+            else if urlString.contains(debugRemoteDesignImageUrl) {
+                debugView.backgroundColor = .purple
+            }
+            else {
+                debugView.backgroundColor = .yellow
+            }
+        }
+        else {
+            debugView.backgroundColor = .red
+        }
+
+        debugView.alpha = 0.5
+    }
+
+    public func addDebugMaskView(targetView: UIView, color: UIColor = UIColor(hex: 0xFF3E3E, alpha: 0.2), isUseStroke: Bool = false) {
+        let debugView = DebugMaskingView(bgColor: color, strokeColor: color, isUseStroke: isUseStroke)
+        debugView.frame = targetView.bounds
+        targetView.addSubviewResizingMask(debugView)
+        targetView.bringSubviewToFront(debugView)
+    }
+
+    public func debugMaskView() -> DebugMaskingView? {
+        guard let debugMaskView = self.viewWithTag(DebugMaskingView.DebugMaskViewTag) as? DebugMaskingView else {
+            return nil
+        }
+        return debugMaskView
+    }
+    @objc
+    public func showNetworkImageInfo(button: UIButton?) {
+        Logger.ui.logDebug("image url : \(String(describing: button?.accessibilityHint))")
+    }
 }
 
 private let UIViewAnimationDuration: TimeInterval = 1
@@ -586,6 +653,7 @@ private let UIViewAnimationSpringDamping: CGFloat = 0.5
 private let UIViewAnimationSpringVelocity: CGFloat = 0.5
 
 // MARK: - Animation Extensions
+@MainActor
 extension UIView {
     public func clickAnimation(scaleX: CGFloat = 0.8, usingSpringWithDamping: CGFloat = 0.3, initialSpringVelocity: CGFloat = 10.0, completion: VoidClosure? = nil) {
         self.transform = CGAffineTransform(scaleX: scaleX, y: scaleX)
@@ -671,7 +739,7 @@ extension UIView {
 
     public func pop() {
         setScale(x: 1.1, y: 1.1)
-        spring(duration: 0.2, animations: { [weak self] () -> Void in
+        spring(duration: 0.2, animations: { [weak self] in
             guard let `self` = self else { return }
             self.setScale(x: 1, y: 1)
         })
@@ -679,7 +747,7 @@ extension UIView {
 
     public func popBig() {
         setScale(x: 1.25, y: 1.25)
-        spring(duration: 0.2, animations: { [weak self] () -> Void in
+        spring(duration: 0.2, animations: { [weak self] in
             guard let `self` = self else { return }
             self.setScale(x: 1, y: 1)
         })
@@ -701,6 +769,7 @@ extension UIView {
 }
 
 // MARK: - Render Extensions
+@MainActor
 extension UIView {
     /// 뷰와 그 전체 계층 구조를 UIImage로 변환합니다.
     /// - `drawHierarchy(in:afterScreenUpdates:)`를 사용하여 뷰 계층 구조 전체를 캡처합니다.
@@ -714,6 +783,7 @@ extension UIView {
             drawHierarchy(in: bounds, afterScreenUpdates: false)
         }
     }
+
     /// 뷰의 Core Animation 레이어만 UIImage로 변환합니다.
     /// - `layer.render(in:)`를 사용하여 현재 레이어 상태만 캡처합니다.
     /// - 서브뷰나 오버레이는 포함되지 않으며, 단일 뷰만 캡처됩니다.
@@ -728,8 +798,15 @@ extension UIView {
     }
 }
 
+// MARK: - Gesture Extensions
+private var TapGesture_Key: UInt8 = 0
+private var SwipeGesture_Key: UInt8 = 0
+private var PanGesture_Key: UInt8 = 0
+private var PinchGesture_Key: UInt8 = 0
+private var LongPressGesture_Key: UInt8 = 0
+
 @MainActor
-private final class ClosureSleeve: @unchecked Sendable {
+private class ClosureSleeve {
     let closure: (_ recognizer: UIGestureRecognizer) -> Void
 
     init (_ closure: @escaping (_ recognizer: UIGestureRecognizer) -> Void) {
@@ -751,15 +828,9 @@ private final class ClosureSleeve: @unchecked Sendable {
         }
     }
 }
-// MARK: - Gesture Extensions
+
+@MainActor
 extension UIView {
-    private struct AssociatedGestureKeys {
-        nonisolated(unsafe) static var tapGesture: UInt8 = 0
-        nonisolated(unsafe) static var swipeGesture: UInt8 = 0
-        nonisolated(unsafe) static var panGesture: UInt8 = 0
-        nonisolated(unsafe) static var pinchGesture: UInt8 = 0
-        nonisolated(unsafe) static var longPressGesture: UInt8 = 0
-    }
     /// http://stackoverflow.com/questions/4660371/how-to-add-a-touch-event-to-a-uiview/32182866#32182866
     @discardableResult
     public func addTapGesture(tapNumber: Int = 1, _ closure: @escaping (_ recognizer: UIGestureRecognizer) -> Void) -> UITapGestureRecognizer {
@@ -768,7 +839,7 @@ extension UIView {
         tap.numberOfTapsRequired = tapNumber
         addGestureRecognizer(tap)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &AssociatedGestureKeys.tapGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &TapGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return tap
     }
 
@@ -784,7 +855,7 @@ extension UIView {
 
         addGestureRecognizer(swipe)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &AssociatedGestureKeys.swipeGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &SwipeGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return swipe
     }
 
@@ -794,7 +865,7 @@ extension UIView {
         let pan: UIPanGestureRecognizer = UIPanGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(pan)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &AssociatedGestureKeys.panGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &PanGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return pan
     }
     #if os(iOS)
@@ -805,7 +876,7 @@ extension UIView {
         let pinch: UIPinchGestureRecognizer = UIPinchGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(pinch)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &AssociatedGestureKeys.pinchGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &PinchGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return pinch
     }
 
@@ -817,18 +888,23 @@ extension UIView {
         let longPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: sleeve, action: #selector(ClosureSleeve.invoke))
         addGestureRecognizer(longPress)
         isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &AssociatedGestureKeys.longPressGesture, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &LongPressGesture_Key, sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return longPress
     }
 }
 
 // MARK: - UIView Extension Xib
+@MainActor
 extension UIView {
-    class func fromXib(cache: Bool = false) -> Self {
+    public class func fromXib(cache: Bool = false) -> Self {
         return fromXib(cache: cache, as: self)
     }
 
-    private class func fromXib<T>(cache: Bool = false, as type: T.Type) -> T {
+    private class func fromXib<T: UIView>(cache: Bool = false, as type: T.Type) -> T {
+        // betaApp이고 현재 메인쓰레드가 아닌데 fromXib를 호출했으면 종료처리
+        if isBetaApp() && !Thread.isMainThread {
+            fatalError("not main thread")
+        }
         if cache, let view = ViewCacheManager.cacheViewNibs.object(forKey: self.className as NSString) {
             return view as! T
         }
@@ -841,22 +917,26 @@ extension UIView {
                 let view = nib.instantiate(withOwner: nil, options: nil).first as! T
 
                 ViewCacheManager.cacheNibs.setObject(nib, forKey: self.className as NSString)
+//                let view: UIView = Bundle.main.loadNibNamed(self.className, owner: nil, options: nil)!.first as! UIView
                 if cache {
-                    ViewCacheManager.cacheViewNibs.setObject(view as! UIView, forKey: self.className as NSString)
+                    ViewCacheManager.cacheViewNibs.setObject(view, forKey: self.className as NSString)
+                    view.cache = cache
                 }
                 return view
             }
         }
+
         fatalError("\(className) XIB File Not Exist")
     }
 
     public class func fromXibSize() -> CGSize {
         return fromXib(cache: true).frame.size
     }
+
 }
 
-
 // MARK: - UIView safeAreaLayoutGuide
+@MainActor
 extension UIView {
     public var safeTopAnchor: NSLayoutYAxisAnchor {
         return self.safeAreaLayoutGuide.topAnchor
@@ -875,12 +955,14 @@ extension UIView {
     }
 }
 
+@MainActor
 extension UIResponder {
     public func next<T: UIResponder>(_ type: T.Type) -> T? {
         return next as? T ?? next?.next(type)
     }
 }
 
+@MainActor
 extension UIView {
     public func getViewFromParent<T>(_ type: T.Type) -> T? {
         var view: UIView? = self
@@ -892,17 +974,22 @@ extension UIView {
         }
         return nil
     }
+
+    public func topSuperview() -> UIView? {
+        return sequence(first: self, next: \.superview).lazy.compactMap({ $0 as? UIWindow }).first
+    }
 }
 
+@MainActor
 extension UIView {
     private struct AssociatedKeys {
-        nonisolated(unsafe) static var cache: UInt8 = 0
-        nonisolated(unsafe) static var unitName: UInt8 = 0
-        nonisolated(unsafe) static var tagName: UInt8 = 0
-        nonisolated(unsafe) static var tagValue: UInt8 = 0
-        nonisolated(unsafe) static var stretchImage: UInt8 = 0
-        nonisolated(unsafe) static var strechPoint: UInt8 = 0
-        nonisolated(unsafe) static var resizeImageSize: UInt8 = 0
+        static var cache: UInt8 = 0
+        static var unitName: UInt8 = 0
+        static var tagName: UInt8 = 0
+        static var tagValue: UInt8 = 0
+        static var stretchImage: UInt8 = 0
+        static var strechPoint: UInt8 = 0
+        static var resizeImageSize: UInt8 = 0
     }
 
     public var cache: Bool {
@@ -964,48 +1051,6 @@ extension UIView {
         }
     }
 
-    public var resize_image_size: Int? {
-        get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.resizeImageSize) as? Int
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociatedKeys.resizeImageSize, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
-    public func allButtonSelect(_ select: Bool) {
-        for view: UIView in self.subviews {
-            if let button: UIButton = view as? UIButton {
-                button.isSelected = select
-            }
-            else {
-                view.allButtonSelect(select)
-            }
-        }
-    }
-
-    public func allButtonEnalbe(_ enable: Bool) {
-        for view: UIView in self.subviews {
-            if let button: UIButton = view as? UIButton {
-                button.isEnabled = enable
-            }
-            else {
-                view.allButtonEnalbe(enable)
-            }
-        }
-    }
-
-    public func disableScrollsToTopPropertyOnAllSubviewsOf() {
-        for view in self.subviews {
-            if let scrollView: UIScrollView = view as? UIScrollView {
-                scrollView.scrollsToTop = false
-            }
-            else {
-                view.disableScrollsToTopPropertyOnAllSubviewsOf()
-            }
-        }
-    }
-
     public func findViewController() -> UIViewController? {
         if let nextResponder = self.next as? UIViewController {
             return nextResponder
@@ -1017,102 +1062,170 @@ extension UIView {
             return nil
         }
     }
+
+    public func currentFirstResponder() -> UIResponder? {
+        if self.isFirstResponder {
+            return self
+        }
+        for subview in self.subviews {
+            if let responder = subview.currentFirstResponder() {
+                return responder
+            }
+        }
+        return nil
+    }
 }
 
+// MARK: - CGRect 각 코너별 radius 지원
+@MainActor
 extension UIView {
-    public static var isSwizzledBorderLayer = false {
-        didSet {
-            if isSwizzledBorderLayer {
-                enableBorderLayerSwizzling()
+    private struct RoundCornerAssociatedKeys {
+        static var topLeftRadius: UInt8 = 0
+        static var topRightRadius: UInt8 = 0
+        static var bottomLeftRadius: UInt8 = 0
+        static var bottomRightRadius: UInt8 = 0
+    }
+    /// XIB에서 코너별로 다른 radius 적용 시 cornerRadius 값을 무시하고 위의 값을 적용
+    @IBInspectable public var topLeftRadius: NSNumber? {
+        get {
+            if let value = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.topLeftRadius) as? NSNumber {
+                return value
             }
-            else {
-                disableBorderLayerSwizzling()
+            return nil
+        }
+        set {
+            let oldValue = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.topLeftRadius)
+            objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.topLeftRadius, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            setLayerMaskIfNeeded(oldValue: oldValue as? NSNumber, newValue: newValue)
+        }
+    }
+    @IBInspectable public var topRightRadius: NSNumber? {
+        get {
+            if let value = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.topRightRadius) as? NSNumber {
+                return value
             }
+            return nil
+        }
+        set {
+            let oldValue = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.topRightRadius)
+            objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.topRightRadius, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            setLayerMaskIfNeeded(oldValue: oldValue as? NSNumber, newValue: newValue)
         }
     }
+    @IBInspectable public var bottomLeftRadius: NSNumber? {
+        get {
+            if let value = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.bottomLeftRadius) as? NSNumber {
+                return value
+            }
+            return nil
+        }
+        set {
+            let oldValue = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.bottomLeftRadius)
+            objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.bottomLeftRadius, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            setLayerMaskIfNeeded(oldValue: oldValue as? NSNumber, newValue: newValue)
+        }
+    }
+    @IBInspectable public var bottomRightRadius: NSNumber? {
+        get {
+            if let value = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.bottomRightRadius) as? NSNumber {
+                return value
+            }
+            return nil
+        }
+        set {
+            let oldValue = objc_getAssociatedObject(self, &RoundCornerAssociatedKeys.bottomRightRadius)
+            objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.bottomRightRadius, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            setLayerMaskIfNeeded(oldValue: oldValue as? NSNumber, newValue: newValue)
+        }
+    }
+    /// 여러 코너의 cornerRadius 값을 변경한 경우, 한 번의 mask만 그리는 operation을 수행하도록 하는 func
+    public func setLayerMaskOperation(topLeft: CGFloat = 0, topRight: CGFloat = 0, bottomLeft: CGFloat = 0, bottomRight: CGFloat = 0) {
+        objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.topLeftRadius, NSNumber(floatLiteral: topLeft), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.topRightRadius, NSNumber(floatLiteral: topRight), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.bottomLeftRadius, NSNumber(floatLiteral: bottomLeft), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(self, &RoundCornerAssociatedKeys.bottomRightRadius, NSNumber(floatLiteral: bottomRight), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        setLayerMask()
+    }
+    /// 런타임에서 특정 코너의 cornerRadius 값을 변경하는 경우, 값이 바뀌어야만 masking을 하도록 만든 func
+    public func setLayerMaskIfNeeded<T>(oldValue: T?, newValue: T?) where T: NSNumber {
+        guard let oldValue, oldValue.isEqual(to: newValue ?? NSNumber(floatLiteral: 0)) else { return }
+        setLayerMask()
+    }
+    /// layer의 mask를 graphic operation 으로 (GPU 가속을 이용하여) 그리는 공통 func
+    public func setLayerMask() {
+        let topLeft = CGFloat(topLeftRadius?.doubleValue ?? 0)
+        let topRight = CGFloat(topRightRadius?.doubleValue ?? 0)
+        let bottomLeft = CGFloat(bottomLeftRadius?.doubleValue ?? 0)
+        let bottomRight = CGFloat(bottomRightRadius?.doubleValue ?? 0)
 
-    public static func enableBorderLayerSwizzling() {
-        guard !isSwizzledBorderLayer else { return }
-        isSwizzledBorderLayer = true
-        swizzleBorderLayerMethods()
+        let shape = CAShapeLayer()
+        shape.frame = bounds
+        shape.path = Self.roundedRectPath(
+            in: bounds,
+            topLeft: topLeft,
+            topRight: topRight,
+            bottomLeft: bottomLeft,
+            bottomRight: bottomRight
+        ).cgPath
 
+        layer.mask = shape
+        clipsToBounds = true
+        layer.masksToBounds = true
+        setNeedsDisplay()
     }
 
-    public static func disableBorderLayerSwizzling() {
-        guard isSwizzledBorderLayer else { return }
-        isSwizzledBorderLayer = false
-        swizzleBorderLayerMethods() // 다시 교환하여 원래 상태로 복구
-
-    }
-
-    private static func swizzleBorderLayerMethods() {
-        let originalSelector = #selector(layoutSubviews)
-        let swizzledSelector = #selector(swizzled_layoutSubviews)
-
-        guard let originalMethod = class_getInstanceMethod(UIView.self, originalSelector),
-              let swizzledMethod = class_getInstanceMethod(UIView.self, swizzledSelector) else {
-            return
+    private static func roundedRectPath(
+        in rect: CGRect,
+        topLeft: CGFloat,
+        topRight: CGFloat,
+        bottomLeft: CGFloat,
+        bottomRight: CGFloat
+    ) -> UIBezierPath {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: rect.minX + topLeft, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - topRight, y: rect.minY))
+        if topRight > 0 {
+            path.addArc(
+                withCenter: CGPoint(x: rect.maxX - topRight, y: rect.minY + topRight),
+                radius: topRight,
+                startAngle: -.pi / 2,
+                endAngle: 0,
+                clockwise: true
+            )
         }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
-    @objc private func swizzled_layoutSubviews() {
-        // 기존 layoutSubviews 호출
-        self.swizzled_layoutSubviews()
-
-        // 추가 동작 (테두리 렌더링)
-        showRectLine()
-    }
-
-    private func showRectLine() {
-        if self is UILabel {
-            self.borderColor = #colorLiteral(red: 0.1960784346, green: 0.3411764801, blue: 0.1019607857, alpha: 1)
-            self.borderWidth = 0.5
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - bottomRight))
+        if bottomRight > 0 {
+            path.addArc(
+                withCenter: CGPoint(x: rect.maxX - bottomRight, y: rect.maxY - bottomRight),
+                radius: bottomRight,
+                startAngle: 0,
+                endAngle: .pi / 2,
+                clockwise: true
+            )
         }
-        else if self is UIImageView {
-            self.borderColor = #colorLiteral(red: 0.4392156899, green: 0.01176470611, blue: 0.1921568662, alpha: 1)
-            self.borderWidth = 1
+        path.addLine(to: CGPoint(x: rect.minX + bottomLeft, y: rect.maxY))
+        if bottomLeft > 0 {
+            path.addArc(
+                withCenter: CGPoint(x: rect.minX + bottomLeft, y: rect.maxY - bottomLeft),
+                radius: bottomLeft,
+                startAngle: .pi / 2,
+                endAngle: .pi,
+                clockwise: true
+            )
         }
-        else if self is UITextField {
-            self.borderColor = .darkGray
-            self.borderWidth = 0.5
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + topLeft))
+        if topLeft > 0 {
+            path.addArc(
+                withCenter: CGPoint(x: rect.minX + topLeft, y: rect.minY + topLeft),
+                radius: topLeft,
+                startAngle: .pi,
+                endAngle: -.pi / 2,
+                clockwise: true
+            )
         }
-        else if self is UIStackView {
-            self.borderColor = #colorLiteral(red: 1, green: 0.4850212932, blue: 0.4556372166, alpha: 1)
-            self.borderWidth = 0.5
-        }
-        else if self is UIButton {
-            self.borderColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
-            self.borderWidth = 0.5
-        }
-        else if self is UITableViewCell {
-            self.borderColor = #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1)
-            self.borderWidth = 0.5
-        }
-        else if self is UICollectionViewCell {
-            self.borderColor = #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1)
-            self.borderWidth = 0.5
-        }
-        else if self is UICollectionReusableView {
-            self.borderColor = #colorLiteral(red: 0.1490196078, green: 0, blue: 0.2980392157, alpha: 1)
-            self.borderWidth = 0.5
-        }
-        else if self is WKWebView {
-            self.borderColor = #colorLiteral(red: 0.5954421759, green: 1, blue: 0.981256187, alpha: 1)
-            UIColor(hex: 0xFF3E3E, alpha: 1)
-            self.borderWidth = 3
-        }
-        else if self is UIScrollView {
-            self.borderColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-            UIColor(hex: 0xFF7D5A, alpha: 0.6)
-            self.borderWidth = 0.5
-        }
-        else {
-            self.borderColor = #colorLiteral(red: 0.7254902124, green: 0.4784313738, blue: 0.09803921729, alpha: 1)
-            self.borderWidth = 0.5
-        }
+        path.close()
+        return path
     }
 }
-#endif
 
+#endif

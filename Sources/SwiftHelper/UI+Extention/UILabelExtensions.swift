@@ -2,7 +2,6 @@
 //  UILabelExtensions.swift
 //  EZSwiftExtensions
 //
-//  Created by Goktug Yilmaz on 15/07/15.
 //  Copyright (c) 2015 Goktug Yilmaz. All rights reserved.
 //
 
@@ -10,8 +9,8 @@
 
 import UIKit
 
+@MainActor
 extension UILabel {
-    ///   Initialize Label with a font, color and alignment.
     public convenience init(font: UIFont, color: UIColor, alignment: NSTextAlignment) {
         self.init()
         self.font = font
@@ -19,86 +18,42 @@ extension UILabel {
         self.textAlignment = alignment
     }
 
-    /// EZSwiftExtensions
-    public func getEstimatedSize(_ width: CGFloat = CGFloat.greatestFiniteMagnitude, height: CGFloat = CGFloat.greatestFiniteMagnitude) -> CGSize {
-        return sizeThatFits(CGSize(width: width, height: height))
+    /// 이 함수는 메인큐에서만 사용할 수 있습니다.
+    /// 디버그를 용이하게 하기 위해서 메인큐가 아닌 곳에서 사용할 경우 앱을 죽입니다.
+    /// 운영앱은 0 뱉을꺼에요 UI 깨질꺼임!
+    public func maxLineHeight() -> CGFloat {
+        if Thread.isMainThread {
+            return CGFloat(self.numberOfLines) * self.font.lineHeight
+        }
+        if isBetaApp() {
+            assertionFailure("이 함수는 메인큐에서만 사용할 수 있습니다.")
+        }
+        return .zero
     }
 
-    /// EZSwiftExtensions
-    public func getEstimatedHeight() -> CGFloat {
-        return sizeThatFits(CGSize(width: w, height: CGFloat.greatestFiniteMagnitude)).height
-    }
-
-    /// EZSwiftExtensions
-    public func getEstimatedWidth() -> CGFloat {
-        return sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: h)).width
-    }
-
-    /// EZSwiftExtensions
-    public func fitHeight() {
-        self.h = getEstimatedHeight()
-    }
-
-    /// EZSwiftExtensions
-    public func fitWidth() {
-        self.w = getEstimatedWidth()
-    }
-
-    /// EZSwiftExtensions
-    public func fitSize() {
-        self.fitWidth()
-        self.fitHeight()
-        sizeToFit()
-    }
-
-    /// EZSwiftExtensions (if duration set to 0 animate wont be)
-    public func set(text _text: String?, duration: TimeInterval) {
-        UIView.transition(with: self, duration: duration, options: .transitionCrossDissolve, animations: { () -> Void in
-            self.text = _text
-        }, completion: nil)
-    }
-
-    public func convertWonFormat(_ text: String) -> NSMutableAttributedString {
-        let price: String = text + "원"
-        let wonFont: UIFont = UIFont(name: self.font.fontName, size: self.font.pointSize - 4)!
-
-        let messageStr: NSMutableAttributedString = NSMutableAttributedString(string: price)
-        messageStr.addAttribute(NSAttributedString.Key.font, value: self.font as Any, range: NSRange(location: 0, length: messageStr.length - 1))
-        messageStr.addAttribute(NSAttributedString.Key.font, value: wonFont, range: NSRange(location: messageStr.length - 1, length: 1))
-        messageStr.addAttribute(NSAttributedString.Key.foregroundColor, value: self.textColor as Any, range: NSRange(location: 0, length: messageStr.length))
-
-        let messageParagraph: NSMutableParagraphStyle = NSMutableParagraphStyle(withHangul: true)
-        messageParagraph.alignment = .center
-        messageParagraph.lineBreakMode = .byCharWrapping
-        messageParagraph.lineSpacing = 2
-        messageStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: messageParagraph, range: NSRange(location: 0, length: messageStr.length))
-
-        return messageStr
-    }
-
-    public func boundingRectForCharacterRange(range: NSRange) -> CGRect? {
-        guard let attributedText else { return nil }
-
-        let textStorage: NSTextStorage = NSTextStorage(attributedString: attributedText)
-        let layoutManager: NSLayoutManager = NSLayoutManager()
-
-        textStorage.addLayoutManager(layoutManager)
-
-        let textContainer: NSTextContainer = NSTextContainer(size: bounds.size)
-        textContainer.lineFragmentPadding = 0.0
-
-        layoutManager.addTextContainer(textContainer)
-
-        var glyphRange: NSRange = NSRange()
-
-        // Convert the range for glyphs.
-        layoutManager.characterRange(forGlyphRange: range, actualGlyphRange: &glyphRange)
-
-        return layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+    /// 이 함수는 메인큐에서만 사용할 수 있습니다.
+    /// 디버그를 용이하게 하기 위해서 메인큐가 아닌 곳에서 사용할 경우 앱을 죽입니다.
+    /// 운영앱은 0 뱉을꺼에요 UI 깨질꺼임!
+    public func textSize(width: CGFloat? = nil) -> CGSize {
+        if Thread.isMainThread {
+            let maxLineHeight = self.maxLineHeight()
+            if let text {
+                if let width {
+                    return text.size(maxSize: CGSize(width: width, height: maxLineHeight), font: self.font)
+                }
+                return text.size(maxSize: CGSize(width: self.width, height: maxLineHeight), font: self.font)
+            }
+            return .zero
+        }
+        if isBetaApp() {
+            assertionFailure("이 함수는 메인큐에서만 사용할 수 있습니다.")
+        }
+        return .zero
     }
 }
 
 // MARK: - Debug Label
+@MainActor
 extension UILabel {
     public static func makeDebugLabel(owner: NSObject) {
         let label = UILabel(frame: CGRect(x: 0, y: 0, w: 100, h: 50))
@@ -144,10 +99,9 @@ extension UILabel {
 
         label.addLongPressGesture { [weak owner] _ in
             guard let owner else { return }
-            print("\n 🌸 Show Class Name : \(owner.className)\n")
+            Logger.ui.logDebug("\n 🌸 Show Class Name : \(owner.className)\n")
             UIPasteboard.general.string = owner.className
-            alert(title: nil, message: "\(owner.className) 복사되었습니다!")
-//            UIAlertController.alert(title: nil, message: "\(owner.className) 복사되었습니다!")
+            UIAlertController.alert(title: nil, message: "\(owner.className) 복사되었습니다!")
         }
         label.addTapGesture { [weak label] recognizer in
             guard let label else { return }
@@ -163,12 +117,43 @@ extension UILabel {
                 }
             }
         }
+
+        if let v = owner as? UIView, v.cornerRadius > 0 {
+            label.frame.origin.x = v.cornerRadius / 3
+        }
+    }
+}
+
+@MainActor
+extension UILabel {
+    private struct AssociatedKeys {
+        static var customFontName: UInt8 = 0
+        static var customFontSize: UInt8 = 0
+    }
+
+    @IBInspectable public var customFont: String? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.customFontName) as? String
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.customFontName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            guard let string = newValue else { return }
+            let strings = string.components(separatedBy: ",").filter {
+                !$0.trim().isEmpty
+            }
+            if let fontName = strings.first, let size = strings.last {
+                if let font = UIFont(name: fontName, size: size.toCGFloat()) {
+                    self.font = font
+                }
+            }
+        }
     }
 }
 
 // HTML
+@MainActor
 extension UILabel {
-    public func setHTMLText(_ text: String?, lineBreakMode: NSLineBreakMode = .byTruncatingTail) {
+    public func setHTMLText(_ text: String?, alignment: NSTextAlignment = .natural, lineBreakMode: NSLineBreakMode = .byTruncatingTail) {
         self.text = nil
         self.attributedText = nil
         guard let text else { return }
@@ -184,6 +169,7 @@ extension UILabel {
             let range = NSRange(location: 0, length: mutableAttr.length)
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineBreakMode = lineBreakMode
+            paragraphStyle.alignment = alignment
             mutableAttr.addAttribute(.paragraphStyle, value: paragraphStyle, range: range)
             attributedText = mutableAttr
         }

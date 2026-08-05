@@ -2,24 +2,23 @@
 //  NSObjectExtensions.swift
 //  ssg
 //
-//  Created by pkh on 2018. 1. 26..
 //  Copyright © 2018년 emart. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-final class ObjectInfoMap: Sendable {
-    let ivarInfoList: [IvarInfo]
+public class ObjectInfoMap {
+    public var ivarInfoList: [IvarInfo]
 
-    init(ivarInfoList: [IvarInfo]) {
+    public init(ivarInfoList: [IvarInfo]) {
         self.ivarInfoList = ivarInfoList
     }
 }
 
-private let cache = NSCache<NSString, ObjectInfoMap>()
+public let Object_Info_Cache = NSCache<NSString, ObjectInfoMap>()
 
-@inline(__always) public func swiftClassFromString(_ className: String, bundleName: String = "WiggleSDK") -> AnyClass? {
+@inline(__always) public func swiftClassFromString(_ className: String, bundleName: String = "SwiftHelper") -> AnyClass? {
     // get the project name
     if  let appName: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String {
         // generate the full name of your class (take a look into your "YourProject-swift.h" file)
@@ -39,12 +38,13 @@ private let cache = NSCache<NSString, ObjectInfoMap>()
     return nil
 }
 
-struct  IvarInfo {
-    enum IvarInfoClassType: String {
+public struct  IvarInfo {
+    public enum IvarInfoClassType: String {
         case any
         case array
         case dictionary
         case int
+        case uint
         case string
         case float
         case cgfloat
@@ -58,14 +58,14 @@ struct  IvarInfo {
         }
     }
 
-    var label: String = ""
-    var classType: IvarInfoClassType = .exceptType
-    var stringClassTypeName: String = ""
-    var subClassType: AnyClass?
-    var subValueType: IvarInfoClassType = .exceptType
+    public var label: String = ""
+    public var classType: IvarInfoClassType = .exceptType
+    public var stringClassTypeName: String = ""
+    public var subClassType: AnyClass?
+    public var subValueType: IvarInfoClassType = .exceptType
 }
 
-@inline(__always) func getDictionaryExcludSuper(mirrored_object: Mirror) -> [String: Any] {
+@inline(__always) public func getDictionaryExcludSuper(mirrored_object: Mirror) -> [String: Any] {
     var dict: [String: Any] = [String: Any]()
     for (label, value) in mirrored_object.children {
         guard let label else { continue }
@@ -86,7 +86,7 @@ struct  IvarInfo {
     return dict
 }
 
-@inline(__always) func getDictionary(mirrored_object: Mirror) -> [String: Any] {
+@inline(__always) public func getDictionary(mirrored_object: Mirror) -> [String: Any] {
     var dict: [String: Any] = [String: Any]()
     for (label, value) in mirrored_object.children {
         guard let label else { continue }
@@ -137,7 +137,7 @@ struct  IvarInfo {
     return dict
 }
 
-@inline(__always) func getIvarInfoList(_ classType: NSObject.Type) -> [IvarInfo] {
+@inline(__always) public func getIvarInfoList(_ classType: NSObject.Type) -> [IvarInfo] {
     var className: String = ""
 
     let mirror: Mirror = Mirror(reflecting: classType.init())
@@ -145,6 +145,14 @@ struct  IvarInfo {
     ivarDataList.reserveCapacity(mirror.children.count)
 
     for case let (label?, value) in mirror.children {
+//        if label == "comm" {
+//            print("label: \(label), class: \(classType.className) value: \(String(describing: type(of: value)))")
+//        }
+
+//        if classType.className == "DI_TripHotelItem", label == "data" {
+//            print("111")
+//        }
+
         let label = label.replace("$__lazy_storage_$_", "")
         className = String(describing: type(of: value))
 
@@ -175,6 +183,9 @@ struct  IvarInfo {
             else if value is Int {
                 ivarDataList.append( IvarInfo(label: label, classType: .int, stringClassTypeName: className, subClassType: nil) )
             }
+            else if value is UInt {
+                ivarDataList.append( IvarInfo(label: label, classType: .uint, stringClassTypeName: className, subClassType: nil) )
+            }
             else if value is Float {
                 ivarDataList.append( IvarInfo(label: label, classType: .float, stringClassTypeName: className, subClassType: nil) )
             }
@@ -201,7 +212,8 @@ struct  IvarInfo {
         }
     }
 
-    if let superClass = class_getSuperclass(classType) {
+    if let superClass = class_getSuperclass(classType),
+        superClass != NSObject.self {
         let superIvarDataList = getIvarInfoList(superClass as! NSObject.Type)
         if superIvarDataList.count > 0 {
             ivarDataList += superIvarDataList
@@ -222,15 +234,15 @@ extension NSObject {
         return getDictionaryExcludSuper(mirrored_object: mirrored_object)
     }
 
-    @inline(__always) func ivarInfoList() -> [IvarInfo] {
+    @inline(__always) public func ivarInfoList() -> [IvarInfo] {
 //        print(String(describing: type(of:self)))
-        if let info = cache.object(forKey: self.className as NSString) {
+        if let info: ObjectInfoMap = Object_Info_Cache.object(forKey: self.className as NSString) {
             return info.ivarInfoList
         }
         else {
             let infoList: [IvarInfo] = getIvarInfoList(type(of: self))
             let info: ObjectInfoMap = ObjectInfoMap(ivarInfoList: infoList )
-            cache.setObject(info, forKey: self.className as NSString)
+            Object_Info_Cache.setObject(info, forKey: self.className as NSString)
             return infoList
         }
 //        return getIvarInfoList(type(of:self))
@@ -238,19 +250,40 @@ extension NSObject {
 }
 
 extension NSObject {
-    private struct AssociatedKeys {
-        nonisolated(unsafe) static var observerAble: UInt8 = 0
-        nonisolated(unsafe) static var isRequestImpression: UInt8 = 0
+    nonisolated private struct AssociatedKeys {
+        static var className: UInt8 = 0
+        static var observerAble: UInt8 = 0
+        static var isRequestImpression: UInt8 = 0
     }
 
-    public var toInt: Int {
+    nonisolated public var toInt: Int {
         return unsafeBitCast(self, to: Int.self)
     }
 
-    public var className: String { String(describing: type(of:self)) }
-    public class var className: String { String(describing: self) }
+    nonisolated public var className: String {
+        if let name: String = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
+            return name
+        }
+        else {
+            let name: String = String(describing: type(of: self))
+            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return name
+        }
 
-    public var observerAble: (key: Notification.Name, closure: ((_ value: String) -> Void)?)? {
+    }
+
+    nonisolated public class var className: String {
+        if let name: String = objc_getAssociatedObject(self, &AssociatedKeys.className) as? String {
+            return name
+        }
+        else {
+            let name: String = String(describing: self)
+            objc_setAssociatedObject(self, &AssociatedKeys.className, name, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            return name
+        }
+    }
+
+    nonisolated public var observerAble: (key: Notification.Name, closure: ((_ value: String) -> Void)?)? {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.observerAble) as? (key: Notification.Name, ((_ value: String) -> Void)?)
         }
@@ -262,7 +295,7 @@ extension NSObject {
         }
     }
 
-    public var isRequestImpression: Bool {
+    nonisolated public var isRequestImpression: Bool {
         get {
             if let isRequestImpression: Bool = objc_getAssociatedObject(self, &AssociatedKeys.isRequestImpression) as? Bool {
                 return isRequestImpression
@@ -280,5 +313,13 @@ extension NSObject {
 
     @objc private func onObserver() {
         observerAble?.closure?(observerAble?.key.rawValue ?? "")
+    }
+}
+
+nonisolated public struct WeakContainer<Object: AnyObject> {
+    public weak var object: Object?
+
+    public init(_ object: Object) {
+        self.object = object
     }
 }

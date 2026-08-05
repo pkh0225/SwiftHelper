@@ -2,7 +2,6 @@
 //  ArrayExtensions.swift
 //  EZSwiftExtensions
 //
-//  Created by Goktug Yilmaz on 15/07/15.
 //  Copyright (c) 2015 Goktug Yilmaz. All rights reserved.
 //
 
@@ -40,28 +39,11 @@ extension Array {
         return nil
     }
 
-    ///  Get a sub array from range of index
-//    public func get(at range: ClosedRange<Int>) -> Array {
-//        let halfOpenClampedRange = Range(range).clamped(to: Range(indices))
-//        return Array(self[halfOpenClampedRange])
-//    }
-
     ///   Checks if array contains at least 1 item which type is same with given element's type
     public func containsType<T>(of element: T) -> Bool {
         let elementType = type(of: element)
         return contains { type(of: $0) == elementType }
     }
-
-    ///   Decompose an array to a tuple with first element and the rest
-//    public func decompose() -> (head: Iterator.Element, tail: SubSequence)? {
-//
-//        if count > 0 {
-//            return (self[0], self[1..<count])
-//        }
-//        else {
-//            return nil
-//        }
-//    }
 
     ///   Iterates on each element of the array with its index. (Index, Element)
     public func forEachEnumerated(_ body: @escaping (_ offset: Int, _ element: Element) -> Void) {
@@ -96,23 +78,6 @@ extension Array {
         guard index >= 0 && index < count else { return nil }
         return Swift.max(count - 1 - index, 0)
     }
-
-    ///   Shuffles the array in-place using the Fisher-Yates-Durstenfeld algorithm.
-//    public mutating func shuffle() {
-//        guard count > 1 else { return }
-//        var j: Int
-//        for i in 0..<(count-2) {
-//            j = Int(arc4random_uniform(UInt32(count - i)))
-//            if i != i+j { self.swapAt(i, i+j) }
-//        }
-//    }
-
-    ///   Shuffles copied array using the Fisher-Yates-Durstenfeld algorithm, returns shuffled array.
-//    public func shuffled() -> Array {
-//        var result = self
-//        result.shuffle()
-//        return result
-//    }
 
     ///   Returns an array with the given number as the max number of elements.
     public func takeMax(_ n: Int) -> Array {
@@ -161,9 +126,9 @@ extension Array where Element: Equatable {
     }
 
     ///   Checks if self contains a list of items.
-    public func contains(_ elements: Element...) -> Bool {
-        return elements.testAll { self.firstIndex(of: $0) ?? -1 >= 0 }
-    }
+//    public func contains(_ elements: Element...) -> Bool {
+//        return elements.testAll { self.firstIndex(of: $0) ?? -1 >= 0 }
+//    }
 
     ///   Returns the indexes of the object
     public func indexes(of element: Element) -> [Int] {
@@ -232,7 +197,7 @@ extension Array where Element: Equatable {
 
             //  find common elements and save them in first set
             //  to intersect in the next loop
-            value.forEach { (item: Element) -> Void in
+            value.forEach { (item: Element) in
                 if result.contains(item) {
                     intersection.append(item)
                 }
@@ -284,62 +249,121 @@ extension Array where Element: Equatable {
     }
 }
 
-extension Array where Element: NSObject {
-    public func clone() -> Array {
-        var copiedArray = [Element]()
-        for element in self {
-            copiedArray.append(element.copy() as! Element)
+extension Array where Element == (_ value: [String: Any]?) -> Void {
+    public mutating func nextRun(_ value: [String: Any]? = nil) {
+        guard self.count > 0 || self.first != nil else { return }
+        let work = self.removeFirst()
+        Task { @MainActor in
+//            try await Task.sleep(nanoseconds: 1_000_000)
+            work(value)
         }
-        return copiedArray
+    }
+
+    public mutating func addAction(_ work: @escaping (_ value: [String: Any]?) -> Void) {
+        self.append(work)
     }
 }
 
-extension Array where Element == UIButton {
-    @MainActor
-    public mutating func sw_addUtilityButton(with normal: UIImage?, selectedImg: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.setBackgroundImage(normal, for: .normal)
-        button.setBackgroundImage(selectedImg, for: .highlighted)
-        self.append(button)
+extension Array where Element == () -> Void {
+    public mutating func nextRun() {
+        guard self.count > 0 || self.first != nil else { return }
+        let work = self.removeFirst()
+        Task { @MainActor in
+            try await Task.sleep(nanoseconds: 1_000_000)
+            work()
+        }
     }
-    @MainActor
-    public mutating func sw_addUtilityButton(with color: UIColor?, title: String?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.append(button)
-    }
-    @MainActor
-    public mutating func sw_addUtilityButton(with color: UIColor?, attributedTitle title: NSAttributedString?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setAttributedTitle(title, for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        self.append(button)
-    }
-    @MainActor
-    public mutating func sw_addUtilityButton(with color: UIColor?, icon: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setImage(icon, for: .normal)
-        self.append(button)
-    }
-    @MainActor
-    public mutating func sw_addUtilityButton(with color: UIColor?, normalIcon: UIImage?, selectedIcon: UIImage?) {
-        let button: UIButton = UIButton(type: .custom)
-        button.backgroundColor = color
-        button.setImage(normalIcon, for: .normal)
-        button.setImage(selectedIcon, for: .highlighted)
-        button.setImage(selectedIcon, for: .selected)
-        self.append(button)
+
+    public mutating func addAction(_ work: @escaping () -> Void) {
+        self.append(work)
     }
 }
 
-extension Optional where Wrapped: Collection {
-    public var count: Int {
-        return (self as? [Any])?.count ?? 0
+@MainActor
+extension Array where Element: UIView {
+    /// reused된 View를 리턴
+    /// - Parameters:
+    ///   - parentView: 아이템뷰가 들어갈 부모뷰
+    ///   - size: 아이템 기본 사이즈
+    /// - Returns: reused 된 View
+    @inline(__always) public mutating func getReusedView(parentView: UIView, size: CGSize = .zero) -> Element {
+        func isXibFileExists(_ fileName: String) -> Bool {
+            if let path: String = Bundle.main.path(forResource: fileName, ofType: "nib") {
+                if FileManager.default.fileExists(atPath: path) {
+                    return true
+                }
+            }
+            return false
+        }
+        var view: Element?
+        for item in self {
+            if item.isHidden {
+                item.isHidden = false
+                view = item
+                break
+            }
+        }
+
+        if view == nil {
+            if isXibFileExists(Element.className) {
+                view = Element.fromXib()
+                if size != .zero {
+                    view?.bounds = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+                }
+            }
+            else {
+                view = Element(frame: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+            }
+
+            view?.isHidden = false
+            self.append(view!)
+
+            if let p = parentView as? UIStackView {
+                p.addArrangedSubview(view!)
+            }
+            else {
+                parentView.addSubview(view!)
+            }
+
+        }
+
+        return view!
+    }
+
+    @inline(__always) public func setHiddenAll(_ value: Bool) {
+        self.forEach { $0.isHidden = value }
+    }
+}
+
+extension Sequence {
+    public func concurrentMap<T>(_ transform: @escaping (Element) async -> T) async -> [T] {
+        let tasks = map { element in
+            Task {
+                await transform(element)
+            }
+        }
+
+        return await tasks.asyncMap { task in
+            await task.value
+        }
+    }
+
+    public func asyncMap<T>(_ transform: (Element) async -> T) async -> [T] {
+        var values = [T]()
+        for element in self {
+            await values.append(transform(element))
+        }
+        return values
+    }
+
+    public func concurrentForEach(_ operation: @escaping (Element) async -> Void) async {
+        await withTaskGroup(of: Void.self) { group in
+            for element in self {
+                group.addTask {
+                    await operation(element)
+                }
+            }
+        }
     }
 }
 

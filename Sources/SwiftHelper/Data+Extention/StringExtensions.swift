@@ -2,12 +2,12 @@
 //  StringExtensions.swift
 //  EZSwiftExtensions
 //
-//  Created by Goktug Yilmaz on 15/07/15.
 //  Copyright (c) 2015 Goktug Yilmaz. All rights reserved.
 //
 // swiftlint:disable line_length
 
 import UIKit
+import OrderedCollections
 
 public class ColorChangeTextItem {
     public var text: String = ""
@@ -56,6 +56,10 @@ extension String {
         return self.trimmingCharacters(in: ["{", "}"]).isValid
     }
 
+    public var isSinegaeURL: Bool {
+        return URL(string: self)?.host?.contains(".shinsegae.com") ?? false
+    }
+
     /// isValid 검사를 해서 성공이면 자기 자신을 return하고 아니면 default 값을 return 한다.
     /// - Parameter value: default Value
     /// - Returns: isValid 검사를 해서 성공이면 자기 자신을 return하고 아니면 default 값을 return 한다.
@@ -82,7 +86,7 @@ extension String {
             return detector.matches(in: self, options: [], range: NSRange(location: 0, length: count))
         }
         catch let error {
-            print("\(self) --> \(error.localizedDescription)")
+            Logger.extension.logError(error)
             return []
         }
     }
@@ -191,6 +195,26 @@ extension String {
         return newUrlString
     }
 
+    public func urlAddParameters(_ params: OrderedDictionary<String, String>) -> String {
+        guard var components: URLComponents = URLComponents(string: self) else { return self }
+
+        var queryItems: [URLQueryItem] = []
+
+        if let items = components.queryItems {
+            queryItems = items
+        }
+
+        let addItems = params.map { key, value -> URLQueryItem in
+            return URLQueryItem(name: key, value: value)
+        }
+
+        queryItems.append(contentsOf: addItems)
+        components.queryItems = queryItems
+
+        guard let newUrlString: String = components.url?.absoluteString else { return self }
+        return newUrlString
+    }
+
     public func urlFromQueryString() -> (host: String, path: String, queryItems: [String: String])? {
         guard let url = self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else { return nil }
         guard let urlComponents = URLComponents(string: url), let host = urlComponents.host, let scheme = urlComponents.scheme else { return nil }
@@ -223,6 +247,12 @@ extension String {
             }
         }
         return (path: urlComponents.path, queryItems: params)
+    }
+
+    public func urlPathFromQueryString() -> (host: String, path: String)? {
+        guard let url = self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else { return nil }
+        guard let urlComponents = URLComponents(string: url), let host = urlComponents.host, let scheme = urlComponents.scheme else { return nil }
+        return (host: scheme + "://" + host, path: urlComponents.path)
     }
 
     public func objectFromQueryString() -> [String: String]? {
@@ -286,7 +316,7 @@ extension String {
 
     public func removeParameters() -> String? {
         guard let url = URL(string: self) else {
-            print("잘못된 URL 형식입니다.")
+            Logger.extension.logError("잘못된 URL 형식입니다.")
             return nil
         }
 
@@ -582,7 +612,7 @@ extension String {
                 return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
             }
             catch {
-                print("\(self) --> \(error.localizedDescription)")
+                Logger.extension.logError(error)
             }
         }
         return nil
@@ -595,7 +625,7 @@ extension String {
                 return try JSONSerialization.jsonObject(with: data, options: []) as? [Any]
             }
             catch {
-                print("\(self) --> \(error.localizedDescription)")
+                Logger.extension.logError(error)
             }
         }
         return nil
@@ -615,7 +645,7 @@ extension String {
          한글 > 영문(대소구분 없음) > 숫자 > $
          그외 특수문자는 전부 무시한채 인덱싱
          $는 예외
-
+        
          self 가 @"ㄱ" 보다 작고 (한글이 아니고) , comp 가 @"ㄱ"보다 같거나 클때 - 무조건 크다
          비교하면 -1 0 1 이 작다, 같다, 크다 순이므로 +1 을 하면 한글일때 YES 아니면 NO 가 된다.
          self 가 한글이고 comp 가 한글이 아닐때 무조건 작다인 조건과
@@ -734,7 +764,7 @@ extension String {
         let constraintSize: CGSize = CGSize(width: maxWidth, height: .greatestFiniteMagnitude)
         let paragraphStyle = NSMutableParagraphStyle(withHangul: true)
         let boundingBox: CGRect = self.boundingRect(with: constraintSize, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.paragraphStyle: paragraphStyle], context: nil)
-        return boundingBox.height
+        return ceilUI(boundingBox.height)
     }
 
     /**
@@ -747,7 +777,7 @@ extension String {
         let constraintSize: CGSize = CGSize(width: .greatestFiniteMagnitude, height: maxHeight)
         let paragraphStyle = NSMutableParagraphStyle(withHangul: true)
         let boundingBox: CGRect = self.boundingRect(with: constraintSize, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.paragraphStyle: paragraphStyle], context: nil)
-        return boundingBox.width
+        return ceilUI(boundingBox.width)
     }
 
     /**
@@ -771,7 +801,7 @@ extension String {
         }
         let paragraphStyle = NSMutableParagraphStyle(withHangul: true)
         let boundingBox: CGRect = self.boundingRect(with: constraintSize, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.paragraphStyle: paragraphStyle], context: nil)
-        return CGSize(width: boundingBox.width, height: boundingBox.height)
+        return CGSize(width: ceilUI(boundingBox.width), height: ceilUI(boundingBox.height))
     }
 
     ///  숫자:숫자 형태로 된 문자열에서 ":"(콜론 문자열)을 보고 비율값을 return하는 함수

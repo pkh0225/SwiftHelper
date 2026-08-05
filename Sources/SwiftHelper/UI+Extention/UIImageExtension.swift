@@ -1,21 +1,13 @@
 //
 //  UIImageExtension.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by pkh on 2017. 11. 28..
 //  Copyright © 2017년 leejaejin. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
-@MainActor
 extension UIImage {
-    public enum fileType: String {
-        case gif = ".gif"
-        case webp = ".webp"
-    }
-
     public var w: CGFloat {
         return self.size.width
     }
@@ -37,19 +29,17 @@ extension UIImage {
         self.init(cgImage: cgImage)
     }
 
-    public class func imageWithImage(image: UIImage?, scaledTo size: CGSize) -> UIImage? {
-        guard let image else { return nil }
+    public func imageWithImage(scaledTo size: CGSize) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
-        image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         let newImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return newImage!
     }
-    @MainActor
-    public class func imageWithImage(image: UIImage?, scaledToMaxWidth width: CGFloat, maxHeight height: CGFloat) -> UIImage? {
-        guard let image else { return nil }
-        let oldWidth: CGFloat = image.size.width
-        let oldHeight: CGFloat = image.size.height
+
+    public func imageWithImage(scaledToMaxWidth width: CGFloat, maxHeight height: CGFloat) -> UIImage? {
+        let oldWidth: CGFloat = self.size.width
+        let oldHeight: CGFloat = self.size.height
         var scaleFactor: CGFloat = 0
         if (oldWidth ) > (oldHeight) {
             scaleFactor = width / oldWidth
@@ -61,7 +51,7 @@ extension UIImage {
         let newWidth: CGFloat = oldWidth * scaleFactor
         let newSize: CGSize = CGSize(width: newWidth, height: newHeight)
 
-        return UIImage.imageWithImage(image: image, scaledTo: newSize)
+        return imageWithImage(scaledTo: newSize)
     }
 
     public func scalingAndCroppingForSize(targetSize: CGSize, isCenter: Bool) -> UIImage? {
@@ -113,6 +103,7 @@ extension UIImage {
     }
 
     public func toSize(_ size: CGSize) -> UIImage? {
+        guard size != .zero else { return nil }
         UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
         self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -197,16 +188,10 @@ extension UIImage {
             }
 
         }
-
         return nil
-
     }
 
-    public class func imageRectangle(withFrame frame: CGRect, color: UIColor) -> UIImage? {
-        return self.imageRectangle(withFrame: frame, color: color, alpha: 1.0)
-    }
-
-    public class func imageRectangle(withFrame frame: CGRect, color: UIColor, alpha aAlpha: CGFloat) -> UIImage? {
+    public static func imageRectangle(withFrame frame: CGRect, color: UIColor, alpha aAlpha: CGFloat = 1.0) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(frame.size, false, UIScreen.main.scale)
         guard let context: CGContext = UIGraphicsGetCurrentContext() else { return nil }
         context.setAlpha(aAlpha)
@@ -215,53 +200,6 @@ extension UIImage {
         let image: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image
-    }
-
-    public class func initTintColor(name: String, tintColor hexString: String) -> UIImage? {
-        return UIImage.initTintColor(name: name, tintColor: UIColor.hexString(hexString))
-    }
-
-    public class func initTintColor(name: String, tintColor hex: UInt32) -> UIImage? {
-        return UIImage.initTintColor(name: name, tintColor: UIColor(hex: hex))
-    }
-
-    public class func initTintColor(name: String, tintColor color: UIColor) -> UIImage? {
-        return UIImage(named: name)?.tintColor(color)
-    }
-
-    public func tintColor(_ hex: UInt32) -> UIImage {
-        return tintColor(UIColor(hex: hex))
-    }
-
-    public func tintColor(_ hexString: String) -> UIImage {
-        return tintColor(UIColor.hexString(hexString))
-    }
-
-    public func tintColor(_ color: UIColor) -> UIImage {
-        if #available(iOS 13.0, *) {
-            return self.withTintColor(color)
-        } else {
-            // iOS 12 이하에서는 수동으로 이미지에 색상을 적용합니다.
-            UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
-            guard let context = UIGraphicsGetCurrentContext(), let cgImage = self.cgImage else {
-                UIGraphicsEndImageContext()
-                return self
-            }
-
-            context.translateBy(x: 0, y: self.size.height)
-            context.scaleBy(x: 1.0, y: -1.0)
-            context.setBlendMode(.normal)
-
-            let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
-            context.clip(to: rect, mask: cgImage)
-            color.setFill()
-            context.fill(rect)
-
-            let tintedImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-
-            return tintedImage ?? self
-        }
     }
 
     public func resizableImageCenter() -> UIImage {
@@ -322,7 +260,6 @@ extension UIImage {
 
 }
 // 이미지회전
-@MainActor
 extension UIImage {
     // 회전된 이미지로 다시 그리기.
     public func rotateImage(by radian: CGFloat) -> UIImage {
@@ -372,7 +309,6 @@ extension UIImage {
 }
 
 // 업로드용 이미지
-@MainActor
 extension UIImage {
     // 정책 : 1500으로 리사이징 했는데도 maxSize가 넘을 경우 1000으로 리사이징. 그래도 maxSize 넘으면 실패
     @objc public func resizeUploadImage(maxSize: Int = 10) -> UIImage? {
@@ -387,14 +323,16 @@ extension UIImage {
 
         defer {
             if success == false {
-                alert(title: nil, message: "최대 \(Int(maxSize))MB 까지 등록 가능합니다.")
+                Task { @MainActor in
+                    ToastView("최대 \(Int(maxSize))MB 까지 등록 가능합니다.").show()
+                }
             }
         }
 
-        resizeImage = UIImage.imageWithImage(image: self, scaledToMaxWidth: firstSize / UIScreen.main.scale, maxHeight: firstSize / UIScreen.main.scale)
+        resizeImage = self.imageWithImage(scaledToMaxWidth: firstSize / UIScreen.main.scale, maxHeight: firstSize / UIScreen.main.scale)
         resizeData = resizeImage?.jpegData(compressionQuality: 1.0)
         if let aResizeData = resizeData, Double(aResizeData.count) / 1024.0 / 1024.0 > Double(maxSize) {
-            resizeImage = UIImage.imageWithImage(image: self, scaledToMaxWidth: secondSize / UIScreen.main.scale, maxHeight: secondSize / UIScreen.main.scale)
+            resizeImage = self.imageWithImage(scaledToMaxWidth: secondSize / UIScreen.main.scale, maxHeight: secondSize / UIScreen.main.scale)
             resizeData = resizeImage?.jpegData(compressionQuality: 1.0)
 
             if let resizeData, Double(resizeData.count) / 1024.0 / 1024.0 > Double(maxSize) {

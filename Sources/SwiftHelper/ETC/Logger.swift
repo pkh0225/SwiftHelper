@@ -2,216 +2,57 @@
 //  Logger.swift
 //  SwiftHelper
 //
-//  Created by 박길호 on 9/9/25.
+//  Copyright © 2026 mykim. All rights reserved.
 //
 
 import Foundation
-import OSLog
+@_exported import os
 
-// MARK: - 커스텀 로거 클래스
-public class Logger {
-    public var isDebugPrintEnabled: Bool = false
+extension Logger {
+    // 앱의 번들 식별자를 서브시스템으로 사용
+    private static let subsystem = Bundle.main.bundleIdentifier ?? "SwiftHelper"
 
-    private let subsystem: String
-    private let category: String
-    private let osLog: OSLog
+    // 카테고리별 Logger 정의
+    nonisolated public static let etc = Logger(subsystem: subsystem, category: "ETC")
+    nonisolated public static let ui = Logger(subsystem: subsystem, category: "UI")
+    nonisolated public static let network = Logger(subsystem: subsystem, category: "Network")
+    nonisolated public static let cookie = Logger(subsystem: subsystem, category: "Cookie")
+    nonisolated public static let `extension` = Logger(subsystem: subsystem, category: "Extension")
+    nonisolated public static let `deinit` = Logger(subsystem: subsystem, category: "Deinit")
+    nonisolated public static let parser = Logger(subsystem: subsystem, category: "parser")
 
-    public init(subsystem: String = Bundle.main.bundleIdentifier ?? "MyApp", category: String = "General") {
-        self.subsystem = subsystem
-        self.category = category
-        self.osLog = OSLog(subsystem: subsystem, category: category)
+    nonisolated public static let apiAutoTest = Logger(subsystem: subsystem, category: "apiAutoTest")
+}
+
+extension Logger {
+    nonisolated public func logDebug(_ message: String) {
+        self.debug("🔍 DEBUG: \(message)")
     }
 
-    @inline(__always) private func getLogMessage(message: String, file: String, function: String, line: Int) -> String {
-        let fileName = URL(fileURLWithPath: file).lastPathComponent
-        let dateFormatter: DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss.SSS"
-        let dateString: String = dateFormatter.string(from: Date())
-        let logMessage = "[\(fileName):\(line)] [\(dateString)] \(function) - \(message)"
-        return logMessage
+    nonisolated public func logInfo(_ message: String) {
+        self.info("ℹ️ INFO: \(message)")
     }
 
-    // MARK: - 각 레벨별 로깅 메서드
-
-    /// Debug 레벨 로그 (개발 중 디버깅 정보)
-    public func debug(_ message: String,
-               file: String = #file,
-               function: String = #function,
-               line: Int = #line) {
-
-        let logMessage = getLogMessage(message: message, file: file, function: function, line: line)
-
-        os_log("%@", log: osLog, type: .debug, logMessage)
-
-        #if DEBUG
-        if isDebugPrintEnabled { print("🐛 [DEBUG] \(message)") }
-        #endif
+    nonisolated public func logNotice(_ message: String) {
+        self.notice("✅ Notice: \(message)")
     }
 
-    /// Info 레벨 로그 (일반적인 정보)
-    public func info(_ message: String,
-              file: String = #file,
-              function: String = #function,
-              line: Int = #line) {
-        let logMessage = getLogMessage(message: message, file: file, function: function, line: line)
-
-        os_log("%@", log: osLog, type: .info, logMessage)
-
-        #if DEBUG
-        if isDebugPrintEnabled { print("ℹ️ [INFO] \(message)") }
-        #endif
+    nonisolated public func logWarning(_ message: String) {
+        self.warning("⚠️ WARNING: \(message)")
     }
 
-    /// Notice 레벨 로그 (주목할 만한 이벤트)
-    public func notice(_ message: String,
-                file: String = #file,
-                function: String = #function,
-                line: Int = #line) {
-        let logMessage = getLogMessage(message: message, file: file, function: function, line: line)
-
-        os_log("%@", log: osLog, type: .default, logMessage)
-
-        #if DEBUG
-        if isDebugPrintEnabled { print("📢 [NOTICE] \(message)") }
-        #endif
+    nonisolated public func logError(_ message: String) {
+        self.error("🚨 ERROR: \(message)")
     }
 
-    /// Error 레벨 로그 (에러 상황)
-    public func error(_ message: String,
-               error: Error? = nil,
-               file: String = #file,
-               function: String = #function,
-               line: Int = #line) {
-        var logMessage = getLogMessage(message: message, file: file, function: function, line: line)
-
-        if let error = error {
-            logMessage += " Error: \(error.localizedDescription)"
-        }
-
-        os_log("%@", log: osLog, type: .error, logMessage)
-
-        #if DEBUG
-        if isDebugPrintEnabled { print("❌ [ERROR] \(message)") }
-        #endif
-    }
-
-    /// Fault 레벨 로그 (심각한 오류)
-    public func fault(_ message: String,
-               error: Error? = nil,
-               file: String = #file,
-               function: String = #function,
-               line: Int = #line) {
-        var logMessage = getLogMessage(message: message, file: file, function: function, line: line)
-
-        if let error = error {
-            logMessage += " Critical Error: \(error.localizedDescription)"
-        }
-
-        os_log("%@", log: osLog, type: .fault, logMessage)
-
-        #if DEBUG
-        print("🔥 [FAULT] \(message)")
-        #endif
-
-        // 심각한 오류는 추가 처리 (예: 크래시 리포팅)
-        // crashlytics.record(error: error)
+    nonisolated public func logFault(_ message: String) {
+        self.fault("💣 FAULT: \(message)")
     }
 }
 
-// MARK: - 전역 로거 인스턴스
-public extension Logger {
-    public static let shared = Logger()
-
-    // 카테고리별 로거들
-    public static let network = Logger(category: "Network")
-    public static let ui = Logger(category: "UI")
-    public static let database = Logger(category: "Database")
-    public static let auth = Logger(category: "Authentication")
-}
-
-// MARK: - 로그 필터링을 위한 확장
-public extension Logger {
-    // MARK: - 로그 레벨 정의
-    public enum LogLevel: String, CaseIterable {
-        case debug = "DEBUG"
-        case info = "INFO"
-        case notice = "NOTICE"
-        case error = "ERROR"
-        case fault = "FAULT"
-
-        public var osLogType: OSLogType {
-            switch self {
-            case .debug:
-                return .debug
-            case .info:
-                return .info
-            case .notice:
-                return .default
-            case .error:
-                return .error
-            case .fault:
-                return .fault
-            }
-        }
+extension Logger {
+    nonisolated public func logError(_ error: any Error, file: String = #file, function: String = #function, line: Int = #line) {
+        let fileName = (file as NSString).lastPathComponent
+        self.error("🚨 [\(fileName)] \(function) (Line \(line)) - Error: \(error.localizedDescription)")
     }
-
-    /// 특정 레벨 이상의 로그만 출력하는 메서드
-    public func log(_ level: LogLevel,
-             _ message: String,
-             error: Error? = nil,
-             file: String = #file,
-             function: String = #function,
-             line: Int = #line) {
-
-        switch level {
-        case .debug:
-            debug(message, file: file, function: function, line: line)
-        case .info:
-            info(message, file: file, function: function, line: line)
-        case .notice:
-            notice(message, file: file, function: function, line: line)
-        case .error:
-            self.error(message, error: error, file: file, function: function, line: line)
-        case .fault:
-            fault(message, error: error, file: file, function: function, line: line)
-        }
-    }
-}
-
-// MARK: - 간편 사용을 위한 전역 함수들
-public func logDebug(_ message: String,
-              file: String = #file,
-              function: String = #function,
-              line: Int = #line) {
-    Logger.shared.debug(message, file: file, function: function, line: line)
-}
-
-public func logInfo(_ message: String,
-             file: String = #file,
-             function: String = #function,
-             line: Int = #line) {
-    Logger.shared.info(message, file: file, function: function, line: line)
-}
-
-public func logNotice(_ message: String,
-               file: String = #file,
-               function: String = #function,
-               line: Int = #line) {
-    Logger.shared.notice(message, file: file, function: function, line: line)
-}
-
-public func logError(_ message: String,
-              error: Error? = nil,
-              file: String = #file,
-              function: String = #function,
-              line: Int = #line) {
-    Logger.shared.error(message, error: error, file: file, function: function, line: line)
-}
-
-public func logFault(_ message: String,
-              error: Error? = nil,
-              file: String = #file,
-              function: String = #function,
-              line: Int = #line) {
-    Logger.shared.fault(message, error: error, file: file, function: function, line: line)
 }

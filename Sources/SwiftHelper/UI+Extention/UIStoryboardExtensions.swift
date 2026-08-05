@@ -2,7 +2,6 @@
 //  UIStoryboardExtensions.swift
 //  EZSwiftExtensions
 //
-//  Created by Rugen Heidbuchel on 15/06/2016.
 //  Copyright © 2016 Goktug Yilmaz. All rights reserved.
 //
 
@@ -10,6 +9,7 @@
 
 import UIKit
 
+@MainActor
 extension UIStoryboard {
     public class func Storyboard<T>(storyboardName: String, identifier: T.Type, bundle: Bundle? = Bundle.main) -> T? {
         let storyboard = self.init(name: storyboardName, bundle: Bundle.main)

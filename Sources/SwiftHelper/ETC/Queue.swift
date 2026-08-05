@@ -1,8 +1,6 @@
 //
-//  LinkedList.swift
+//  Queue.swift
 //  SwiftHelper
-//
-//  Created by 박길호 on 11/26/24.
 //
 
 import Foundation
@@ -38,7 +36,8 @@ public final class Queue<T> {
         if tail == nil { // 큐가 비어있다면
             head = newNode
             tail = newNode
-        } else {
+        }
+        else {
             tail?.next = newNode
             tail = newNode
         }
@@ -67,4 +66,3 @@ public final class Queue<T> {
         return value
     }
 }
-

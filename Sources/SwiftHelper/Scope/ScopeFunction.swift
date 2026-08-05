@@ -1,8 +1,7 @@
 //
 //  ScopeFunction.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by 박길호 on 8/13/24.
 //  Copyright © 2024 mykim. All rights reserved.
 //
 
@@ -21,8 +20,6 @@ extension ScopeAble {
     /// 이 메서드는 인스턴스의 변경 가능한 복사본을 생성하고, 제공된 클로저에 전달합니다.
     /// 클로저를 실행한 후, 수정된 복사본을 반환합니다.
     ///
-    /// 일반적으로 사용예시는 생성자에서 초기화된 인스턴스를 수정하는데 사용됩니다.
-    ///
     /// - Parameter block: 인스턴스와 동일한 타입의 `inout` 매개변수를 받는 클로저입니다.
     ///                   이 클로저는 인스턴스를 직접 수정할 수 있습니다.
     /// - Returns: 클로저가 실행된 후 수정된 인스턴스의 복사본을 반환합니다.
@@ -30,7 +27,7 @@ extension ScopeAble {
     ///
     /// 사용 예:
     /// ```swift
-    /// let label = UILabel().apply {
+    /// let label = UILabel() {
     ///     $0.text = "안녕하세요, Swift!"
     ///     $0.textColor = .blue
     /// }
@@ -57,8 +54,6 @@ extension ScopeAble {
     ///
     /// 이 메서드는 인스턴스의 변경 가능한 복사본을 생성하고, 제공된 클로저를 실행한 후
     /// 클로저의 결과를 반환합니다.
-    ///
-    /// 일반적으로 한번 사용되는 함수를 따로 만들지 않고  run을 통해서 한번만 사용할 수 있습니다.
     ///
     /// - Parameter block: 인스턴스와 동일한 타입의 `inout` 매개변수를 받는 클로저입니다.
     ///                   이 클로저는 인스턴스를 직접 수정할 수 있으며, 반환값은 제네릭 타입 `T`입니다.

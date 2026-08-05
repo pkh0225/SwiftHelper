@@ -2,7 +2,6 @@
 //  ScopeViewController.swift
 //  TestSwiftHelper
 //
-//  Created by 박길호 on 9/20/24.
 //  Copyright © 2024 pkh. All rights reserved.
 //
 
@@ -42,8 +41,6 @@ class SccopeViewController: UIViewController, RouterProtocol {
         self.view.backgroundColor = .white
 
         test()
-
-        ToastView(text: "102-39748-01239745-09128390-48123-908-0").show()
     }
 
     func test() {
@@ -170,7 +167,12 @@ class SccopeViewController: UIViewController, RouterProtocol {
 
         let result = stringList.joined(separator: "\n")
 
-        makeDebugTextView(value: result)
+        let textView = UITextView(frame: view.bounds.insetBy(dx: 10, dy: 10))
+        textView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        textView.isEditable = false
+        textView.font = .systemFont(ofSize: 14)
+        textView.text = result
+        view.addSubview(textView)
     }
 }
 

@@ -1,8 +1,7 @@
 //
 //  JSONSerializableExtension.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by mykim on 2018. 8. 20..
 //  Copyright © 2018년 mykim. All rights reserved.
 //
 
@@ -37,6 +36,15 @@ extension JSONSerializable {
 
         for case let (label?, value) in mirrored_object.children {
 //            print("label: \(label), value: \(value)")
+            if label == "_descriptionTab" {
+                continue
+            }
+            if label == "_debugJsonDic" {
+                continue
+            }
+            if label == "_debugAnyData" {
+                continue
+            }
 
             let mir = Mirror(reflecting: value)
             if mir.displayStyle == .enum {
@@ -67,7 +75,7 @@ extension JSONSerializable {
                                 addArray.append(strArray)
                             }
                         }
-                        else if let item = item as? JSONSerializable {
+                        else if let item: JSONSerializable = item as? JSONSerializable {
                             let dic = item.JSONRepresentation
                             if dic.isEmpty == false {
                                 addArray.append(dic)
@@ -99,9 +107,9 @@ extension JSONSerializable {
                     representation[label] = "\(value)"
 
                 default:
-                    print("mirrored_object: \(mirrored_object)")
-                    print(" Ignore any unserializable properties")
-                    print("label: \(label), value: \(value)")
+                    Logger.etc.logError("mirrored_object: \(mirrored_object)")
+                    Logger.etc.logError(" Ignore any unserializable properties")
+                    Logger.etc.logError("label: \(label), value: \(value)")
                     break
                 }
             }
@@ -109,7 +117,9 @@ extension JSONSerializable {
 
         if let parent: Mirror = mirrored_object.superclassMirror {
             let dic: [String: Any] = getMirrorToDic(mirrored_object: parent)
-            dic.forEach { representation[$0.key] = $0.value }
+            if dic.isEmpty == false {
+                representation += dic
+            }
 
         }
         return representation
@@ -125,7 +135,7 @@ extension JSONSerializable {
         }
 
         do {
-            let data = try JSONSerialization.data(withJSONObject: representation, options: [.prettyPrinted, .sortedKeys])
+            let data = try JSONSerialization.data(withJSONObject: representation, options: [.prettyPrinted])
             return String(data: data, encoding: String.Encoding.utf8)
         }
         catch {

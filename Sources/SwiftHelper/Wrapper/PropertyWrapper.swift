@@ -1,36 +1,63 @@
 //
 //  PropertyWrapper.swift
-//  Test
+//  SwiftHelper
 //
-//  Created by 박길호 on 8/14/24.
-//  Copyright © 2024 pkh. All rights reserved.
+//  Copyright © 2021 mykim. All rights reserved.
 //
+
 import Foundation
+import os
 
 @propertyWrapper
 public struct Atomic<Value> {
-    private var value: Value
-    private let lock = NSLock()
+    private let loadValue: () -> Value
+    private let storeValue: (Value) -> Void
 
     public init(wrappedValue value: Value) {
-        self.value = value
+        if #available(iOS 16.0, *) {
+            let storage = OSAllocatedUnfairLock(initialState: value)
+            self.loadValue = {
+                storage.withLock { $0 }
+            }
+            self.storeValue = { newValue in
+                storage.withLock { $0 = newValue }
+            }
+        }
+        else {
+            let lock = NSLock()
+            let box = AtomicValueBox(value)
+            self.loadValue = {
+                lock.lock()
+                defer { lock.unlock() }
+                return box.value
+            }
+            self.storeValue = { newValue in
+                lock.lock()
+                defer { lock.unlock() }
+                box.value = newValue
+            }
+        }
     }
 
     public var wrappedValue: Value {
-      get { return load() }
-      set { store(newValue: newValue) }
+        get { load() }
+        set { store(newValue: newValue) }
     }
 
     public func load() -> Value {
-        lock.lock()
-        defer { lock.unlock() }
-        return value
+        loadValue()
     }
 
-    public mutating func store(newValue: Value) {
-        lock.lock()
-        defer { lock.unlock() }
-        value = newValue
+    public func store(newValue: Value) {
+        storeValue(newValue)
+    }
+}
+
+private final class AtomicValueBox<Value>: @unchecked Sendable {
+    var value: Value
+
+    init(_ value: Value) {
+        self.value = value
     }
 }
 

@@ -2,29 +2,11 @@
 //  File.swift
 //
 //
-//  Created by mykim on 2020/10/21.
 //
 
 import UIKit
 
-struct CellColor {
-    public let cellBackGroundColorInfo: [UIColor] =
-        [
-            UIColor(hex: 0xf6f3e6),
-            UIColor(hex: 0xf3eae0),
-            UIColor(hex: 0xe5f3e0),
-            UIColor(hex: 0xe0edf3),
-            UIColor(hex: 0xe0e0f3),
-            UIColor(hex: 0xeae0f3),
-            UIColor(hex: 0xf3e0f2),
-            UIColor(hex: 0xf3e0e4),
-            UIColor(hex: 0xeae0cc),
-            UIColor(hex: 0xd0ede0),
-            UIColor(hex: 0xccd4ea),
-            UIColor(hex: 0xe0e0e0)
-        ]
-}
-
+@MainActor
 extension UIImageView {
     @IBInspectable public var stretchImage: Bool {
         get {
@@ -45,7 +27,7 @@ extension UIImageView {
         }
         set {
             if let newValue {
-                self.setTintColorImage(newValue)
+                self.image = self.image?.withTintColor(newValue)
             }
         }
     }
@@ -90,15 +72,6 @@ extension UIImageView {
         }
     }
 
-    @IBInspectable public var resizeImageSize: Int {
-        get {
-            return self.resize_image_size ?? 0
-        }
-        set {
-            self.resize_image_size = newValue
-        }
-    }
-
     public func setStrechImage(_ inset: UIEdgeInsets?, resizeMode: UIImage.ResizingMode = .stretch) {
         guard let nomalImage = self.image else { return }
         var edgeInset: UIEdgeInsets!
@@ -118,38 +91,5 @@ extension UIImageView {
             self.highlightedImage = highlightedResizeImage
         }
 
-    }
-
-    public func setTintColorImage(_ color: UIColor) {
-//        print("1111333 self.image = \(String(describing: self.image))")
-//        self.image = self.image?.tintColor(color)
-        if self.image?.renderingMode != .alwaysTemplate {
-            self.image = self.image?.withRenderingMode(.alwaysTemplate)
-        }
-        self.tintColor = color
-    }
-}
-
-// MARK:-
-extension UIImageView {
-    // MARK:- GET scaleAspectFit Size
-    public var contentClippingRect: CGRect {
-        guard let image else { return bounds }
-        guard contentMode == .scaleAspectFit else { return bounds }
-        guard image.size.width > 0 && image.size.height > 0 else { return bounds }
-
-        let scale: CGFloat
-        if image.size.width > image.size.height {
-            scale = bounds.width / image.size.width
-        }
-        else {
-            scale = bounds.height / image.size.height
-        }
-
-        let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
-        let x = (bounds.width - size.width) / 2.0
-        let y = (bounds.height - size.height) / 2.0
-
-        return CGRect(x: x, y: y, width: size.width, height: size.height)
     }
 }

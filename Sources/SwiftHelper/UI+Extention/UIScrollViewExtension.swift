@@ -1,8 +1,7 @@
 //
 //  UIScrollViewExtension.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by pkh on 2018. 5. 23..
 //  Copyright © 2018년 mykim. All rights reserved.
 //
 
@@ -35,17 +34,18 @@ public extension UIPanGestureRecognizer {
 
 public typealias ScrollViewClosure = (_ obj: UIScrollView, _ newValue: CGPoint, _ oldValue: CGPoint) -> Void
 
+@MainActor
 extension UIScrollView {
     private struct AssociatedKeys {
-        nonisolated(unsafe) static var headerView: UInt8 = 0
-        nonisolated(unsafe) static var footerView: UInt8 = 0
-        nonisolated(unsafe) static var topInsetView: UInt8 = 0
-        nonisolated(unsafe) static var headerViewIsSticky: UInt8 = 0
-        nonisolated(unsafe) static var kvoOffsetCallback: UInt8 = 0
-        nonisolated(unsafe) static var offsetObserver: UInt8 = 0
-        nonisolated(unsafe) static var insetObserver: UInt8 = 0
-        nonisolated(unsafe) static var contentSizeObserver: UInt8 = 0
-        nonisolated(unsafe) static var headerViewFrameObserver: UInt8 = 0
+        static var headerView: UInt8 = 0
+        static var footerView: UInt8 = 0
+        static var topInsetView: UInt8 = 0
+        static var headerViewIsSticky: UInt8 = 0
+        static var kvoOffsetCallback: UInt8 = 0
+        static var offsetObserver: UInt8 = 0
+        static var insetObserver: UInt8 = 0
+        static var contentSizeObserver: UInt8 = 0
+        static var headerViewFrameObserver: UInt8 = 0
     }
 
     // MARK:- Observer를 중복으로 Add하는 방지를 위한 Bool 값들
@@ -209,8 +209,8 @@ extension UIScrollView {
     private func addObserverInset() {
         guard self.insetObserver == nil else { return }
         self.insetObserver = self.observe(\.contentInset, options: [.old, .new]) { [weak self] _, _ in
-            guard let `self` = self else { return }
-            DispatchQueue.main.async {
+            MainActor.assumeIsolated {
+                guard let `self` = self else { return }
                 if let headerView: UIView = self.customHeaderView {
                     headerView.frame.origin.y = -headerView.frame.size.height
                 }
@@ -230,10 +230,10 @@ extension UIScrollView {
     private func addObserverOffset() {
         guard self.offsetObserver == nil else { return }
         self.offsetObserver = self.observe(\.contentOffset, options: [.old, .new]) { [weak self] obj, change in
-            guard let `self` = self else { return }
-            guard let newValue: CGPoint = change.newValue, let oldValue: CGPoint = change.oldValue else { return }
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                guard let newValue: CGPoint = change.newValue, let oldValue: CGPoint = change.oldValue else { return }
 
-            DispatchQueue.main.async {
                 if floor(newValue.y) != floor(oldValue.y) {
                     if let kvoOffsetCallbacks = self.kvoOffsetCallbacks {
                         for clousre in kvoOffsetCallbacks {
@@ -258,28 +258,25 @@ extension UIScrollView {
                     headerView.frame.origin.y = -headerView.frame.size.height
                 }
             }
-
         }
-
     }
 
     // MARK:- Content Size Observer
     private func addObserverContentSize() {
         guard self.contentSizeObserver == nil else { return }
         self.contentSizeObserver = self.observe(\.contentSize, options: [.old, .new]) { [weak self] _, change in
-            guard let `self` = self else { return }
+            MainActor.assumeIsolated {
+            guard let self else { return }
             guard let newValue: CGSize = change.newValue, let oldValue: CGSize = change.oldValue else { return }
             guard newValue != oldValue else { return }
-
-            DispatchQueue.main.async {
                 if let footerView = self.customFooterView {
                     UIView.performWithoutAnimation {
                         footerView.frame.origin.y = self.contentSize.height
-    //                    print("self.contentSize.height: \(self.contentSize.height)")
+                        //                    print("self.contentSize.height: \(self.contentSize.height)")
                     }
+
                 }
             }
-
         }
     }
 
@@ -291,10 +288,8 @@ extension UIScrollView {
             guard let `self` = self else { return }
             guard let newValue: CGRect = change.newValue, let oldValue: CGRect = change.oldValue else { return }
             guard floor(newValue.size.height) != floor(oldValue.size.height) else { return }
-            DispatchQueue.main.async {
-                let top: CGFloat = floor(self.contentInset.top + newValue.size.height - oldValue.size.height)
-                self.contentInset = UIEdgeInsets(top: top, left: self.contentInset.left, bottom: self.contentInset.bottom, right: self.contentInset.right)
-            }
+            let top: CGFloat = floor(self.contentInset.top + newValue.size.height - oldValue.size.height)
+            self.contentInset = UIEdgeInsets(top: top, left: self.contentInset.left, bottom: self.contentInset.bottom, right: self.contentInset.right)
         }
     }
 
@@ -309,9 +304,10 @@ extension UIScrollView {
         self.scrollsToTop = false
 
         self.setContentOffset(contentOffset, animated: animated)
-        gcd_main_after(0.4) {
+
+        Task { @MainActor in
+            try await Task.sleep(nanoseconds: 400_000_000)
             self.scrollsToTop = true
         }
     }
-
 }

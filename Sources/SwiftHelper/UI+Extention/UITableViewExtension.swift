@@ -1,14 +1,14 @@
 //
 //  UITableViewExtension.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by pkh on 2017. 11. 28..
 //  Copyright © 2017년 leejaejin. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
+@MainActor
 extension UITableView {
     public func registerDefaultCell() {
         register(UITableViewCell.self)
@@ -67,9 +67,10 @@ extension UITableView {
 
 }
 
+@MainActor
 extension UITableViewCell {
     private struct AssociatedKeys {
-        nonisolated(unsafe) static var indexPath: UInt8 = 0
+        static var indexPath: UInt8 = 0
     }
     public var indexPath: IndexPath {
         get {

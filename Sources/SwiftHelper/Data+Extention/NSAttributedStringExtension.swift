@@ -1,8 +1,7 @@
 //
 //  NSAttributedStringExtension.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by 박길호(팀원) - 서비스개발담당App개발팀 on 9/16/25.
 //  Copyright © 2025 mykim. All rights reserved.
 //
 import UIKit
@@ -26,13 +25,13 @@ extension NSAttributedString {
                 paragraphStyle.lineBreakStrategy = .hangulWordPriority
                 sizeAttributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: sizeAttributedString.length))
             }
-            return sizeAttributedString.boundingRect(with: CGSize(width: maxWidth, height: maxHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.height
+            return ceilUI(sizeAttributedString.boundingRect(with: CGSize(width: maxWidth, height: maxHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.height)
         }
         else {
             let constraintRect = CGSize(width: maxWidth, height: maxHeight)
             let boundingBox = boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
 
-            return boundingBox.height
+            return ceilUI(boundingBox.height)
         }
     }
 
@@ -53,13 +52,13 @@ extension NSAttributedString {
                 paragraphStyle.lineBreakStrategy = .hangulWordPriority
                 sizeAttributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: sizeAttributedString.length))
             }
-            return sizeAttributedString.boundingRect(with: CGSize(width: .greatestFiniteMagnitude, height: maxHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width
+            return ceilUI(sizeAttributedString.boundingRect(with: CGSize(width: .greatestFiniteMagnitude, height: maxHeight), options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil).size.width)
         }
         else {
             let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: maxHeight)
             let boundingBox = boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
 
-            return boundingBox.width
+            return ceilUI(boundingBox.width)
         }
     }
 }
@@ -98,6 +97,26 @@ extension NSMutableAttributedString {
     }
 }
 
+extension NSAttributedString {
+    /// 첫 번째 attributes dictionary 반환
+    public var firstAttributes: [NSAttributedString.Key: Any]? {
+        guard self.length > 0 else { return nil }
+        return self.attributes(at: 0, effectiveRange: nil)
+    }
+
+    /// 첫 Font 반환
+    public var firstFont: UIFont? {
+        guard let attrs = self.firstAttributes else { return nil }
+        return attrs[.font] as? UIFont
+    }
+
+    /// 첫 TextColor 반환
+    public var firstTextColor: UIColor? {
+        guard let attrs = self.firstAttributes else { return nil }
+        return attrs[.foregroundColor] as? UIColor
+    }
+}
+
 extension NSMutableParagraphStyle {
     public convenience init(withHangul: Bool) {
         self.init()
@@ -105,13 +124,11 @@ extension NSMutableParagraphStyle {
         // 2. ParagraphStyle을 수동으로 init하여 넣는 경우에는 개발자가 만드므로 빠지고 있음
         // 3. 그러나 애플은 이를 있다고 가정하고 boundingRect을 계산하는 오류가 있으므로 init 시 강제로 박도록 한다.
         // 애플이 오류 수정 시 이 키워드로 검색 후 기본 init으로 바꿔주면 됩니다!!!
-        if #available(iOS 14.0, *) {
-            if withHangul {
-                self.lineBreakStrategy = .hangulWordPriority
-            }
-            else {
-                self.lineBreakStrategy = .standard
-            }
+        if withHangul {
+            self.lineBreakStrategy = .hangulWordPriority
+        }
+        else {
+            self.lineBreakStrategy = .standard
         }
     }
 }

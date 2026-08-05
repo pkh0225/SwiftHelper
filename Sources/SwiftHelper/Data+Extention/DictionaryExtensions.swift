@@ -2,18 +2,12 @@
 //  DictionaryExtensions.swift
 //  EZSwiftExtensions
 //
-//  Created by Goktug Yilmaz on 15/07/15.
 //  Copyright (c) 2015 Goktug Yilmaz. All rights reserved.
 //
 
 import Foundation
 
 extension Dictionary {
-    ///   Returns the value of a random Key-Value pair from the Dictionary
-    public func random() -> Value? {
-        return Array(values).random()
-    }
-
     ///   Union of self and the input dictionaries.
     public func union(_ dictionaries: Dictionary...) -> Dictionary {
         var result = self
@@ -24,24 +18,6 @@ extension Dictionary {
         }
         return result
     }
-
-    ///   Intersection of self and the input dictionaries.
-    /// Two dictionaries are considered equal if they contain the same [key: value] copules.
-//    public func intersection<K, V>(_ dictionaries: [K: V]...) -> [K: V] where K: Equatable, V: Equatable {
-//        //  Casts self from [Key: Value] to [K: V]
-//        let filtered = mapFilter { (item, value) -> (K, V)? in
-//            if let item = item as? K, let value = value as? V {
-//                return (item, value)
-//            }
-//            return nil
-//        }
-//
-//        //  Intersection
-//        return filtered.filter { (key: K, value: V) -> Bool in
-//            //  check for [key: value] in all the dictionaries
-//            dictionaries.testAll { $0.has(key) && $0[key] == value }
-//        }
-//    }
 
     ///   Checks if a key exists in the dictionary.
     public func has(_ key: Key) -> Bool {

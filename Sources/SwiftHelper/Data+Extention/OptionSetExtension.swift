@@ -2,7 +2,6 @@
 //  OptionSetExtension.swift
 //  ssg
 //
-//  Created by yoseok on 03/07/2019.
 //  Copyright © 2019 emart. All rights reserved.
 //
 

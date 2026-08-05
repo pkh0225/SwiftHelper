@@ -1,11 +1,11 @@
 //
-//  Closure.swift
-//  Test
+//  DefineClosure.swift
+//  SwiftHelper
 //
-//  Created by 박길호 on 8/14/24.
-//  Copyright © 2024 pkh. All rights reserved.
+//  Copyright © 2017년 leejaejin. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 public typealias VoidClosure                = () -> Void
@@ -28,18 +28,7 @@ public typealias OnButtonClosure            = (_ sender: UIButton?) -> Void
 public typealias ActionClosure              = (_ actionType: String, _ data: Any?) -> Void
 public typealias CompletionClosure          = (_ completion: @escaping BoolClosure) -> Void
 public typealias ScrollViewCallback         = (_ scrollView: UIScrollView) -> Void
-public typealias AuthorizationPhotoCallback = (_ status: Int, _ isAccess: Bool) -> Void
 
-public typealias AnyPointClosure = (_ value: Any) -> CGPoint
-public typealias CommonOnTextFieldNotificationClosure = (_ isShow: Bool, _ keyboardHeight: CGFloat, _ notification: Notification) -> Void
+public typealias IntStringClosure = (Int, String) -> Void
 public typealias StringBoolClosure = (_ value1: String, _ value2: Bool) -> Void
 public typealias StringAnyClosure = (_ value1: String, _ value2: Any) -> Void
-public typealias ViewStringClosure = (_ view: UIView, _ value: String) -> CGPoint
-
-public typealias TransitionAnimationClosure     = (_ fromViewController: UIViewController, _ toViewController: UIViewController, _ completion: @escaping VoidClosure) -> Void
-
-public typealias LongTapMenuClosure             = (_ indexMenu: Int, _ indexPath: IndexPath, _ pointInCell: CGPoint ) -> Void
-public typealias LongTapMenuScreennameClosure   = (_ indexPath: IndexPath, _ pointInCell: CGPoint ) -> String
-public typealias LongTapMenuDataItemClosure     = (_ indexPath: IndexPath, _ pointInCell: CGPoint ) -> Any
-public typealias LongTapMenuCellClosure         = (_ indexPath: IndexPath, _ pointInCell: CGPoint) -> Any
-public typealias LongTapMenuShareClosure        = (_ dataItem: Any, _ cell: Any, _ screenNameSecond: String) -> Void

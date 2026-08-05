@@ -1,18 +1,18 @@
 //
 //  UIAccessibilityExtensions.swift
-//  WiggleSDK
+//  SwiftHelper
 //
-//  Created by pkh on 2021/04/08.
 //  Copyright © 2021 mykim. All rights reserved.
 //
 
 import UIKit
 
+@MainActor
 extension UIAccessibility {
-    @MainActor
     public static func setFocusTo(_ object: Any?) {
         if UIAccessibility.isVoiceOverRunning {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            Task { @MainActor in
+                try await Task.sleep(nanoseconds: 500_000_000)
                 if let o = object as? NSObject {
                     o.isAccessibilityElement = true
                 }

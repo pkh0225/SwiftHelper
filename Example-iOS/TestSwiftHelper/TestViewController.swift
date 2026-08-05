@@ -2,19 +2,16 @@
 //  ViewController.swift
 //  Test
 //
-//  Created by pkh on 2018. 8. 14..
 //  Copyright © 2018년 pkh. All rights reserved.
 //
 
 import UIKit
 import SwiftHelper
 
-typealias TypePushController = UIViewController & RouterProtocol
-
 class TestViewController: UITableViewController, RouterProtocol {
     static var storyboardName: String = "Main"
 
-    var vcList = [(title: String, vc: TypePushController.Type)]()
+    var vcList = [(title: String, vc: RouterProtocol.Type)]()
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self)
@@ -24,9 +21,8 @@ class TestViewController: UITableViewController, RouterProtocol {
 
     func setData() {
         vcList.append(("Closure Queue", ClosureQueueController.self))
-        vcList.append(("Memory", MemoryViewController.self))
         vcList.append(("Scope", SccopeViewController.self))
-        vcList.append(("Logger", LoggerTestViewController.self))
+        vcList.append(("ToastView", ToastViewController.self))
     }
 }
 

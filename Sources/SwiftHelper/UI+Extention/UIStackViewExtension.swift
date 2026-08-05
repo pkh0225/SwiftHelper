@@ -2,13 +2,13 @@
 //  UIStackViewExtension.swift
 //  ssg
 //
-//  Created by enteris on 2020/08/07.
 //  Copyright © 2020 emart. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
+@MainActor
 extension UIStackView {
     public func addBackground(_ color: UIColor) {
         let subview = UIView(frame: bounds)
